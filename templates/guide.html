@@ -1,0 +1,48 @@
+{% extends "_base.html" %}
+
+{% block title %}{{ guide.title }} | Guide{% endblock %}
+
+{% block content -%}
+<div class="container">
+    <div class="row">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="cot-guide-chapters" aria-labelledby="cot-guide-chapters-label" data-bs-theme="dark">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title" id="cot-guide-chapters-label">Guide chapters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#cot-guide-chapters"></button>
+            </div>
+
+            <div class="offcanvas-body">
+                {%- include "_guide_chapters.html" -%}
+            </div>
+        </div>
+
+        <aside class="d-none d-lg-block pt-4 me-xxl-5 col-auto sticky-sidebar">
+            {%- include "_guide_chapters.html" -%}
+        </aside>
+
+        <div class="col-12 col-lg-auto order-lg-last cot-toc sticky-sidebar mt-4 mb-5 ms-xxl-5 px-sm-1 text-body-secondary">
+            <button class="btn btn-secondary d-lg-none collapsed cot-guide-toc-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#guide-toc-contents" aria-expanded="false" aria-controls="guide-toc-contents">
+                On this page
+                {% include "icons/chevron_expand.svg" -%}
+            </button>
+            <strong class="d-none d-lg-block h6 my-2 ms-3">On this page</strong>
+            <hr class="d-none d-lg-block my-2 ms-3">
+            <div class="collapse" id="guide-toc-contents" style="">
+                <nav id="guide-toc">
+                    <ul>
+                        {%- for section in guide.sections -%}
+                            {{ section|safe }}
+                        {%- endfor -%}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#guide-toc" data-bs-offset="0" tabindex="0">
+            <h1>{{ guide.title }}</h1>
+
+            {{- guide.content_html|safe -}}
+        </div>
+    </div>
+</div>
+{%- endblock %}

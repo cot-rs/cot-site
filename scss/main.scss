@@ -1,0 +1,63 @@
+// Bootstrap core
+@import "../bootstrap/scss/functions";
+
+$primary: #f97316;
+$btn-transition: none;
+$enable-important-utilities: false;
+$enable-smooth-scroll: false;
+
+$font-family-sans-serif: "Lato", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-serif: "Libre Baskerville", serif, system-ui, -apple-system, "Times New Roman", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-monospace: "Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+$nav-link-transition: color .05s ease-in-out, background-color .05s ease-in-out, border-color .05s ease-in-out;
+$offcanvas-transition-duration: .25s;
+
+@import "../bootstrap/scss/variables";
+@import "../bootstrap/scss/variables-dark";
+
+@import "../bootstrap/scss/maps";
+@import "../bootstrap/scss/mixins";
+@import "../bootstrap/scss/root";
+
+@import "../bootstrap/scss/utilities";
+@import "../bootstrap/scss/reboot";
+@import "../bootstrap/scss/type";
+@import "../bootstrap/scss/images";
+@import "../bootstrap/scss/containers";
+@import "../bootstrap/scss/grid";
+@import "../bootstrap/scss/helpers";
+
+// Components
+
+// Layout & components
+@import "../bootstrap/scss/tables";
+//@import "../bootstrap/scss/forms";
+@import "../bootstrap/scss/buttons";
+@import "../bootstrap/scss/transitions";
+@import "../bootstrap/scss/dropdown";
+@import "../bootstrap/scss/button-group";
+@import "../bootstrap/scss/nav";
+@import "../bootstrap/scss/navbar";
+@import "../bootstrap/scss/card";
+//@import "../bootstrap/scss/accordion";
+@import "../bootstrap/scss/breadcrumb";
+//@import "../bootstrap/scss/pagination";
+//@import "../bootstrap/scss/badge";
+//@import "../bootstrap/scss/alert";
+//@import "../bootstrap/scss/progress";
+//@import "../bootstrap/scss/list-group";
+@import "../bootstrap/scss/close";
+//@import "../bootstrap/scss/toasts";
+//@import "../bootstrap/scss/modal";
+//@import "../bootstrap/scss/tooltip";
+//@import "../bootstrap/scss/popover";
+//@import "../bootstrap/scss/carousel";
+//@import "../bootstrap/scss/spinners";
+@import "../bootstrap/scss/offcanvas";
+//@import "../bootstrap/scss/placeholders";
+
+// Utilities
+@import "../bootstrap/scss/utilities/api";
+
+@import "custom";
+@import "syntax-highlighting";

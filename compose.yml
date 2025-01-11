@@ -1,0 +1,16 @@
+services:
+  web:
+    image: ghcr.io/cot-rs/cot-site-web:master
+    container_name: cot_site_web
+    volumes:
+      - ./static-files:/app/static
+
+  proxy:
+    image: ghcr.io/cot-rs/cot-site-proxy:master
+    container_name: cot_site_proxy
+    volumes:
+      - ./static-files:/app/static
+    ports:
+      - "8000:80"
+    depends_on:
+      - web

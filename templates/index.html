@@ -1,0 +1,105 @@
+{% extends "_base.html" %}
+
+{% block title %}Modern web framework for Rust focused on ease of use{% endblock %}
+
+{# Remove navbar border and background #}
+{% block navbar_classes %}{% endblock %}
+
+{% block content %}
+<div class="px-4 py-5 border-bottom text-center text-light main-lead">
+    <div class="col-lg-6 mx-auto container">
+        <p class="display-5 mb-4">Take your Rust web development to the&nbsp;next&nbsp;level</p>
+        <p class="lead mb-4">
+            <strong>Cot</strong> is a powerful, type-safe, and fully featured Rust framework, delivering top-notch security and blazing speed. Cot empowers you to build production-ready web apps in record time&nbsp;—&nbsp;without compromising on performance or reliability.
+        </p>
+        <div class="d-grid gap-4 d-sm-flex justify-content-sm-center">
+            <a href="{{ cot::reverse!(request, "guide") }}" class="btn btn-primary btn-lead px-4 gap-3">Get Started<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
+            <a href="https://github.com/cot-rs/cot" class="btn btn-lead btn-lead-secondary px-4 gap-3"><svg class="bi me-2"><use href="#github"></use></svg>View on GitHub</a>
+        </div>
+    </div>
+</div>
+
+<div class="container px-4 py-5" id="icon-grid">
+    <h2 class="pb-2 text-center">Features</h2>
+
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-5 py-5">
+        <div class="col d-flex align-items-start">
+            {% include "icons/battery.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Batteries-included</h3>
+                <p>Cot delivers solutions to common web development challenges&nbsp;—&nbsp;so you can focus on bringing your ideas to life, instead of hunting down crates.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/terminal.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Easy to use API</h3>
+                <p>Cot's API is designed to be easy to use and intuitive. Sensible defaults make it for easy rapid development, while the API is still empowering you when needed.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/database.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">ORM integration</h3>
+                <p>Cot's integrated ORM provides a Rust-native database experience. Rust types guide your data model, while the ORM handles conversions and auto-generates migrations.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/gauge.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Admin panel</h3>
+                <p>Built-in admin panel is here for effortless data management. Adding new models is simple, making it perfect for rapid prototyping.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/shield.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Security</h3>
+                <p>Security should be the default, not an afterthought. Cot safeguards your app against modern threats, so you can focus on building, not bolting on security.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/lightning.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Performance</h3>
+                <p>Enjoy machine-code speed with interpreted convenience&nbsp;—&nbsp;experience full-featured development without sacrificing performance.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/book.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Documentation</h3>
+                <p>The documentation is a first-class citizen in Cot, making it always easy to find what you're looking for.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            {% include "icons/patch_check.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">Type safety</h3>
+                <p>Cot harnesses Rust's type system to catch errors early. From ORM to the templates, every component benefits from strong typing to prevent bugs.</p>
+            </div>
+        </div>
+        <div class="col d-none d-lg-flex align-items-start">
+            {% include "icons/braces.svg" %}
+            <div>
+                <h3 class="fw-bold mb-2 fs-4">JSON</h3>
+                <p>Cot comes with first-class JSON handling right out of the box. Simply derive JSON traits to parse incoming data or return JSON responses with ease.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-body-tertiary">
+    <div class="container mx-auto px-4 py-4 text-center">
+        <h2 class="font-bold my-4">Ready to Get Started?</h2>
+        <p class="mb-8">
+            Try Cot today and see how easy it is to build web apps in Rust.
+        </p>
+        <div class="p-4">
+            <code class="bg-info-subtle rounded-4 p-3">$ cargo install cot-cli && cot new</code>
+        </div>
+
+        <a href="{{ cot::reverse!(request, "guide") }}" class="btn btn-primary px-4 my-3">Read the Guide<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
+    </div>
+</div>
+{% endblock %}

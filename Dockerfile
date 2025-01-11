@@ -1,0 +1,11 @@
+FROM rust:1.84 as builder
+WORKDIR /usr/src/cot-site
+COPY . .
+RUN cargo install --path . --locked
+
+FROM debian:12-slim
+COPY --from=builder /usr/local/cargo/bin/cot-site /usr/local/bin/cot-site
+RUN mkdir /app
+COPY entrypoint.sh /app
+
+CMD ["/app/entrypoint.sh", "-l", "0.0.0.0:8000"]

@@ -1,0 +1,86 @@
+:root, [data-bs-theme=light] {
+  --code-block-color: #000;
+  --code-block-bg-color: #f5f5f5;
+  --syntax-highlighting-kw-color: #8959a8;
+  --syntax-highlighting-kw-2-color: #4271ae;
+  --syntax-highlighting-lifetime-color: #b76514;
+  --syntax-highlighting-prelude-val-color: #c82829;
+  --syntax-highlighting-number-color: #718c00;
+  --syntax-highlighting-string-color: #718c00;
+  --syntax-highlighting-literal-color: #c82829;
+  --syntax-highlighting-annotation-color: #c82829;
+  --syntax-highlighting-macro-color: #3e999f;
+  --syntax-highlighting-question-mark-color: #ff9011;
+  --syntax-highlighting-comment-color: #8e908c;
+  --syntax-highlighting-doc-comment-color: #4d4d4c;
+}
+
+[data-bs-theme=dark] {
+  --code-block-color: #ddd;
+  --code-block-bg-color: #2a2a2a;
+  --syntax-highlighting-kw-color: #ab8ac1;
+  --syntax-highlighting-kw-2-color: #769acb;
+  --syntax-highlighting-lifetime-color: #d97f26;
+  --syntax-highlighting-prelude-val-color: #ee6868;
+  --syntax-highlighting-string-color: #83a300;
+  --syntax-highlighting-number-color: #83a300;
+  --syntax-highlighting-literal-color: #ee6868;
+  --syntax-highlighting-annotation-color: #ee6868;
+  --syntax-highlighting-macro-color: #3e999f;
+  --syntax-highlighting-question-mark-color: #ff9011;
+  --syntax-highlighting-comment-color: #8d8d8b;
+  --syntax-highlighting-doc-comment-color: #8ca375;
+}
+
+pre.syntax-highlighting {
+  tab-size: 4;
+  padding: 1rem;
+  color: var(--code-block-color);
+  background-color: var(--code-block-bg-color);
+  @extend .rounded-3;
+  overflow-x: auto;
+
+  .keyword, .storage, .continuation.line.shell {
+    color: var(--syntax-highlighting-kw-color);
+  }
+
+  .keyword.operator, .storage.modifier {
+    color: var(--syntax-highlighting-kw-2-color);
+  }
+
+  .lifetime {
+    color: var(--syntax-highlighting-lifetime-color);
+  }
+
+  .support.type, .function.shell, .parameter.shell {
+    color: var(--syntax-highlighting-prelude-val-color);
+  }
+
+  .string, .string .constant {
+    color: var(--syntax-highlighting-string-color);
+  }
+
+  .constant.numeric {
+    color: var(--syntax-highlighting-number-color);
+  }
+
+  .constant {
+    color: var(--syntax-highlighting-literal-color);
+  }
+
+  .annotation {
+    color: var(--syntax-highlighting-annotation-color);
+  }
+
+  .macro {
+    color: var(--syntax-highlighting-macro-color);
+  }
+
+  .comment {
+    color: var(--syntax-highlighting-comment-color);
+  }
+
+  .comment.documentation {
+    color: var(--syntax-highlighting-doc-comment-color);
+  }
+}
