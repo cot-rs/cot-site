@@ -10,7 +10,7 @@ Cot is a free and open-source web framework for Rust that's been designed to ena
 
 This guide doesn't assume any advanced knowledge in Rust or web development in general (although this will help, too!). It's aimed at beginners who are looking to get started with Cot, and will guide you through the process of setting up a new project, creating your first views, using the Cot ORM and running your application.
 
-If you are not familiar with Rust, you might want to start by reading the [Rust Book](https://doc.rust-lang.org/book/), which is an excellent resource for learning Rust. 
+If you are not familiar with Rust, you might want to start by reading the [Rust Book](https://doc.rust-lang.org/book/), which is an excellent resource for learning Rust.
 
 ## Installing and running Cot CLI
 
@@ -42,7 +42,7 @@ cot_tutorial
 └── Cargo.toml
 ```
 
-Apart from the typical Rust project structure, you can see that Cot has created a `static` directory for your static files (like CSS, JavaScript, images, etc.), a `templates` directory for your HTML templates, and a `bacon.toml` file, which is a configuration for [bacon], a tool that handles reloading your application when the source code changes. 
+Apart from the typical Rust project structure, you can see that Cot has created a `static` directory for your static files (like CSS, JavaScript, images, etc.), a `templates` directory for your HTML templates, and a `bacon.toml` file, which is a configuration for [bacon], a tool that handles reloading your application when the source code changes.
 
 If you don't have [bacon] installed already, we strongly recommend you to do so. It will make your development process much more pleasant. You can install it by running:
 
