@@ -4,6 +4,8 @@ title: Introduction
 
 [bacon]: https://dystroy.org/bacon/
 
+<div class="alert alert-warning" role="alert"><strong>Disclaimer</strong>: Cot is currently missing a lot of features and is <strong>not ready</strong> for production use. This guide is a work in progress and will be updated as Cot matures. that said, you are more than welcome to try it out and provide feedback!</div>
+
 Cot is a free and open-source web framework for Rust that's been designed to enable rapid development, fast iteration, as well as secure and bug-free web applications. It is inspired by [Django](https://www.djangoproject.com/), and aims to provide a similar experience to developers who are already familiar with it, but also to be easy to learn for those who are not.
 
 ## Who is this guide for?

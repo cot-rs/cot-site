@@ -203,6 +203,7 @@ fn parse_guide(link: &'static str, guide_content: &str) -> Guide {
     options.extension.table = true;
     options.extension.front_matter_delimiter = Some("---".to_string());
     options.parse.smart = true;
+    options.render.unsafe_ = true;
 
     let heading_adapter = GuideHeadingAdapter {
         anchorizer: Mutex::new(comrak::Anchorizer::new()),
@@ -311,14 +312,12 @@ impl CotApp for CotSiteApp {
 
 #[cot::main]
 async fn main() -> cot::Result<CotProject> {
-    let todo_project = CotProject::builder()
-        .config(ProjectConfig::builder().build())
+    let builder = CotProject::builder().config(ProjectConfig::builder().build())
         .with_cli(cot::cli::metadata!())
         .register_app_with_views(CotSiteApp, "")
-        .middleware_with_context(StaticFilesMiddleware::from_app_context)
-        .middleware(LiveReloadMiddleware::new())
-        .build()
-        .await?;
+        .middleware_with_context(StaticFilesMiddleware::from_app_context);
+    #[cfg(debug_assertions)]
+    let builder = builder.middleware(LiveReloadMiddleware::new());
 
-    Ok(todo_project)
+    Ok(builder.build().await?)
 }
