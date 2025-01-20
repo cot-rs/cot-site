@@ -11,7 +11,7 @@ use cot::request::{Request, RequestExt};
 use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
-use cot::{Body, CotApp, CotProject, Error, StatusCode, reverse, reverse_redirect, static_files};
+use cot::{reverse, reverse_redirect, static_files, Body, CotApp, CotProject, Error, StatusCode};
 use rinja::Template;
 use serde::Deserialize;
 
@@ -131,16 +131,19 @@ macro_rules! md_guide {
 }
 
 fn parse_guides() -> (Vec<GuideLinkCategory>, HashMap<&'static str, Guide>) {
-    let categories = [("Getting started", vec![
-        md_guide!("introduction"),
-        md_guide!("templates"),
-        md_guide!("forms"),
-        md_guide!("static-files"),
-        md_guide!("authentication"),
-        md_guide!("db-models"),
-        md_guide!("error-pages"),
-        md_guide!("testing"),
-    ])];
+    let categories = [(
+        "Getting started",
+        vec![
+            md_guide!("introduction"),
+            md_guide!("templates"),
+            md_guide!("forms"),
+            md_guide!("static-files"),
+            md_guide!("authentication"),
+            md_guide!("db-models"),
+            md_guide!("error-pages"),
+            md_guide!("testing"),
+        ],
+    )];
 
     let categories_links = categories
         .iter()
