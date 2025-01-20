@@ -5,7 +5,7 @@
 [![Discord chat](https://img.shields.io/discord/1330137289287925781?logo=Discord&logoColor=white)](https://discord.cot.rs)
 </div>
 
-This is the repository for the source of the website for the web framework cot-rs/cot.
+This is the repository for the source of the website for the [Cot web framework](https://github.com/cot-rs/cot).
 
 ## License
 
