@@ -1,4 +1,4 @@
-FROM rust:1.84 as builder
+FROM rust:1.84 AS builder
 WORKDIR /usr/src/cot-site
 COPY . .
 RUN cargo install --path . --locked

@@ -1,4 +1,5 @@
 /target/
+/nginx/
 Dockerfile
 *.dockerfile
 docker-compose.yml
