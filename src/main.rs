@@ -215,7 +215,12 @@ fn parse_guide(link: &'static str, guide_content: &str) -> Guide {
 
     let syntax_highlighter = comrak::plugins::syntect::SyntectAdapterBuilder::new()
         .css()
-        .syntax_set(syntect::dumps::from_uncompressed_data(include_bytes!("../syntax-highlighting/defs.bin")).expect("failed to load syntax set"))
+        .syntax_set(
+            syntect::dumps::from_uncompressed_data(include_bytes!(
+                "../syntax-highlighting/defs.bin"
+            ))
+            .expect("failed to load syntax set"),
+        )
         .build();
     let render_plugins = comrak::RenderPlugins::builder()
         .codefence_syntax_highlighter(&syntax_highlighter)
@@ -321,7 +326,8 @@ impl CotApp for CotSiteApp {
 
 #[cot::main]
 async fn main() -> cot::Result<CotProject> {
-    let builder = CotProject::builder().config(ProjectConfig::builder().build())
+    let builder = CotProject::builder()
+        .config(ProjectConfig::builder().build())
         .with_cli(cot::cli::metadata!())
         .register_app_with_views(CotSiteApp, "")
         .middleware_with_context(StaticFilesMiddleware::from_app_context);

@@ -30,8 +30,8 @@ repos:
     hooks:
       - id: fmt
 
-  - repo: https://github.com/lovesegfault/beautysh
-    rev: v6.2.1
+  - repo: https://github.com/adamryczkowski/beautysh
+    rev: v6.2.3
     hooks:
       - id: beautysh
         args: ["--tab"]
