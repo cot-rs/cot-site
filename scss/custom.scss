@@ -177,7 +177,7 @@ body {
   // Allow the code blocks inside guide to overflow
   min-width: 0;
 
-  p {
+  p, ul, ol, table {
     font-family: $font-family-serif;
   }
 

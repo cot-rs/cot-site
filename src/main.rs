@@ -286,6 +286,7 @@ fn fix_section_children(sections: &Vec<Section>) -> Section {
     // todo 404 page
     // todo webhook to deploy
     // todo README.md
+    // todo throw 404
 }
 
 struct CotSiteApp;
