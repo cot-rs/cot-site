@@ -12,3 +12,4 @@ target/
 # Compiled files
 static/css/main.css
 static-files/
+syntax-highlighting/defs.bin

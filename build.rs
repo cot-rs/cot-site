@@ -1,6 +1,13 @@
+use syntect::parsing::SyntaxSetBuilder;
+
 const CSS_PATH: &'static str = "static/css";
 
 fn main() {
+    build_css();
+    build_syntax_highlighting_defs();
+}
+
+fn build_css() {
     println!("cargo::rerun-if-changed=scss/main.scss");
     println!("cargo::rerun-if-changed=scss/custom.scss");
     println!("cargo::rerun-if-changed=scss/syntax-highlighting.scss");
@@ -15,7 +22,7 @@ fn main() {
                 &css,
                 lightningcss::stylesheet::ParserOptions::default(),
             )
-            .expect("failed to parse CSS");
+                .expect("failed to parse CSS");
             stylesheet
                 .minify(lightningcss::stylesheet::MinifyOptions::default())
                 .expect("failed to minify CSS");
@@ -31,4 +38,22 @@ fn main() {
 
     std::fs::create_dir_all(CSS_PATH).expect("failed to create CSS directory");
     std::fs::write(format!("{CSS_PATH}/main.css"), css).expect("failed to write CSS");
+}
+
+fn build_syntax_highlighting_defs() {
+    let mut builder = SyntaxSetBuilder::new();
+    builder.add_plain_text_syntax();
+    add_syntax_highlighting_from_folder(&mut builder, "Packages/HTML");
+    add_syntax_highlighting_from_folder(&mut builder, "Packages/Rust");
+    add_syntax_highlighting_from_folder(&mut builder, "Packages/Diff");
+    add_syntax_highlighting_from_folder(&mut builder, "Packages/ShellScript");
+    add_syntax_highlighting_from_folder(&mut builder, "sublime-jinja2");
+    add_syntax_highlighting_from_folder(&mut builder, "sublime_toml_highlighting");
+
+    let syntax_set = builder.build();
+    syntect::dumps::dump_to_uncompressed_file(&syntax_set, "syntax-highlighting/defs.bin").expect("failed to dump syntax highlighting defs");
+}
+
+fn add_syntax_highlighting_from_folder(builder: &mut SyntaxSetBuilder, path: &str) {
+    builder.add_from_folder(format!("syntax-highlighting/{path}"), true).expect(&format!("failed to add {path} syntax highlighting"))
 }

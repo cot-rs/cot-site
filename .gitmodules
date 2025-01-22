@@ -1,3 +1,12 @@
 [submodule "bootstrap"]
 	path = bootstrap
 	url = https://github.com/twbs/bootstrap.git
+[submodule "syntax-highlighting/sublime-jinja2"]
+	path = syntax-highlighting/sublime-jinja2
+	url = https://github.com/Martin819/sublime-jinja2.git
+[submodule "syntax-highlighting/Packages"]
+	path = syntax-highlighting/Packages
+	url = https://github.com/sublimehq/Packages.git
+[submodule "syntax-highlighting/sublime_toml_highlighting"]
+	path = syntax-highlighting/sublime_toml_highlighting
+	url = https://github.com/jasonwilliams/sublime_toml_highlighting.git

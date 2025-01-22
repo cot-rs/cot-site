@@ -12,7 +12,9 @@ cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "880db
 rinja = "0.3.5"
 serde = "1.0"
 serde_yml = "0.0.12"
+syntect = { version = "5", features = ["dump-load"] }
 
 [build-dependencies]
 grass = "0.13.4"
 lightningcss = "1.0.0-alpha.63"
+syntect = { version = "5", features = ["dump-create"] }

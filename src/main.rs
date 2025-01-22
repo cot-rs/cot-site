@@ -12,6 +12,7 @@ use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
 use cot::{reverse, reverse_redirect, static_files, Body, CotApp, CotProject, Error, StatusCode};
+use rinja::filters::HtmlSafe;
 use rinja::Template;
 use serde::Deserialize;
 
@@ -124,6 +125,8 @@ struct Section {
     children: Vec<Self>,
 }
 
+impl HtmlSafe for Section {}
+
 macro_rules! md_guide {
     ($name:literal) => {
         parse_guide($name, include_str!(concat!("guide/", $name, ".md")))
@@ -210,7 +213,10 @@ fn parse_guide(link: &'static str, guide_content: &str) -> Guide {
         sections: Mutex::new(vec![]),
     };
 
-    let syntax_highlighter = comrak::plugins::syntect::SyntectAdapter::new(None);
+    let syntax_highlighter = comrak::plugins::syntect::SyntectAdapterBuilder::new()
+        .css()
+        .syntax_set(syntect::dumps::from_uncompressed_data(include_bytes!("../syntax-highlighting/defs.bin")).expect("failed to load syntax set"))
+        .build();
     let render_plugins = comrak::RenderPlugins::builder()
         .codefence_syntax_highlighter(&syntax_highlighter)
         .heading_adapter(&heading_adapter)
@@ -275,9 +281,11 @@ fn fix_section_children(sections: &Vec<Section>) -> Section {
     // todo licenses page
     // todo opengraph/twitter meta
     // todo(cot) config from env
-    // todo docker image
     // todo next/previous guide links
     // todo proc macros
+    // todo 404 page
+    // todo webhook to deploy
+    // todo README.md
 }
 
 struct CotSiteApp;

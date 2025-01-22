@@ -40,11 +40,11 @@ pre.syntax-highlighting {
   @extend .rounded-3;
   overflow-x: auto;
 
-  .keyword, .storage, .continuation.line.shell {
+  .keyword, .storage, .continuation.line.shell, .entity.tag.html {
     color: var(--syntax-highlighting-kw-color);
   }
 
-  .keyword.operator, .storage.modifier {
+  .keyword.operator, .storage.modifier, .entity.attribute-name.html {
     color: var(--syntax-highlighting-kw-2-color);
   }
 
@@ -70,6 +70,10 @@ pre.syntax-highlighting {
 
   .annotation {
     color: var(--syntax-highlighting-annotation-color);
+  }
+
+  .delimiter.jinja2 {
+    font-weight: bold;
   }
 
   .macro {

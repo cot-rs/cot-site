@@ -633,6 +633,7 @@ dependencies = [
  "rinja",
  "serde",
  "serde_yml",
+ "syntect",
 ]
 
 [[package]]
