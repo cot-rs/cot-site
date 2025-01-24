@@ -1,6 +1,6 @@
+use crate::{FrontMatter, Guide, GuideHeadingAdapter, GuideLink, GuideLinkCategory, Section};
 use std::collections::HashMap;
 use std::sync::Mutex;
-use crate::{FrontMatter, Guide, GuideHeadingAdapter, GuideLink, GuideLinkCategory, Section};
 
 macro_rules! md_guide {
     ($name:literal) => {
@@ -40,7 +40,10 @@ pub fn parse_guides() -> (Vec<GuideLinkCategory>, HashMap<&'static str, Guide>) 
     (categories_links, guide_map)
 }
 
-pub fn get_prev_next_link<'a>(guides: &'a [GuideLinkCategory], current_id: &str) -> (Option<&'a GuideLink>, Option<&'a GuideLink>) {
+pub fn get_prev_next_link<'a>(
+    guides: &'a [GuideLinkCategory],
+    current_id: &str,
+) -> (Option<&'a GuideLink>, Option<&'a GuideLink>) {
     let mut prev = None;
     let mut has_found = false;
 
@@ -84,7 +87,7 @@ fn parse_guide(link: &'static str, guide_content: &str) -> Guide {
             syntect::dumps::from_uncompressed_data(include_bytes!(
                 "../syntax-highlighting/defs.bin"
             ))
-                .expect("failed to load syntax set"),
+            .expect("failed to load syntax set"),
         )
         .build();
     let render_plugins = comrak::RenderPlugins::builder()
@@ -105,7 +108,6 @@ fn parse_guide(link: &'static str, guide_content: &str) -> Guide {
     };
     guide
 }
-
 
 fn fix_section_children(sections: &Vec<Section>) -> Section {
     let root_section = Section {
@@ -144,6 +146,4 @@ fn fix_section_children(sections: &Vec<Section>) -> Section {
         .into_iter()
         .next()
         .expect("root section should always be in the stack")
-
-
 }

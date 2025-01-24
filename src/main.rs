@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::sync::Mutex;
 
+use crate::guides::{get_prev_next_link, parse_guides};
 use comrak::adapters::{HeadingAdapter, HeadingMeta};
 use comrak::nodes::Sourcepos;
 use cot::bytes::Bytes;
@@ -17,7 +18,6 @@ use cot::{reverse, reverse_redirect, static_files, Body, CotApp, CotProject, Err
 use rinja::filters::HtmlSafe;
 use rinja::Template;
 use serde::Deserialize;
-use crate::guides::{get_prev_next_link, parse_guides};
 
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
