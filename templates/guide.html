@@ -42,6 +42,21 @@
             <h1>{{ guide.title }}</h1>
 
             {{- guide.content_html|safe -}}
+
+            <div class="border-top border-secondary-subtle py-4 d-flex flex-row flex-wrap">
+                {%- if let Some(prev) = prev -%}
+                <a href="{{ cot::reverse!(request, "guide_page", page = prev.link) }}" class="link-secondary link-underline-opacity-0">
+                    {%- include "icons/chevron_left.svg" -%}
+                    <span class="ms-1">{{ prev.title }}</span>
+                </a>
+                {%- endif %}
+                {%- if let Some(next) = next -%}
+                <a href="{{ cot::reverse!(request, "guide_page", page = next.link) }}" class="link-primary justify-content-end link-underline-opacity-0 ms-auto">
+                    <span class="me-1">{{ next.title }}</span>
+                    {%- include "icons/chevron_right.svg" -%}
+                </a>
+                {%- endif %}
+            </div>
         </div>
     </div>
 </div>
