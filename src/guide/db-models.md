@@ -86,6 +86,18 @@ link.insert(request.db()).await?;
 
 ### Retrieving models
 
+The basis for retrieving models from the database is the `Query` structure. It contains information about which model you want to retrieve and allows you to filter, sort, and limit the results.
+
+The easiest way to work with the `Query` structure is the `query!` macro, which allows you to write complicated queries in readable way using Rusty syntax. For example, to retrieve the link which has slug "cot" from the database, you can write:
+
+```rust
+let link = query!(Link, $slug == "cot")
+    .get(request.db())
+    .await?;
+```
+
+As you can see, the `query!` macro takes the model type as the first argument, followed by the filter expression. The filter expression supports many of the common comparison operators, such as `==`, `!=`, `>`, `<`, `>=`, and `<=`. You can also use logical operators like `&&` and `||` to combine multiple conditions. The `$` sign is used to access the fields of the model in the filter expression—this is needed so that the macro can differentiate between fields of the model and other variables. What's nice about the filter expression is that it's type-checked at compile time, so not only you won't be able to filter using a non-existent field, but also you won't be able to compare fields of different types.
+
 ### Deleting models
 
 ## Foreign keys
