@@ -15,6 +15,7 @@ use cot::db::{model, Auto, LimitedString};
 
 #[model]
 pub struct Link {
+    #[model(primary_key)]
     id: Auto<i64>,
     #[model(unique)]
     slug: LimitedString<32>,
@@ -91,7 +92,9 @@ The basis for retrieving models from the database is the `Query` structure. It c
 The easiest way to work with the `Query` structure is the `query!` macro, which allows you to write complicated queries in readable way using Rusty syntax. For example, to retrieve the link which has slug "cot" from the database, you can write:
 
 ```rust
-let link = query!(Link, $slug == "cot")
+use cot::db::query;
+
+let link = query!(Link, $slug == LimitedString::new("cot").unwrap())
     .get(request.db())
     .await?;
 ```
@@ -100,7 +103,49 @@ As you can see, the `query!` macro takes the model type as the first argument, f
 
 ### Deleting models
 
+To delete a model from the database, you can use the `delete` method of the `Query` object returned by the `query!` macro. Here's an example of how you can delete a link from the database:
+
+```rust
+query!(Link, $slug == LimitedString::new("cot").unwrap()).delete(request.db()).await?;
+```
+
 ## Foreign keys
+
+To define a foreign key relationship between two models, you can use the `ForeignKey` type. Here's an example of how you can define a foreign key relationship between a `Link` model and some other `User` model:
+
+```rust
+use cot::db::ForeignKey;
+
+#[model]
+pub struct Link {
+    #[model(primary_key)]
+    id: Auto<i64>,
+    #[model(unique)]
+    slug: LimitedString<32>,
+    url: String,
+    user: ForeignKey<User>,
+}
+
+#[model]
+pub struct User {
+    #[model(primary_key)]
+    id: Auto<i64>,
+    name: String,
+}
+```
+
+When you define a foreign key relationship, Cot will automatically create a foreign key constraint in the database. This constraint will ensure that the value in the `user_id` field of the `Link` model corresponds to a valid primary key in the `User` model.
+
+When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the `get` method of the `ForeignKey` object. Here's an example of how you can fetch the related user for a link:
+
+```rust
+let mut link = query!(Link, $slug == LimitedString::new("cot").unwrap())
+    .get(request.db())
+    .await?
+    .expect("Link not found");
+
+let user = link.user.get(request.db()).await?;
+```
 
 ## Model attributes
 

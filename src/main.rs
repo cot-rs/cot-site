@@ -166,6 +166,7 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     // todo(cot) (typed?) path params
     // todo(cot) new path param format
     // todo(cot) slashes in URLs
+    // todo(cot) query!() working with path::function()
     // todo guide
     // todo faq
     // todo licenses page
