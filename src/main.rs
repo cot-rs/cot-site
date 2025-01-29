@@ -163,7 +163,6 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
 
-    // todo(cot) (typed?) path params
     // todo(cot) new path param format
     // todo(cot) slashes in URLs
     // todo(cot) query!() working with path::function()
