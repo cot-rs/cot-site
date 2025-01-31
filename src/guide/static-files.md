@@ -11,9 +11,11 @@ Cot provides a straightforward system for serving static files - resources that 
 ## Configuration and Usage
 
 ### Directory Structure
+
 The Cot CLI generates a `static` directory in your project root, which serves as the designated location for all static files.
 
 ### Registering Static Files
+
 To serve static files, you'll need to register them in your application's `static_files()` method within the `CotApp` implementation. Here's a basic example:
 
 ```rust

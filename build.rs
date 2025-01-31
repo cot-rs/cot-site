@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use syntect::parsing::SyntaxSetBuilder;
 
 const CSS_PATH: &'static str = "static/css";

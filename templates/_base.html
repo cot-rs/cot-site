@@ -21,6 +21,7 @@
     <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg">
     <link rel="apple-touch-icon" href="/static/images/favicon-180.png" sizes="180x180">
     <link rel="manifest" href="/static/images/site.webmanifest">
+    {%- block head -%}{%- endblock -%}
 </head>
 <body class="bg-body d-flex flex-column h-100">
 
@@ -35,7 +36,7 @@
         </button>
         {%- endif -%}
 
-        <a class="navbar-brand" href="{{ cot::reverse!(request, "index") }}"><img src="/static/images/cot-dark.svg" alt="" width="30" height="24">Cot</a>
+        <a class="navbar-brand" href="{{ cot::reverse!(request, "index") }}" aria-label="Go to homepage"><img src="/static/images/cot-dark.svg" alt="" width="30" height="24">Cot</a>
         <button class="ms-auto navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cot-offcanvas-navbar" aria-controls="cot-offcanvas-navbar" aria-label="Toggle navigation">
             <svg class="bi"><use href="#three-dots"></use></svg>
         </button>
@@ -59,8 +60,9 @@
                 </ul>
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                     <li class="nav-item">
-                        <a class="nav-link" href="https://github.com/cot-rs/cot">
-                            <svg class="bi"><use href="#github"></use></svg><span class="d-lg-none ms-2">GitHub</span></a>
+                        <a class="nav-link" href="https://github.com/cot-rs/cot" aria-label="Cot repository on GitHub">
+                            <svg class="bi"><use href="#github"></use></svg><span class="d-lg-none ms-2">GitHub</span>
+                        </a>
                     </li>
                     <li class="nav-item dropdown">
                         <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="cot-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (dark)">
@@ -112,7 +114,7 @@
                     <a href="#" class="nav-link p-0 text-body-secondary">FAQ</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link p-0 text-body-secondary">Code of Conduct</a>
+                    <a href="https://github.com/cot-rs/cot/blob/master/CODE_OF_CONDUCT.md" class="nav-link p-0 text-body-secondary">Code of Conduct</a>
                 </li>
             </ul>
         </div>

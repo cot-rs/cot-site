@@ -1,6 +1,5 @@
 mod guides;
 
-use std::collections::HashMap;
 use std::io::Write;
 use std::sync::Mutex;
 
@@ -14,7 +13,7 @@ use cot::request::{Request, RequestExt};
 use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
-use cot::{reverse, reverse_redirect, static_files, Body, CotApp, CotProject, Error, StatusCode};
+use cot::{reverse_redirect, static_files, Body, CotApp, CotProject, StatusCode};
 use rinja::filters::HtmlSafe;
 use rinja::Template;
 use serde::Deserialize;
@@ -163,9 +162,12 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
 
-    // todo(cot) new path param format
     // todo(cot) slashes in URLs
     // todo(cot) query!() working with path::function()
+    // todo(cot) cot::test
+    // todo(cot) admin panel
+    // todo(cot) disable live reloading in production
+    // todo(cot) 404 support
     // todo guide
     // todo faq
     // todo licenses page
