@@ -20,7 +20,7 @@ By employing Cot's testing utilities, you'll be able to verify that each piece o
 
 ## General Overview
 
-Cot provides several built-in utilities located in the [`cot::test` module](https://docs.rs/cot/0.1/cot/test/index.html) to help you create and run tests for your application. 
+Cot provides several built-in utilities located in the [`cot::test` module](https://docs.rs/cot/0.1/cot/test/index.html) to help you create and run tests for your application.
 
 Typical Rust projects keep their tests in:
 - A dedicated `tests/` directory (for integration tests).
@@ -131,21 +131,21 @@ test_db.cleanup().await?;
 
 ### Best Practices
 
-1. **Always Clean Up Test Databases**  
+1. **Always Clean Up Test Databases**
    ```rust
    let test_db = TestDatabase::new_sqlite().await?;
    // ... run your tests ...
    test_db.cleanup().await?;
    ```
    Cleaning up helps ensure that each test runs in isolation and that temporary databases don't accumulate. Note that if a test panics, the database will **not** be cleaned up, which might be useful for debugging. On the next test run, the database will be removed automatically.
-   
-2. **Use Unique Test Names for PostgreSQL/MySQL**  
+
+2. **Use Unique Test Names for PostgreSQL/MySQL**
    ```rust
    let test_db = TestDatabase::new_postgres("unique_test_name").await?;
    ```
    This prevents naming collisions when running multiple tests or suites simultaneously.
 
-3. **Add Migrations and Auth Support If Required**  
+3. **Add Migrations and Auth Support If Required**
    ```rust
    let mut test_db = TestDatabase::new_sqlite().await?;
    test_db.with_auth().run_migrations().await;
@@ -174,7 +174,7 @@ test_db.cleanup().await?;
 
 ## Summary
 
-Cot's testing framework provides a robust and flexible approach to ensuring the quality of your application. 
+Cot's testing framework provides a robust and flexible approach to ensuring the quality of your application.
 
 - **Unit tests** with `TestRequestBuilder` help you verify that individual components behave as expected.
 - **Integration tests** with `Client` let you test your entire application in a near-production environment, while `TestDatabase` give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
