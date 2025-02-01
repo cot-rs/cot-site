@@ -6,7 +6,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-comrak = "0.33"
+comrak = "0.35"
 cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "880db36947e5b3d2f2d7cb4ed30f70ccba0d80ad", features = ["live-reload"]}
 #cot = { package = "cot", path = "/home/m4tx/projects/cot/cot", default-features = false, features = ["live-reload"] }
 rinja = "0.3.5"
