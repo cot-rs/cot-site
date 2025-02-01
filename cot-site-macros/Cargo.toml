@@ -1,0 +1,17 @@
+[package]
+name = "cot-site-macros"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+comrak = "0.33"
+cot-site-common = { path = "../cot-site-common" }
+serde = "1.0"
+serde_yml = "0.0.12"
+syntect = { version = "5", features = ["dump-load"] }
+quote = "1.0.37"
+proc-macro2 = "1.0.92"
+syn = "2.0.90"

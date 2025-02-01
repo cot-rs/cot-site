@@ -36,7 +36,7 @@
         </button>
         {%- endif -%}
 
-        <a class="navbar-brand" href="{{ cot::reverse!(request, "index") }}" aria-label="Go to homepage"><img src="/static/images/cot-dark.svg" alt="" width="30" height="24">Cot</a>
+        <a class="navbar-brand" href="{{ cot::reverse!(request, "index")? }}" aria-label="Go to homepage"><img src="/static/images/cot-dark.svg" alt="" width="30" height="24">Cot</a>
         <button class="ms-auto navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cot-offcanvas-navbar" aria-controls="cot-offcanvas-navbar" aria-label="Toggle navigation">
             <svg class="bi"><use href="#three-dots"></use></svg>
         </button>
@@ -49,7 +49,7 @@
                 {%- let route_name = request.route_name().unwrap_or_default() -%}
                 <ul class="navbar-nav flex-grow-1 pe-3">
                     <li class="nav-item">
-                        <a class="nav-link{% if route_name == "guide" || route_name == "guide_page" %} active{% endif %}" href="{{ cot::reverse!(request, "guide") }}">Guide</a>
+                        <a class="nav-link{% if route_name == "guide" || route_name == "guide_page" %} active{% endif %}" href="{{ cot::reverse!(request, "guide")? }}">Guide</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="https://docs.rs/cot">Docs</a>

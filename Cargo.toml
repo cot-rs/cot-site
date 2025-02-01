@@ -5,10 +5,19 @@ authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+members = [
+    ".",
+    "cot-site-common",
+    "cot-site-macros",
+]
+resolver = "2"
+
 [dependencies]
 comrak = "0.33"
-cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "880db36947e5b3d2f2d7cb4ed30f70ccba0d80ad", features = ["live-reload"]}
-#cot = { package = "cot", path = "/home/m4tx/projects/cot/cot", default-features = false, features = ["live-reload"] }
+cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "797f6071a539c0573f86c7a1445757404a4b74d0", features = ["live-reload"]}
+cot-site-common = { path = "cot-site-common" }
+cot-site-macros = { path = "cot-site-macros" }
 rinja = "0.3.5"
 serde = "1.0"
 serde_yml = "0.0.12"
