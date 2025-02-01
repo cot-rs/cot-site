@@ -1,8 +1,8 @@
-use std::io::Write;
-use std::sync::Mutex;
 use comrak::adapters::{HeadingAdapter, HeadingMeta};
 use comrak::nodes::Sourcepos;
 use serde::Deserialize;
+use std::io::Write;
+use std::sync::Mutex;
 
 #[derive(Debug, Clone)]
 pub struct Guide {

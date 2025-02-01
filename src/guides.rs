@@ -1,7 +1,7 @@
-use crate::{GuideLinkCategory};
-use std::collections::HashMap;
+use crate::GuideLinkCategory;
 use cot_site_common::guides::{Guide, GuideLink};
 use cot_site_macros::md_guide;
+use std::collections::HashMap;
 
 pub fn parse_guides() -> (Vec<GuideLinkCategory>, HashMap<String, Guide>) {
     let categories = [(

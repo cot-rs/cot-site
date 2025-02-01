@@ -1,10 +1,10 @@
-use std::path::Path;
-use proc_macro2::TokenStream;
 use cot_site_common::guides::{FrontMatter, Guide, GuideHeadingAdapter, Section};
-use std::sync::Mutex;
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::LitStr;
+use std::path::Path;
+use std::sync::Mutex;
 use syn::parse::{Parse, ParseStream};
+use syn::LitStr;
 
 pub(super) struct MdGuide {
     pub(super) link: String,
@@ -19,7 +19,11 @@ impl Parse for MdGuide {
 
 fn read_guide(link: &str) -> String {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let path = Path::new(&manifest_dir).join("src").join("guide").join(link).with_extension("md");
+    let path = Path::new(&manifest_dir)
+        .join("src")
+        .join("guide")
+        .join(link)
+        .with_extension("md");
     std::fs::read_to_string(path).expect("failed to read file")
 }
 
@@ -84,7 +88,7 @@ pub(super) fn parse_guide(link: &str) -> Guide {
             syntect::dumps::from_uncompressed_data(include_bytes!(
                 "../../syntax-highlighting/defs.bin"
             ))
-                .expect("failed to load syntax set"),
+            .expect("failed to load syntax set"),
         )
         .build();
     let render_plugins = comrak::RenderPlugins::builder()
