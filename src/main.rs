@@ -9,9 +9,9 @@ use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
 use cot::{reverse_redirect, static_files, Body, CotApp, CotProject, StatusCode};
+use cot_site_common::guides::{Guide, GuideLink, Section};
 use rinja::filters::{HtmlSafe, Safe};
 use rinja::Template;
-use cot_site_common::guides::{Guide, GuideLink, Section};
 
 #[derive(Debug, Template)]
 #[template(path = "index.html")]

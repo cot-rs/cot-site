@@ -626,16 +626,12 @@ dependencies = [
 name = "cot-site"
 version = "0.1.0"
 dependencies = [
- "comrak",
  "cot",
  "cot-site-common",
  "cot-site-macros",
  "grass",
  "lightningcss",
  "rinja",
- "serde",
- "serde_yml",
- "syntect",
 ]
 
 [[package]]
