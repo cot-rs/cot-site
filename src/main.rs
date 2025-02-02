@@ -1,6 +1,5 @@
 mod guides;
 
-use crate::guides::{get_prev_next_link, parse_guides};
 use cot::bytes::Bytes;
 use cot::config::ProjectConfig;
 use cot::middleware::LiveReloadMiddleware;
@@ -12,6 +11,8 @@ use cot::{reverse_redirect, static_files, Body, CotApp, CotProject, StatusCode};
 use cot_site_common::guides::{Guide, GuideLink, Section};
 use rinja::filters::{HtmlSafe, Safe};
 use rinja::Template;
+
+use crate::guides::{get_prev_next_link, parse_guides};
 
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
@@ -87,6 +88,7 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
 
+    // todo(cot) move code out of lib.rs
     // todo(cot) slashes in URLs
     // todo(cot) query!() working with path::function()
     // todo(cot) cot::test
@@ -94,10 +96,10 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     // todo(cot) disable live reloading in production
     // todo(cot) 404 support
     // todo(cot) cli: add migration to file
-    // todo(cot) move code out of lib.rs
     // todo(cot) config from env
     // todo(cot) proper html escaping
     // todo(cot) generating openapi spec
+    // todo(cot) ergonomic input/output in views
     // todo guide
     // todo faq
     // todo licenses page

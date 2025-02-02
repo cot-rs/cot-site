@@ -1,5 +1,6 @@
-use crate::guides::MdGuide;
 use proc_macro::TokenStream;
+
+use crate::guides::MdGuide;
 
 mod guides;
 

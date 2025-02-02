@@ -1,8 +1,9 @@
+use std::path::Path;
+use std::sync::Mutex;
+
 use cot_site_common::guides::{FrontMatter, Guide, GuideHeadingAdapter, Section};
 use proc_macro2::TokenStream;
 use quote::quote;
-use std::path::Path;
-use std::sync::Mutex;
 use syn::parse::{Parse, ParseStream};
 use syn::LitStr;
 
