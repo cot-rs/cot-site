@@ -88,18 +88,15 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
 
-    // todo(cot) move code out of lib.rs
     // todo(cot) slashes in URLs
-    // todo(cot) query!() working with path::function()
-    // todo(cot) cot::test
-    // todo(cot) admin panel
-    // todo(cot) disable live reloading in production
-    // todo(cot) 404 support
     // todo(cot) cli: add migration to file
-    // todo(cot) config from env
-    // todo(cot) proper html escaping
-    // todo(cot) generating openapi spec
     // todo(cot) ergonomic input/output in views
+    // todo(cot) generating openapi spec
+    // todo(cot) admin panel
+    // todo(cot) cot::test
+    // todo(cot) feature first structure
+    // todo(cot) easy adding modules in CLI?
+    // todo(cot) graceful shutdown
     // todo guide
     // todo faq
     // todo licenses page

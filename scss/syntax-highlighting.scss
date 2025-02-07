@@ -72,7 +72,7 @@ pre.syntax-highlighting {
     color: var(--syntax-highlighting-annotation-color);
   }
 
-  .delimiter.jinja2 {
+  .delimiter.jinja2, .tag.jinja2 .keyword {
     font-weight: bold;
   }
 
