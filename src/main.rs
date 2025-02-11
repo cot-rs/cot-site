@@ -90,13 +90,11 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
 
     // todo(cot) slashes in URLs
     // todo(cot) cli: add migration to file
-    // todo(cot) ergonomic input/output in views
-    // todo(cot) generating openapi spec
-    // todo(cot) admin panel
     // todo(cot) cot::test
     // todo(cot) feature first structure
-    // todo(cot) easy adding modules in CLI?
     // todo(cot) graceful shutdown
+    // todo(cot) reverse!() namespacing
+    // todo(cot) msrv
     // todo guide
     // todo faq
     // todo licenses page
