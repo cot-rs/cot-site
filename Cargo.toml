@@ -14,7 +14,7 @@ members = [
 resolver = "2"
 
 [dependencies]
-cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "797f6071a539c0573f86c7a1445757404a4b74d0", features = ["live-reload"]}
+cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "332ff937498f619bf9c547b5f32837d9bf1b9d39", features = ["live-reload"]}
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 rinja = "0.3.5"
