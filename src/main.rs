@@ -88,21 +88,10 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
 
-    // todo(cot) slashes in URLs
-    // todo(cot) cli: add migration to file
-    // todo(cot) cot::test
-    // todo(cot) feature first structure
-    // todo(cot) graceful shutdown
-    // todo(cot) reverse!() namespacing
-    // todo(cot) msrv
+    // todo(cot) use app name in table name
     // todo guide
     // todo faq
     // todo licenses page
-    // todo opengraph/twitter meta
-    // todo 404 page
-    // todo webhook to deploy
-    // todo README.md
-    // todo throw 404
     // todo simple blog
 }
 
