@@ -1,13 +1,17 @@
 mod guides;
 
 use cot::bytes::Bytes;
-use cot::config::ProjectConfig;
+use cot::cli::CliMetadata;
+use cot::config::{LiveReloadMiddlewareConfig, MiddlewareConfig, ProjectConfig};
 use cot::middleware::LiveReloadMiddleware;
+use cot::project::{App, Project, RootHandlerBuilder, WithApps, WithConfig};
 use cot::request::{Request, RequestExt};
 use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
-use cot::{reverse_redirect, static_files, Body, CotApp, CotProject, StatusCode};
+use cot::{
+    reverse_redirect, static_files, AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode,
+};
 use cot_site_common::guides::{Guide, GuideLink, Section};
 use rinja::filters::{HtmlSafe, Safe};
 use rinja::Template;
@@ -97,7 +101,7 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
 
 struct CotSiteApp;
 
-impl CotApp for CotSiteApp {
+impl App for CotSiteApp {
     fn name(&self) -> &'static str {
         "cot-site"
     }
@@ -125,15 +129,45 @@ impl CotApp for CotSiteApp {
     }
 }
 
-#[cot::main]
-async fn main() -> cot::Result<CotProject> {
-    let builder = CotProject::builder()
-        .config(ProjectConfig::builder().build())
-        .with_cli(cot::cli::metadata!())
-        .register_app_with_views(CotSiteApp, "")
-        .middleware_with_context(StaticFilesMiddleware::from_app_context);
-    #[cfg(debug_assertions)]
-    let builder = builder.middleware(LiveReloadMiddleware::new());
+struct CotSiteProject;
 
-    Ok(builder.build().await?)
+impl Project for CotSiteProject {
+    fn cli_metadata(&self) -> CliMetadata {
+        cot::cli::metadata!()
+    }
+
+    fn config(&self, _config_name: &str) -> cot::Result<ProjectConfig> {
+        // we don't need to load any config
+        Ok(ProjectConfig::builder()
+            .middlewares(
+                MiddlewareConfig::builder()
+                    .live_reload(
+                        LiveReloadMiddlewareConfig::builder()
+                            .enabled(cfg!(debug_assertions))
+                            .build(),
+                    )
+                    .build(),
+            )
+            .build())
+    }
+
+    fn register_apps(&self, modules: &mut AppBuilder, _app_context: &ProjectContext<WithConfig>) {
+        modules.register_with_views(CotSiteApp, "");
+    }
+
+    fn middlewares(
+        &self,
+        handler: RootHandlerBuilder,
+        context: &ProjectContext<WithApps>,
+    ) -> BoxedHandler {
+        handler
+            .middleware(StaticFilesMiddleware::from_app_context(context))
+            .middleware(LiveReloadMiddleware::new())
+            .build()
+    }
+}
+
+#[cot::main]
+fn main() -> impl Project {
+    CotSiteProject
 }
