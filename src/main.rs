@@ -2,9 +2,8 @@ mod guides;
 
 use cot::bytes::Bytes;
 use cot::cli::CliMetadata;
-use cot::config::{LiveReloadMiddlewareConfig, MiddlewareConfig, ProjectConfig};
-use cot::middleware::LiveReloadMiddleware;
-use cot::project::{App, ErrorPageHandler, Project, RootHandlerBuilder, WithApps, WithConfig};
+use cot::config::ProjectConfig;
+use cot::project::{App, Project, RootHandlerBuilder, WithApps, WithConfig};
 use cot::request::{Request, RequestExt};
 use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
@@ -93,8 +92,6 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
 
-    // todo(cot) use app name in table name
-    // todo guide
     // todo faq
     // todo simple blog
 }
@@ -171,17 +168,7 @@ impl Project for CotSiteProject {
 
     fn config(&self, _config_name: &str) -> cot::Result<ProjectConfig> {
         // we don't need to load any config
-        Ok(ProjectConfig::builder()
-            .middlewares(
-                MiddlewareConfig::builder()
-                    .live_reload(
-                        LiveReloadMiddlewareConfig::builder()
-                            .enabled(cfg!(debug_assertions))
-                            .build(),
-                    )
-                    .build(),
-            )
-            .build())
+        Ok(ProjectConfig::default())
     }
 
     fn register_apps(&self, modules: &mut AppBuilder, _app_context: &ProjectContext<WithConfig>) {
@@ -193,10 +180,12 @@ impl Project for CotSiteProject {
         handler: RootHandlerBuilder,
         context: &ProjectContext<WithApps>,
     ) -> BoxedHandler {
-        handler
-            .middleware(StaticFilesMiddleware::from_app_context(context))
-            .middleware(LiveReloadMiddleware::new())
-            .build()
+        let handler = handler.middleware(StaticFilesMiddleware::from_app_context(context));
+        #[cfg(debug_assertions)]
+        let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::from_app_context(
+            context,
+        ));
+        handler.build()
     }
 }
 
