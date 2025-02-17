@@ -1,15 +1,17 @@
+#![cfg_attr(feature = "nightly", feature(track_path))]
+
 use proc_macro::TokenStream;
 
-use crate::guides::MdGuide;
+use crate::md_pages::MdPageInput;
 
-mod guides;
+mod md_pages;
 
 #[proc_macro]
-pub fn md_guide(input: TokenStream) -> proc_macro::TokenStream {
+pub fn md_page(input: TokenStream) -> TokenStream {
     let input = proc_macro2::TokenStream::from(input);
 
-    let MdGuide { link } = syn::parse2(input).unwrap();
+    let MdPageInput { link } = syn::parse2(input).unwrap();
 
-    let guide = guides::parse_guide(&link);
-    guides::quote_guide(&guide).into()
+    let md_page = md_pages::parse_md_page(&link);
+    md_pages::quote_md_page(&md_page).into()
 }

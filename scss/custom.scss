@@ -108,7 +108,7 @@ body {
 }
 
 .cot-toc {
-  #guide-toc {
+  #page-toc {
     padding-right: 1rem;
   }
 
@@ -146,6 +146,7 @@ body {
     right: 0;
     height: calc(100vh - 3rem);
     overflow-y: auto;
+    max-width: 20%;
   }
 }
 
@@ -218,13 +219,13 @@ button.navbar-toggler {
 }
 
 @include media-breakpoint-up(lg) {
-  .collapse#guide-toc-contents {
+  .collapse#page-toc-contents {
     display: block;
   }
 }
 
 @include media-breakpoint-down(lg) {
-  #guide-toc-contents nav {
+  #page-toc-contents nav {
     margin-top: .5rem;
     padding: .75rem .75rem 0 .75rem;
     background-color: var(--bs-tertiary-bg);

@@ -167,6 +167,7 @@ Linking to other pages in your application is a frequent requirement, and hardco
 ```rust
 use cot::request::Request;
 use cot::response::{Response, ResponseExt};
+use cot::router::{Router, Route};
 use cot::{Body, StatusCode};
 use rinja::Template;
 
@@ -191,15 +192,15 @@ async fn user(_request: Request) -> cot::Result<Response> {
 
 struct CotTestApp;
 
-impl cot::CotApp for CotTestApp {
+impl cot::App for CotTestApp {
     fn name(&self) -> &'static str {
         env!("CARGO_CRATE_NAME")
     }
 
-    fn router(&self) -> cot::router::Router {
-        cot::router::Router::with_urls([
-            cot::router::Route::with_handler_and_name("/", index, "index"),
-            cot::router::Route::with_handler_and_name("/user/:id", user, "user"),
+    fn router(&self) -> Router {
+        Router::with_urls([
+            Route::with_handler_and_name("/", index, "index"),
+            Route::with_handler_and_name("/user/{id}", user, "user"),
         ])
     }
 }

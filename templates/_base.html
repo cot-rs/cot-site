@@ -56,7 +56,7 @@
                         <a class="nav-link" href="https://docs.rs/cot">Docs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">FAQ</a>
+                        <a class="nav-link{% if route_name == "faq" %} active{% endif %}" href="{{ cot::reverse!(request, "faq")? }}">FAQ</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
@@ -109,10 +109,10 @@
             <h5>Learn More</h5>
             <ul class="nav flex-column">
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link p-0 text-body-secondary">Licenses</a>
+                    <a href="{{ cot::reverse!(request, "licenses")? }}" class="nav-link p-0 text-body-secondary">Licenses</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link p-0 text-body-secondary">FAQ</a>
+                    <a href="{{ cot::reverse!(request, "faq")? }}" class="nav-link p-0 text-body-secondary">FAQ</a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="https://github.com/cot-rs/cot/blob/master/CODE_OF_CONDUCT.md" class="nav-link p-0 text-body-secondary">Code of Conduct</a>
@@ -123,7 +123,7 @@
             <h5>Get Involved</h5>
             <ul class="nav flex-column">
                 <li class="nav-item mb-2">
-                    <a href="#" class="nav-link p-0 text-body-secondary">Contribute to Cot</a>
+                    <a href="https://github.com/cot-rs/cot/blob/master/CONTRIBUTING.md" class="nav-link p-0 text-body-secondary">Contribute to Cot</a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="https://github.com/cot-rs/cot/issues/new" class="nav-link p-0 text-body-secondary">Submit a bug</a>

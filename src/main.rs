@@ -4,7 +4,7 @@ use cot::bytes::Bytes;
 use cot::cli::CliMetadata;
 use cot::config::{LiveReloadMiddlewareConfig, MiddlewareConfig, ProjectConfig};
 use cot::middleware::LiveReloadMiddleware;
-use cot::project::{App, Project, RootHandlerBuilder, WithApps, WithConfig};
+use cot::project::{App, ErrorPageHandler, Project, RootHandlerBuilder, WithApps, WithConfig};
 use cot::request::{Request, RequestExt};
 use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
@@ -12,7 +12,8 @@ use cot::static_files::StaticFilesMiddleware;
 use cot::{
     reverse_redirect, static_files, AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode,
 };
-use cot_site_common::guides::{Guide, GuideLink, Section};
+use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
+use cot_site_macros::md_page;
 use rinja::filters::{HtmlSafe, Safe};
 use rinja::Template;
 
@@ -35,21 +36,21 @@ async fn index(request: Request) -> cot::Result<Response> {
 #[template(path = "guide.html")]
 struct GuideTemplate<'a> {
     link_categories: &'a [GuideLinkCategory],
-    guide: &'a Guide,
+    guide: &'a MdPage,
     request: &'a Request,
-    prev: Option<&'a GuideLink>,
-    next: Option<&'a GuideLink>,
+    prev: Option<&'a MdPageLink>,
+    next: Option<&'a MdPageLink>,
 }
 
 #[derive(Debug, Clone)]
 struct GuideLinkCategory {
     title: &'static str,
-    guides: Vec<GuideLink>,
+    guides: Vec<MdPageLink>,
 }
 
 fn render_section(section: &Section) -> Safe<String> {
     #[derive(Debug, Clone, Template)]
-    #[template(path = "_guide_toc_item.html")]
+    #[template(path = "_md_page_toc_item.html")]
     struct RenderableSection<'a> {
         section: &'a Section,
     }
@@ -78,7 +79,7 @@ async fn guide_page(request: Request) -> cot::Result<Response> {
 
 fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let (link_categories, guide_map) = parse_guides();
-    let guide = guide_map.get(page).unwrap();
+    let guide = guide_map.get(page).ok_or_else(|| cot::Error::not_found())?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
 
     let guide_template = GuideTemplate {
@@ -95,8 +96,38 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     // todo(cot) use app name in table name
     // todo guide
     // todo faq
-    // todo licenses page
     // todo simple blog
+}
+
+#[derive(Debug, Template)]
+#[template(path = "md_page.html")]
+struct MdPageTemplate<'a> {
+    page: &'a MdPage,
+    request: &'a Request,
+}
+
+async fn faq(request: Request) -> cot::Result<Response> {
+    let template = MdPageTemplate {
+        page: &md_page!("faq"),
+        request: &request,
+    };
+
+    Ok(Response::new_html(
+        StatusCode::OK,
+        Body::fixed(template.render()?),
+    ))
+}
+
+async fn licenses(request: Request) -> cot::Result<Response> {
+    let template = MdPageTemplate {
+        page: &md_page!("licenses"),
+        request: &request,
+    };
+
+    Ok(Response::new_html(
+        StatusCode::OK,
+        Body::fixed(template.render()?),
+    ))
 }
 
 struct CotSiteApp;
@@ -109,8 +140,10 @@ impl App for CotSiteApp {
     fn router(&self) -> Router {
         Router::with_urls([
             Route::with_handler_and_name("/", index, "index"),
+            Route::with_handler_and_name("/faq/", faq, "faq"),
+            Route::with_handler_and_name("/licenses/", licenses, "licenses"),
             Route::with_handler_and_name("/guide/latest/", guide, "guide"),
-            Route::with_handler_and_name("/guide/latest/{page}", guide_page, "guide_page"),
+            Route::with_handler_and_name("/guide/latest/{page}/", guide_page, "guide_page"),
         ])
     }
 

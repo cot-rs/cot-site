@@ -1,1 +1,1 @@
-pub mod guides;
+pub mod md_pages;

@@ -1,0 +1,17 @@
+<div class="col-12 col-lg-auto order-lg-last cot-toc sticky-sidebar mt-4 mb-5 ms-xxl-5 px-sm-1 text-body-secondary">
+    <button class="btn btn-secondary d-lg-none collapsed cot-page-toc-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#page-toc-contents" aria-expanded="false" aria-controls="page-toc-contents">
+        On this page
+        {% include "icons/chevron_expand.svg" -%}
+    </button>
+    <strong class="d-none d-lg-block h6 my-2 ms-3">On this page</strong>
+    <hr class="d-none d-lg-block my-2 ms-3">
+    <div class="collapse" id="page-toc-contents" style="">
+        <nav id="page-toc">
+            <ul>
+                {%- for section in page.sections -%}
+                {{ self::render_section(section) }}
+                {%- endfor -%}
+            </ul>
+        </nav>
+    </div>
+</div>

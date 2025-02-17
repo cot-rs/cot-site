@@ -6,15 +6,15 @@ use comrak::nodes::Sourcepos;
 use serde::Deserialize;
 
 #[derive(Debug, Clone)]
-pub struct Guide {
+pub struct MdPage {
     pub link: String,
     pub title: String,
     pub content_html: String,
     pub sections: Vec<Section>,
 }
 
-impl From<&Guide> for GuideLink {
-    fn from(value: &Guide) -> Self {
+impl From<&MdPage> for MdPageLink {
+    fn from(value: &MdPage) -> Self {
         Self {
             link: value.link.clone(),
             title: value.title.clone(),
@@ -23,7 +23,7 @@ impl From<&Guide> for GuideLink {
 }
 
 #[derive(Debug, Clone)]
-pub struct GuideLink {
+pub struct MdPageLink {
     pub link: String,
     pub title: String,
 }
@@ -42,12 +42,12 @@ pub struct Section {
 }
 
 #[derive(Debug)]
-pub struct GuideHeadingAdapter {
+pub struct MdPageHeadingAdapter {
     pub anchorizer: Mutex<comrak::Anchorizer>,
     pub sections: Mutex<Vec<Section>>,
 }
 
-impl HeadingAdapter for GuideHeadingAdapter {
+impl HeadingAdapter for MdPageHeadingAdapter {
     fn enter(
         &self,
         output: &mut dyn Write,

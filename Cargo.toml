@@ -13,6 +13,9 @@ members = [
 ]
 resolver = "2"
 
+[features]
+nightly = ["cot-site-macros/nightly"]
+
 [dependencies]
 cot = { package = "cot", git = "https://github.com/cot-rs/cot.git", rev = "d44b3b01b0b9720335a0f80a82634866c9195103", features = ["live-reload"]}
 cot-site-common = { path = "cot-site-common" }

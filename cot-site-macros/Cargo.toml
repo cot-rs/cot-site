@@ -6,6 +6,9 @@ edition = "2021"
 [lib]
 proc-macro = true
 
+[features]
+nightly = []
+
 [dependencies]
 comrak = "0.35"
 cot-site-common = { path = "../cot-site-common" }
