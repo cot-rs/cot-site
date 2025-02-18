@@ -91,9 +91,6 @@ fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
 
     let rendered = guide_template.render()?;
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
-
-    // todo faq
-    // todo simple blog
 }
 
 #[derive(Debug, Template)]
@@ -182,9 +179,7 @@ impl Project for CotSiteProject {
     ) -> BoxedHandler {
         let handler = handler.middleware(StaticFilesMiddleware::from_app_context(context));
         #[cfg(debug_assertions)]
-        let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::from_app_context(
-            context,
-        ));
+        let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::new());
         handler.build()
     }
 }
