@@ -1,6 +1,7 @@
 <div align="center">
 <h1><a href="https://cot.rs">Cot Website</a></h1>
 
+[![Rust Build Status](https://github.com/cot-rs/cot-site/workflows/Rust%20CI/badge.svg)](https://github.com/cot-rs/cot-site/actions/workflows/rust.yml)
 [![Docker Build Status](https://github.com/cot-rs/cot-site/workflows/Docker%20Images/badge.svg)](https://github.com/cot-rs/cot-site/actions/workflows/docker.yml)
 [![Discord chat](https://img.shields.io/discord/1330137289287925781?logo=Discord&logoColor=white)](https://discord.cot.rs)
 </div>
