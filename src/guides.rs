@@ -6,19 +6,22 @@ use cot_site_macros::md_page;
 use crate::GuideLinkCategory;
 
 pub fn parse_guides() -> (Vec<GuideLinkCategory>, HashMap<String, MdPage>) {
-    let categories = [(
-        "Getting started",
-        vec![
-            md_page!("introduction"),
-            md_page!("templates"),
-            md_page!("forms"),
-            md_page!("db-models"),
-            md_page!("admin-panel"),
-            md_page!("static-files"),
-            md_page!("error-pages"),
-            md_page!("testing"),
-        ],
-    )];
+    let categories = [
+        (
+            "Getting started",
+            vec![
+                md_page!("introduction"),
+                md_page!("templates"),
+                md_page!("forms"),
+                md_page!("db-models"),
+                md_page!("admin-panel"),
+                md_page!("static-files"),
+                md_page!("error-pages"),
+                md_page!("testing"),
+            ],
+        ),
+        ("About", vec![md_page!("framework-comparison")]),
+    ];
 
     let categories_links = categories
         .iter()
