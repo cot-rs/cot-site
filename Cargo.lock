@@ -606,7 +606,6 @@ dependencies = [
  "sea-query",
  "sea-query-binder",
  "serde",
- "serde_json",
  "sha2 0.11.0-pre.4",
  "sqlx",
  "subtle",
@@ -619,7 +618,6 @@ dependencies = [
  "tower-livereload",
  "tower-sessions",
  "tracing",
- "url",
 ]
 
 [[package]]
@@ -1724,7 +1722,6 @@ version = "0.30.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e99fb7a497b1e3339bc746195567ed8d3e24945ecd636e3619d20b9de9e9149"
 dependencies = [
- "cc",
  "pkg-config",
  "vcpkg",
 ]
@@ -3463,7 +3460,6 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
- "serde",
 ]
 
 [[package]]
