@@ -60,7 +60,7 @@ fn render_section(section: &Section) -> Safe<String> {
     Safe(rendered)
 }
 
-const DEFAULT_GUIDE_PAGE: &'static str = "introduction";
+const DEFAULT_GUIDE_PAGE: &str = "introduction";
 
 async fn guide(request: Request) -> cot::Result<Response> {
     page_response(&request, DEFAULT_GUIDE_PAGE)
@@ -78,13 +78,13 @@ async fn guide_page(request: Request) -> cot::Result<Response> {
 
 fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
     let (link_categories, guide_map) = parse_guides();
-    let guide = guide_map.get(page).ok_or_else(|| cot::Error::not_found())?;
+    let guide = guide_map.get(page).ok_or_else(cot::Error::not_found)?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
 
     let guide_template = GuideTemplate {
         link_categories: &link_categories,
         guide,
-        request: &request,
+        request,
         prev,
         next,
     };

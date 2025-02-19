@@ -32,8 +32,7 @@ pub fn parse_guides() -> (Vec<GuideLinkCategory>, HashMap<String, MdPage>) {
         .collect();
     let guide_map = categories
         .into_iter()
-        .map(|(_title, guides)| guides)
-        .flatten()
+        .flat_map(|(_title, guides)| guides)
         .map(|guide| (guide.link.clone(), guide))
         .collect();
 
