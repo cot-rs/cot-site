@@ -648,7 +648,6 @@ dependencies = [
  "cot-site-common",
  "proc-macro2",
  "quote",
- "serde",
  "serde_yml",
  "syn 2.0.98",
  "syntect",
