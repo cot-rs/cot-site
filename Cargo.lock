@@ -579,7 +579,8 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 [[package]]
 name = "cot"
 version = "0.1.0"
-source = "git+https://github.com/cot-rs/cot.git?rev=d44b3b01b0b9720335a0f80a82634866c9195103#d44b3b01b0b9720335a0f80a82634866c9195103"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb95c8d2d3578dff76a6ba1922b464bab873dc48056b3a57742a8887070c152b"
 dependencies = [
  "async-trait",
  "axum",
@@ -655,8 +656,9 @@ dependencies = [
 
 [[package]]
 name = "cot_codegen"
-version = "0.1.0"
-source = "git+https://github.com/cot-rs/cot.git?rev=d44b3b01b0b9720335a0f80a82634866c9195103#d44b3b01b0b9720335a0f80a82634866c9195103"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3fc85a722aae447fca684e60a0cff73aa219312c4bc8168678a33f4a2b04e39e"
 dependencies = [
  "darling",
  "heck",
@@ -667,8 +669,9 @@ dependencies = [
 
 [[package]]
 name = "cot_macros"
-version = "0.1.0"
-source = "git+https://github.com/cot-rs/cot.git?rev=d44b3b01b0b9720335a0f80a82634866c9195103#d44b3b01b0b9720335a0f80a82634866c9195103"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "915949e326a6af73edcbee4383a1a5c5887e019622eb39f91a6ee3abfe8c70ff"
 dependencies = [
  "cot_codegen",
  "darling",

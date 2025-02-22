@@ -9,12 +9,12 @@ use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
 use cot::{
-    reverse_redirect, static_files, AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode,
+    AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode, reverse_redirect, static_files,
 };
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
-use rinja::filters::{HtmlSafe, Safe};
 use rinja::Template;
+use rinja::filters::{HtmlSafe, Safe};
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
@@ -177,7 +177,7 @@ impl Project for CotSiteProject {
         handler: RootHandlerBuilder,
         context: &ProjectContext<WithApps>,
     ) -> BoxedHandler {
-        let handler = handler.middleware(StaticFilesMiddleware::from_app_context(context));
+        let handler = handler.middleware(StaticFilesMiddleware::from_context(context));
         #[cfg(debug_assertions)]
         let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::new());
         handler.build()
