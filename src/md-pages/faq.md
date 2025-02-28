@@ -59,3 +59,10 @@ You can report bugs or suggest enhancements by opening an issue on the [Cot GitH
 ## Where can I report an issue in the Cot website?
 
 Please use [cot-site GitHub repository issue tracker](https://github.com/cot-rs/cot-site/issues) to report any issues with the website. You can also open a pull request if you'd like to contribute to the website!
+
+## Was Cot covered in any media?
+
+Yes! Here are some articles and videos about Cot:
+
+* [Cot framework aims to ease Rust web development](https://www.infoworld.com/article/3832992/cot-framework-aims-to-ease-rust-web-development.html) on [InfoWorld](https://www.infoworld.com/)
+* [Welcome, Cot: the Rust web framework for lazy developers](https://mackow.ski/blog/cot-the-rust-web-framework-for-lazy-developers/) on [Mateusz Maćkowski's blog](https://mackow.ski/) _(written by us)_ 
