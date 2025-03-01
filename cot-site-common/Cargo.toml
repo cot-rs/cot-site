@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-comrak = "0.35"
+comrak = "0.36"
 serde = "1.0"
