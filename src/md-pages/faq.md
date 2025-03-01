@@ -65,4 +65,4 @@ Please use [cot-site GitHub repository issue tracker](https://github.com/cot-rs/
 Yes! Here are some articles and videos about Cot:
 
 * [Cot framework aims to ease Rust web development](https://www.infoworld.com/article/3832992/cot-framework-aims-to-ease-rust-web-development.html) on [InfoWorld](https://www.infoworld.com/)
-* [Welcome, Cot: the Rust web framework for lazy developers](https://mackow.ski/blog/cot-the-rust-web-framework-for-lazy-developers/) on [Mateusz Maćkowski's blog](https://mackow.ski/) _(written by us)_ 
+* [Welcome, Cot: the Rust web framework for lazy developers](https://mackow.ski/blog/cot-the-rust-web-framework-for-lazy-developers/) on [Mateusz Maćkowski's blog](https://mackow.ski/) _(written by us)_
