@@ -9,12 +9,12 @@ use cot::response::{Response, ResponseExt};
 use cot::router::{Route, Router};
 use cot::static_files::StaticFilesMiddleware;
 use cot::{
-    AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode, reverse_redirect, static_files,
+    reverse_redirect, static_files, AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode,
 };
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
-use rinja::Template;
 use rinja::filters::{HtmlSafe, Safe};
+use rinja::Template;
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
