@@ -10,7 +10,7 @@ proc-macro = true
 nightly = []
 
 [dependencies]
-comrak = "0.35"
+comrak = "0.36"
 cot-site-common = { path = "../cot-site-common" }
 proc-macro2 = "1.0.92"
 quote = "1.0.37"
