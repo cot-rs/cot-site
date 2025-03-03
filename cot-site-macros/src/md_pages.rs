@@ -4,8 +4,8 @@ use std::sync::Mutex;
 use cot_site_common::md_pages::{FrontMatter, MdPage, MdPageHeadingAdapter, Section};
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::LitStr;
 use syn::parse::{Parse, ParseStream};
+use syn::LitStr;
 
 pub(super) struct MdPageInput {
     pub(super) link: String,
