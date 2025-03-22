@@ -18,6 +18,10 @@ use rinja::Template;
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
+pub(crate) fn get_latest_version() -> &'static str {
+    "v0.1"
+}
+
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
 struct IndexTemplate<'a> {
@@ -36,6 +40,7 @@ async fn index(request: Request) -> cot::Result<Response> {
 struct GuideTemplate<'a> {
     link_categories: &'a [GuideLinkCategory],
     guide: &'a MdPage,
+    version: &'a str,
     request: &'a Request,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
@@ -63,27 +68,42 @@ fn render_section(section: &Section) -> Safe<String> {
 const DEFAULT_GUIDE_PAGE: &str = "introduction";
 
 async fn guide(request: Request) -> cot::Result<Response> {
-    page_response(&request, DEFAULT_GUIDE_PAGE)
+    reverse_redirect!(request, "guide_version", version = "latest")
+}
+
+async fn guide_version(request: Request) -> cot::Result<Response> {
+    let version = request.path_params().parse()?;
+    page_response(&request, version, DEFAULT_GUIDE_PAGE)
 }
 
 async fn guide_page(request: Request) -> cot::Result<Response> {
-    let page = request.path_params().parse()?;
+    let (version, page) = request.path_params().parse()?;
 
     if page == DEFAULT_GUIDE_PAGE {
-        return Ok(reverse_redirect!(request, "guide")?);
+        return Ok(reverse_redirect!(
+            request,
+            "guide_version",
+            version = version
+        )?);
     }
 
-    page_response(&request, page)
+    page_response(&request, version, page)
 }
 
-fn page_response(request: &Request, page: &str) -> cot::Result<Response> {
-    let (link_categories, guide_map) = parse_guides();
+fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Response> {
+    let file_version = if version == "latest" {
+        get_latest_version()
+    } else {
+        version
+    };
+    let (link_categories, guide_map) = parse_guides(file_version);
     let guide = guide_map.get(page).ok_or_else(cot::Error::not_found)?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
 
     let guide_template = GuideTemplate {
         link_categories: &link_categories,
         guide,
+        version,
         request,
         prev,
         next,
@@ -102,7 +122,7 @@ struct MdPageTemplate<'a> {
 
 async fn faq(request: Request) -> cot::Result<Response> {
     let template = MdPageTemplate {
-        page: &md_page!("faq"),
+        page: &md_page!("", "faq"),
         request: &request,
     };
 
@@ -114,7 +134,7 @@ async fn faq(request: Request) -> cot::Result<Response> {
 
 async fn licenses(request: Request) -> cot::Result<Response> {
     let template = MdPageTemplate {
-        page: &md_page!("licenses"),
+        page: &md_page!("", "licenses"),
         request: &request,
     };
 
@@ -136,8 +156,9 @@ impl App for CotSiteApp {
             Route::with_handler_and_name("/", index, "index"),
             Route::with_handler_and_name("/faq/", faq, "faq"),
             Route::with_handler_and_name("/licenses/", licenses, "licenses"),
-            Route::with_handler_and_name("/guide/latest/", guide, "guide"),
-            Route::with_handler_and_name("/guide/latest/{page}/", guide_page, "guide_page"),
+            Route::with_handler_and_name("/guide/", guide, "guide"),
+            Route::with_handler_and_name("/guide/{version}/", guide_version, "guide_version"),
+            Route::with_handler_and_name("/guide/{version}/{page}/", guide_page, "guide_page"),
         ])
     }
 
