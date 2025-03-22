@@ -1,3 +1,17 @@
+<div class="dropdown">
+    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ version }}
+    </button>
+    <ul class="dropdown-menu">
+        {%- for ver in versions -%}
+        <li><a
+                class="dropdown-item"
+                href="{{ cot::reverse!(request, "guide_version", version = ver)? }}"
+            >{{ ver }}</a></li>
+        {%- endfor -%}
+    </ul>
+</div>
+
 {%- let redirect_version = version -%}
 
 <nav class="w-100 guide-chapters" aria-label="Docs navigation">

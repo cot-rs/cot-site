@@ -22,6 +22,10 @@ pub(crate) fn get_latest_version() -> &'static str {
     "v0.1"
 }
 
+pub(crate) fn get_all_versions() -> &'static [&'static str] {
+    &["v0.1"]
+}
+
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
 struct IndexTemplate<'a> {
@@ -40,6 +44,7 @@ async fn index(request: Request) -> cot::Result<Response> {
 struct GuideTemplate<'a> {
     link_categories: &'a [GuideLinkCategory],
     guide: &'a MdPage,
+    versions: &'a [&'static str],
     version: &'a str,
     request: &'a Request,
     prev: Option<&'a MdPageLink>,
@@ -103,6 +108,7 @@ fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Re
     let guide_template = GuideTemplate {
         link_categories: &link_categories,
         guide,
+        versions: get_all_versions(),
         version,
         request,
         prev,
