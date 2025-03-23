@@ -40,7 +40,12 @@ pub(crate) fn get_all_versions() -> Vec<String> {
 
     [String::from("latest")]
         .into_iter()
-        .chain(versions.into_iter().rev())
+        .chain(
+            versions
+                .into_iter()
+                .rev()
+                .skip_while(|dir| dir != LATEST_VERSION),
+        )
         .collect()
 }
 
@@ -119,6 +124,9 @@ fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Re
     } else {
         version
     };
+    if !get_all_versions().contains(&file_version.to_string()) {
+        return Err(cot::Error::not_found());
+    }
     let (link_categories, guide_map) = parse_guides(file_version);
     let guide = guide_map.get(page).ok_or_else(cot::Error::not_found)?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
