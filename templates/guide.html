@@ -22,9 +22,18 @@
 
         {%- let page = guide -%}
         {%- let redirect_version = version -%}
+        {%- let latest_version = *versions[1] -%}
         {%- include "_md_page_toc.html" -%}
 
         <div class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
+
+            {%- if (version != "latest") && (version != latest_version) -%}
+            <div class="alert alert-warning" role="alert">
+                This guide is for an old Cot's version. Please check out the <a
+                    href="{{ cot::reverse!(request, "guide_version", version = "latest")? }}"
+                >latest</a> version!
+            </div>
+            {%- endif -%}
             <h1>{{ guide.title }}</h1>
 
             {{- guide.content_html|safe -}}
