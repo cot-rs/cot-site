@@ -46,21 +46,24 @@ pub fn get_prev_next_link<'a>(
     (prev, None)
 }
 
-fn get_categories_for_version(version: &str) -> [(&'static str, Vec<MdPage>); 2] {
-    [
-        (
-            "Getting started",
-            vec![
-                md_page!("v0.1", "introduction"),
-                md_page!("v0.1", "templates"),
-                md_page!("v0.1", "forms"),
-                md_page!("v0.1", "db-models"),
-                md_page!("v0.1", "admin-panel"),
-                md_page!("v0.1", "static-files"),
-                md_page!("v0.1", "error-pages"),
-                md_page!("v0.1", "testing"),
-            ],
-        ),
-        ("About", vec![md_page!("v0.1", "framework-comparison")]),
-    ]
+fn get_categories_for_version(version: &str) -> Vec<(&'static str, Vec<MdPage>)> {
+    match version {
+        "v0.1" => vec![
+            (
+                "Getting started",
+                vec![
+                    md_page!("v0.1", "introduction"),
+                    md_page!("v0.1", "templates"),
+                    md_page!("v0.1", "forms"),
+                    md_page!("v0.1", "db-models"),
+                    md_page!("v0.1", "admin-panel"),
+                    md_page!("v0.1", "static-files"),
+                    md_page!("v0.1", "error-pages"),
+                    md_page!("v0.1", "testing"),
+                ],
+            ),
+            ("About", vec![md_page!("v0.1", "framework-comparison")]),
+        ],
+        _ => unreachable!(),
+    }
 }
