@@ -1,5 +1,7 @@
 mod guides;
 
+use std::path::Path;
+
 use cot::bytes::Bytes;
 use cot::cli::CliMetadata;
 use cot::config::ProjectConfig;
@@ -18,12 +20,28 @@ use rinja::Template;
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
-pub(crate) fn get_latest_version() -> &'static str {
-    "v0.1"
-}
+pub(crate) const LATEST_VERSION: &'static str = "v0.1";
 
-pub(crate) fn get_all_versions() -> &'static [&'static str] {
-    &["v0.1"]
+pub(crate) fn get_all_versions() -> Vec<String> {
+    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
+    let path = Path::new(&manifest_dir).join("src").join("md-pages");
+    let dir = std::fs::read_dir(path).expect("Failed to read md-pages directory");
+    let versions: Vec<_> = dir
+        .filter_map(|entry| {
+            if let Ok(entry) = entry {
+                if entry.path().is_dir() {
+                    return Some(entry.file_name().to_string_lossy().to_string());
+                }
+            };
+
+            None
+        })
+        .collect();
+
+    [String::from("latest")]
+        .into_iter()
+        .chain(versions.into_iter().rev())
+        .collect()
 }
 
 #[derive(Debug, Template)]
@@ -44,7 +62,7 @@ async fn index(request: Request) -> cot::Result<Response> {
 struct GuideTemplate<'a> {
     link_categories: &'a [GuideLinkCategory],
     guide: &'a MdPage,
-    versions: &'a [&'static str],
+    versions: Vec<String>,
     version: &'a str,
     request: &'a Request,
     prev: Option<&'a MdPageLink>,
@@ -97,7 +115,7 @@ async fn guide_page(request: Request) -> cot::Result<Response> {
 
 fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Response> {
     let file_version = if version == "latest" {
-        get_latest_version()
+        LATEST_VERSION
     } else {
         version
     };
