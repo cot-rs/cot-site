@@ -18,8 +18,8 @@ use rinja::Template;
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
-pub(crate) const LATEST_VERSION: &'static str = "v0.1";
-pub(crate) const ALL_VERSIONS: &'static [&'static str] = &["latest", "v0.1"];
+pub(crate) const LATEST_VERSION: &'static str = "v0.2";
+pub(crate) const ALL_VERSIONS: &'static [&'static str] = &["latest", "v0.2", "v0.1"];
 
 #[derive(Debug, Template)]
 #[template(path = "index.html")]

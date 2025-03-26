@@ -48,21 +48,34 @@ pub fn get_prev_next_link<'a>(
 
 fn get_categories_for_version(version: &str) -> Vec<(&'static str, Vec<MdPage>)> {
     match version {
-        "v0.1" => vec![
+        "v0.1" => vec![(
+            "Getting started",
+            vec![
+                md_page!("v0.1", "introduction"),
+                md_page!("v0.1", "templates"),
+                md_page!("v0.1", "forms"),
+                md_page!("v0.1", "db-models"),
+                md_page!("v0.1", "admin-panel"),
+                md_page!("v0.1", "static-files"),
+                md_page!("v0.1", "error-pages"),
+                md_page!("v0.1", "testing"),
+            ],
+        )],
+        "v0.2" => vec![
             (
                 "Getting started",
                 vec![
-                    md_page!("v0.1", "introduction"),
-                    md_page!("v0.1", "templates"),
-                    md_page!("v0.1", "forms"),
-                    md_page!("v0.1", "db-models"),
-                    md_page!("v0.1", "admin-panel"),
-                    md_page!("v0.1", "static-files"),
-                    md_page!("v0.1", "error-pages"),
-                    md_page!("v0.1", "testing"),
+                    md_page!("v0.2", "introduction"),
+                    md_page!("v0.2", "templates"),
+                    md_page!("v0.2", "forms"),
+                    md_page!("v0.2", "db-models"),
+                    md_page!("v0.2", "admin-panel"),
+                    md_page!("v0.2", "static-files"),
+                    md_page!("v0.2", "error-pages"),
+                    md_page!("v0.2", "testing"),
                 ],
             ),
-            ("About", vec![md_page!("v0.1", "framework-comparison")]),
+            ("About", vec![md_page!("v0.2", "framework-comparison")]),
         ],
         _ => unreachable!(),
     }
