@@ -1,7 +1,5 @@
 mod guides;
 
-use std::path::Path;
-
 use cot::bytes::Bytes;
 use cot::cli::CliMetadata;
 use cot::config::ProjectConfig;
@@ -21,33 +19,7 @@ use rinja::Template;
 use crate::guides::{get_prev_next_link, parse_guides};
 
 pub(crate) const LATEST_VERSION: &'static str = "v0.1";
-
-pub(crate) fn get_all_versions() -> Vec<String> {
-    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let path = Path::new(&manifest_dir).join("src").join("md-pages");
-    let dir = std::fs::read_dir(path).expect("Failed to read md-pages directory");
-    let versions: Vec<_> = dir
-        .filter_map(|entry| {
-            if let Ok(entry) = entry {
-                if entry.path().is_dir() {
-                    return Some(entry.file_name().to_string_lossy().to_string());
-                }
-            };
-
-            None
-        })
-        .collect();
-
-    [String::from("latest")]
-        .into_iter()
-        .chain(
-            versions
-                .into_iter()
-                .rev()
-                .skip_while(|dir| dir != LATEST_VERSION),
-        )
-        .collect()
-}
+pub(crate) const ALL_VERSIONS: &'static [&'static str] = &["latest", "v0.1"];
 
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
@@ -67,7 +39,7 @@ async fn index(request: Request) -> cot::Result<Response> {
 struct GuideTemplate<'a> {
     link_categories: &'a [GuideLinkCategory],
     guide: &'a MdPage,
-    versions: Vec<String>,
+    versions: &'static [&'static str],
     version: &'a str,
     request: &'a Request,
     prev: Option<&'a MdPageLink>,
@@ -124,7 +96,7 @@ fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Re
     } else {
         version
     };
-    if !get_all_versions().contains(&file_version.to_string()) {
+    if !ALL_VERSIONS.contains(&file_version) {
         return Err(cot::Error::not_found());
     }
     let (link_categories, guide_map) = parse_guides(file_version);
@@ -134,7 +106,7 @@ fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Re
     let guide_template = GuideTemplate {
         link_categories: &link_categories,
         guide,
-        versions: get_all_versions(),
+        versions: ALL_VERSIONS,
         version,
         request,
         prev,
