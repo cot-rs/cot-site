@@ -8,13 +8,16 @@ use syn::parse::{Parse, ParseStream};
 use syn::LitStr;
 
 pub(super) struct MdPageInput {
+    pub(super) prefix: String,
     pub(super) link: String,
 }
 
 impl Parse for MdPageInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
+        let prefix = input.parse::<LitStr>()?.value();
+        input.parse::<syn::Token![,]>()?;
         let link = input.parse::<LitStr>()?.value();
-        Ok(Self { link })
+        Ok(Self { prefix, link })
     }
 }
 
@@ -69,8 +72,13 @@ fn quote_section(section: &Section) -> TokenStream {
     section.into()
 }
 
-pub(super) fn parse_md_page(link: &str) -> MdPage {
-    let md_page_content = read_md_page(link);
+pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
+    let file_link = if prefix.is_empty() {
+        link
+    } else {
+        &format!("{}/{}", prefix, link)
+    };
+    let md_page_content = read_md_page(file_link);
 
     let front_matter = md_page_content
         .split("---")
