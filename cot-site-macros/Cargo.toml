@@ -1,7 +1,7 @@
 [package]
 name = "cot-site-macros"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [lib]
 proc-macro = true
@@ -10,13 +10,13 @@ proc-macro = true
 nightly = []
 
 [dependencies]
-comrak = "0.36"
-cot-site-common = { path = "../cot-site-common" }
-proc-macro2 = "1.0.92"
-quote = "1.0.37"
-serde_yml = "0.0.12"
-syn = "2.0.98"
-syntect = { version = "5", features = ["dump-load"] }
+comrak.workspace = true
+cot-site-common.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+serde_yml.workspace = true
+syn.workspace = true
+syntect = { workspace = true, features = ["dump-load"] }
 
 [build-dependencies]
-syntect = { version = "5", features = ["dump-create"] }
+syntect = { workspace = true, features = ["dump-create"] }

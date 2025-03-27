@@ -3,32 +3,49 @@ mod guides;
 use cot::bytes::Bytes;
 use cot::cli::CliMetadata;
 use cot::config::ProjectConfig;
-use cot::project::{App, Project, RootHandlerBuilder, WithApps, WithConfig};
-use cot::request::{Request, RequestExt};
+use cot::http::request::Parts;
+use cot::project::{App, MiddlewareContext, Project, RegisterAppsContext, RootHandlerBuilder};
+use cot::request::RequestExt;
+use cot::request::extractors::{FromRequestParts, Path};
 use cot::response::{Response, ResponseExt};
-use cot::router::{Route, Router};
+use cot::router::{Route, Router, Urls};
 use cot::static_files::StaticFilesMiddleware;
-use cot::{
-    reverse_redirect, static_files, AppBuilder, Body, BoxedHandler, ProjectContext, StatusCode,
-};
+use cot::{AppBuilder, Body, BoxedHandler, StatusCode, reverse_redirect, static_files};
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
-use rinja::filters::{HtmlSafe, Safe};
 use rinja::Template;
+use rinja::filters::{HtmlSafe, Safe};
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
-pub(crate) const LATEST_VERSION: &'static str = "v0.2";
-pub(crate) const ALL_VERSIONS: &'static [&'static str] = &["latest", "v0.2", "v0.1"];
+pub(crate) const LATEST_VERSION: &str = "v0.2";
+pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.2", "v0.1"];
+
+#[derive(Debug, Clone)]
+struct BaseContext {
+    urls: Urls,
+    route_name: String,
+}
+
+impl FromRequestParts for BaseContext {
+    async fn from_request_parts(parts: &mut Parts) -> cot::Result<Self> {
+        let urls = Urls::from_request_parts(parts).await?;
+        let route_name = parts.route_name().unwrap_or_default().to_owned();
+
+        Ok(Self { urls, route_name })
+    }
+}
 
 #[derive(Debug, Template)]
 #[template(path = "index.html")]
 struct IndexTemplate<'a> {
-    request: &'a Request,
+    base_context: &'a BaseContext,
 }
 
-async fn index(request: Request) -> cot::Result<Response> {
-    let index_template = IndexTemplate { request: &request };
+async fn index(base_context: BaseContext) -> cot::Result<Response> {
+    let index_template = IndexTemplate {
+        base_context: &base_context,
+    };
     let rendered = index_template.render()?;
 
     Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
@@ -41,7 +58,7 @@ struct GuideTemplate<'a> {
     guide: &'a MdPage,
     versions: &'static [&'static str],
     version: &'a str,
-    request: &'a Request,
+    base_context: &'a BaseContext,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
 }
@@ -67,30 +84,33 @@ fn render_section(section: &Section) -> Safe<String> {
 
 const DEFAULT_GUIDE_PAGE: &str = "introduction";
 
-async fn guide(request: Request) -> cot::Result<Response> {
-    reverse_redirect!(request, "guide_version", version = "latest")
+async fn guide(base_context: BaseContext) -> cot::Result<Response> {
+    reverse_redirect!(base_context.urls, "guide_version", version = "latest")
 }
 
-async fn guide_version(request: Request) -> cot::Result<Response> {
-    let version = request.path_params().parse()?;
-    page_response(&request, version, DEFAULT_GUIDE_PAGE)
+async fn guide_version(
+    base_context: BaseContext,
+    Path(version): Path<String>,
+) -> cot::Result<Response> {
+    page_response(base_context, &version, DEFAULT_GUIDE_PAGE)
 }
 
-async fn guide_page(request: Request) -> cot::Result<Response> {
-    let (version, page) = request.path_params().parse()?;
-
+async fn guide_page(
+    base_context: BaseContext,
+    Path((version, page)): Path<(String, String)>,
+) -> cot::Result<Response> {
     if page == DEFAULT_GUIDE_PAGE {
         return Ok(reverse_redirect!(
-            request,
+            base_context.urls,
             "guide_version",
             version = version
         )?);
     }
 
-    page_response(&request, version, page)
+    page_response(base_context, &version, &page)
 }
 
-fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Response> {
+fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::Result<Response> {
     let file_version = if version == "latest" {
         LATEST_VERSION
     } else {
@@ -108,7 +128,7 @@ fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Re
         guide,
         versions: ALL_VERSIONS,
         version,
-        request,
+        base_context: &base_context,
         prev,
         next,
     };
@@ -121,13 +141,13 @@ fn page_response(request: &Request, version: &str, page: &str) -> cot::Result<Re
 #[template(path = "md_page.html")]
 struct MdPageTemplate<'a> {
     page: &'a MdPage,
-    request: &'a Request,
+    base_context: &'a BaseContext,
 }
 
-async fn faq(request: Request) -> cot::Result<Response> {
+async fn faq(base_context: BaseContext) -> cot::Result<Response> {
     let template = MdPageTemplate {
         page: &md_page!("", "faq"),
-        request: &request,
+        base_context: &base_context,
     };
 
     Ok(Response::new_html(
@@ -136,10 +156,10 @@ async fn faq(request: Request) -> cot::Result<Response> {
     ))
 }
 
-async fn licenses(request: Request) -> cot::Result<Response> {
+async fn licenses(base_context: BaseContext) -> cot::Result<Response> {
     let template = MdPageTemplate {
         page: &md_page!("", "licenses"),
-        request: &request,
+        base_context: &base_context,
     };
 
     Ok(Response::new_html(
@@ -193,14 +213,14 @@ impl Project for CotSiteProject {
         Ok(ProjectConfig::default())
     }
 
-    fn register_apps(&self, modules: &mut AppBuilder, _app_context: &ProjectContext<WithConfig>) {
+    fn register_apps(&self, modules: &mut AppBuilder, _app_context: &RegisterAppsContext) {
         modules.register_with_views(CotSiteApp, "");
     }
 
     fn middlewares(
         &self,
         handler: RootHandlerBuilder,
-        context: &ProjectContext<WithApps>,
+        context: &MiddlewareContext,
     ) -> BoxedHandler {
         let handler = handler.middleware(StaticFilesMiddleware::from_context(context));
         #[cfg(debug_assertions)]

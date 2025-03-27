@@ -6,7 +6,7 @@
         {%- for ver in versions -%}
         <li><a
                 class="dropdown-item"
-                href="{{ cot::reverse!(request, "guide_version", version = ver)? }}"
+                href="{{ cot::reverse!(urls, "guide_version", version = ver)? }}"
             >{{ ver }}</a></li>
         {%- endfor -%}
     </ul>
@@ -24,7 +24,7 @@
 
             <ul class="fw-normal pb-2 small">
                 {%- for guide_link in category.guides -%}
-                <li><a href="{{ cot::reverse!(request, "guide_page", version = redirect_version, page = guide_link.link)? }}" class="d-inline-block{% if guide.link == guide_link.link %} active{% endif %}">{{ guide_link.title }}</a></li>
+                <li><a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = guide_link.link)? }}" class="d-inline-block{% if guide.link == guide_link.link %} active{% endif %}">{{ guide_link.title }}</a></li>
                 {%- endfor -%}
             </ul>
         </li>
