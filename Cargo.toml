@@ -3,7 +3,7 @@ name = "cot-site"
 description = "Cot web framework website and official guide"
 authors = ["Mateusz Maćkowski <mateusz@mackowski.org>"]
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [workspace]
 members = [
@@ -13,15 +13,30 @@ members = [
 ]
 resolver = "2"
 
+[workspace.dependencies]
+comrak = "0.37"
+cot = { version = "0.2", default-features = false }
+cot-site-common = { path = "cot-site-common" }
+cot-site-macros = { path = "cot-site-macros" }
+grass = "0.13"
+lightningcss = "1.0.0-alpha.65"
+proc-macro2 = "1"
+quote = "1"
+rinja = "0.3"
+serde = "1"
+serde_yml = "0.0.12"
+syn = "2"
+syntect = "5"
+
 [features]
 nightly = ["cot-site-macros/nightly"]
 
 [dependencies]
-cot = { version = "0.1", default-features = false, features = ["live-reload"] }
-cot-site-common = { path = "cot-site-common" }
-cot-site-macros = { path = "cot-site-macros" }
-rinja = "0.3.5"
+cot = { workspace = true, features = ["live-reload"] }
+cot-site-common.workspace = true
+cot-site-macros.workspace = true
+rinja.workspace = true
 
 [build-dependencies]
-grass = "0.13.4"
-lightningcss = "1.0.0-alpha.63"
+grass.workspace = true
+lightningcss.workspace = true

@@ -1,8 +1,8 @@
 [package]
 name = "cot-site-common"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-comrak = "0.36"
-serde = "1.0"
+comrak.workspace = true
+serde.workspace = true
