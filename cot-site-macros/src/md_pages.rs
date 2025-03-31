@@ -4,8 +4,8 @@ use std::sync::Mutex;
 use cot_site_common::md_pages::{FrontMatter, MdPage, MdPageHeadingAdapter, Section};
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::parse::{Parse, ParseStream};
 use syn::LitStr;
+use syn::parse::{Parse, ParseStream};
 
 pub(super) struct MdPageInput {
     pub(super) prefix: String,
@@ -52,7 +52,7 @@ pub(super) fn quote_md_page(md_page: &MdPage) -> TokenStream {
             sections: vec![#(#sections),*],
         }
     };
-    md_page.into()
+    md_page
 }
 
 fn quote_section(section: &Section) -> TokenStream {
@@ -69,7 +69,7 @@ fn quote_section(section: &Section) -> TokenStream {
             children: vec![#(#children),*],
         }
     };
-    section.into()
+    section
 }
 
 pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
@@ -115,16 +115,15 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
 
     let md_page_content =
         comrak::markdown_to_html_with_plugins(&md_page_content, &options, &plugins);
-    let mut sections = heading_adapter.sections.lock().unwrap().clone();
-    let root_section = fix_section_children(&mut sections);
+    let sections = heading_adapter.sections.lock().unwrap().clone();
+    let root_section = fix_section_children(&sections);
 
-    let md_page = MdPage {
+    MdPage {
         link: link.to_string(),
         title: front_matter.title,
         content_html: md_page_content,
         sections: root_section.children,
-    };
-    md_page
+    }
 }
 
 fn fix_section_children(sections: &Vec<Section>) -> Section {
