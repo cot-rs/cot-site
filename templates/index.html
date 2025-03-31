@@ -17,7 +17,7 @@
             <strong>Cot</strong> is a powerful, type-safe, and fully featured Rust framework, delivering top-notch security and blazing speed. Cot empowers you to build production-ready web apps in record time&nbsp;—&nbsp;without compromising on performance or reliability.
         </p>
         <div class="d-grid gap-4 d-sm-flex justify-content-sm-center">
-            <a href="{{ cot::reverse!(request, "guide")? }}" class="btn btn-primary btn-lead px-4 gap-3">Get Started<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
+            <a href="{{ cot::reverse!(urls, "guide")? }}" class="btn btn-primary btn-lead px-4 gap-3">Get Started<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
             <a href="https://github.com/cot-rs/cot" class="btn btn-lead btn-lead-secondary px-4 gap-3"><svg class="bi me-2"><use href="#github"></use></svg>View on GitHub</a>
         </div>
     </div>
@@ -103,7 +103,7 @@
             <code class="bg-info-subtle rounded-4 p-3 d-inline-block">$ cargo install cot-cli && cot new</code>
         </div>
 
-        <a href="{{ cot::reverse!(request, "guide")? }}" class="btn btn-primary px-4 my-3">Read the Guide<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
+        <a href="{{ cot::reverse!(urls, "guide")? }}" class="btn btn-primary px-4 my-3">Read the Guide<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
     </div>
 </div>
 {% endblock %}
