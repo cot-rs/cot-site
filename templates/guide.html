@@ -21,22 +21,32 @@
         </aside>
 
         {%- let page = guide -%}
+        {%- let redirect_version = version -%}
+        {%- let latest_version = **versions[1] -%}
         {%- include "_md_page_toc.html" -%}
 
         <div class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
+
+            {%- if (version != "latest") && (version != latest_version) -%}
+            <div class="alert alert-warning" role="alert">
+                This guide is for an old Cot's version. Please check out the <a
+                    href="{{ cot::reverse!(request, "guide_version", version = "latest")? }}"
+                >latest</a> version!
+            </div>
+            {%- endif -%}
             <h1>{{ guide.title }}</h1>
 
             {{- guide.content_html|safe -}}
 
             <div class="border-top border-secondary-subtle py-4 d-flex flex-row flex-wrap">
                 {%- if let Some(prev) = &prev -%}
-                <a href="{{ cot::reverse!(request, "guide_page", page = prev.link)? }}" class="link-secondary link-underline-opacity-0">
+                <a href="{{ cot::reverse!(request, "guide_page", version = redirect_version, page = prev.link)? }}" class="link-secondary link-underline-opacity-0">
                     {%- include "icons/chevron_left.svg" -%}
                     <span class="ms-1">{{ prev.title }}</span>
                 </a>
                 {%- endif %}
                 {%- if let Some(next) = &next -%}
-                <a href="{{ cot::reverse!(request, "guide_page", page = next.link)? }}" class="link-primary justify-content-end link-underline-opacity-0 ms-auto">
+                <a href="{{ cot::reverse!(request, "guide_page", version = redirect_version, page = next.link)? }}" class="link-primary justify-content-end link-underline-opacity-0 ms-auto">
                     <span class="me-1">{{ next.title }}</span>
                     {%- include "icons/chevron_right.svg" -%}
                 </a>

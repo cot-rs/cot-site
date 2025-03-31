@@ -5,23 +5,8 @@ use cot_site_macros::md_page;
 
 use crate::GuideLinkCategory;
 
-pub fn parse_guides() -> (Vec<GuideLinkCategory>, HashMap<String, MdPage>) {
-    let categories = [
-        (
-            "Getting started",
-            vec![
-                md_page!("introduction"),
-                md_page!("templates"),
-                md_page!("forms"),
-                md_page!("db-models"),
-                md_page!("admin-panel"),
-                md_page!("static-files"),
-                md_page!("error-pages"),
-                md_page!("testing"),
-            ],
-        ),
-        ("About", vec![md_page!("framework-comparison")]),
-    ];
+pub fn parse_guides(version: &str) -> (Vec<GuideLinkCategory>, HashMap<String, MdPage>) {
+    let categories = get_categories_for_version(version);
 
     let categories_links = categories
         .iter()
@@ -59,4 +44,39 @@ pub fn get_prev_next_link<'a>(
     }
 
     (prev, None)
+}
+
+fn get_categories_for_version(version: &str) -> Vec<(&'static str, Vec<MdPage>)> {
+    match version {
+        "v0.1" => vec![(
+            "Getting started",
+            vec![
+                md_page!("v0.1", "introduction"),
+                md_page!("v0.1", "templates"),
+                md_page!("v0.1", "forms"),
+                md_page!("v0.1", "db-models"),
+                md_page!("v0.1", "admin-panel"),
+                md_page!("v0.1", "static-files"),
+                md_page!("v0.1", "error-pages"),
+                md_page!("v0.1", "testing"),
+            ],
+        )],
+        "v0.2" => vec![
+            (
+                "Getting started",
+                vec![
+                    md_page!("v0.2", "introduction"),
+                    md_page!("v0.2", "templates"),
+                    md_page!("v0.2", "forms"),
+                    md_page!("v0.2", "db-models"),
+                    md_page!("v0.2", "admin-panel"),
+                    md_page!("v0.2", "static-files"),
+                    md_page!("v0.2", "error-pages"),
+                    md_page!("v0.2", "testing"),
+                ],
+            ),
+            ("About", vec![md_page!("v0.2", "framework-comparison")]),
+        ],
+        _ => unreachable!(),
+    }
 }

@@ -1,3 +1,19 @@
+<div class="dropdown">
+    <button class="btn btn-secondary btn-sm dropdown-toggle version-switcher" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ version }}
+    </button>
+    <ul class="dropdown-menu">
+        {%- for ver in versions -%}
+        <li><a
+                class="dropdown-item"
+                href="{{ cot::reverse!(request, "guide_version", version = ver)? }}"
+            >{{ ver }}</a></li>
+        {%- endfor -%}
+    </ul>
+</div>
+
+{%- let redirect_version = version -%}
+
 <nav class="w-100 guide-chapters" aria-label="Docs navigation">
     <ul class="mb-0 pb-3 pb-md-2 pe-lg-2 text-body-secondary">
         {%- for category in link_categories -%}
@@ -8,7 +24,7 @@
 
             <ul class="fw-normal pb-2 small">
                 {%- for guide_link in category.guides -%}
-                <li><a href="{{ cot::reverse!(request, "guide_page", page = guide_link.link)? }}" class="d-inline-block{% if guide.link == guide_link.link %} active{% endif %}">{{ guide_link.title }}</a></li>
+                <li><a href="{{ cot::reverse!(request, "guide_page", version = redirect_version, page = guide_link.link)? }}" class="d-inline-block{% if guide.link == guide_link.link %} active{% endif %}">{{ guide_link.title }}</a></li>
                 {%- endfor -%}
             </ul>
         </li>
