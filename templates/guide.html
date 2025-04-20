@@ -25,8 +25,7 @@
         {%- let latest_version = **versions[1] -%}
         {%- include "_md_page_toc.html" -%}
 
-        <div class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
-
+        <article class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
             {%- if (version != "latest") && (version != latest_version) -%}
             <div class="alert alert-warning" role="alert">
                 This guide is for an old Cot's version. Please check out the <a
@@ -38,21 +37,21 @@
 
             {{- guide.content_html|safe -}}
 
-            <div class="border-top border-secondary-subtle py-4 d-flex flex-row flex-wrap">
+            <nav class="border-top border-secondary-subtle py-4 d-flex flex-row flex-wrap">
                 {%- if let Some(prev) = &prev -%}
-                <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = prev.link)? }}" class="link-secondary link-underline-opacity-0">
+                <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = prev.link)? }}" class="link-secondary link-underline-opacity-0" rel="prev">
                     {%- include "icons/chevron_left.svg" -%}
                     <span class="ms-1">{{ prev.title }}</span>
                 </a>
                 {%- endif %}
                 {%- if let Some(next) = &next -%}
-                <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = next.link)? }}" class="link-primary justify-content-end link-underline-opacity-0 ms-auto">
+                <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = next.link)? }}" class="link-primary justify-content-end link-underline-opacity-0 ms-auto" rel="next">
                     <span class="me-1">{{ next.title }}</span>
                     {%- include "icons/chevron_right.svg" -%}
                 </a>
                 {%- endif %}
-            </div>
-        </div>
+            </nav>
+        </article>
     </div>
 </div>
 {%- endblock %}
