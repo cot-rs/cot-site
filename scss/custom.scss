@@ -55,7 +55,7 @@ body {
 .btn.btn-primary {
   --bs-btn-color: #fff;
 
-  &:hover {
+  &:hover, &:focus-visible {
     $btn-primary-bg-color-hover: #ea580c;
 
     background-color: $btn-primary-bg-color-hover;
@@ -81,12 +81,13 @@ body {
 
 .btn.btn-lead-secondary {
   $btn-lead-secondary-bg-color: #334155;
+  --bs-btn-focus-shadow-rgb: #{to-rgb(tint-color($btn-lead-secondary-bg-color, 40%))};
 
   background-color: $btn-lead-secondary-bg-color;
   border-color: $btn-lead-secondary-bg-color;
   --bs-btn-color: #fff;
 
-  &:hover {
+  &:hover, &:focus-visible {
     $btn-lead-secondary-bg-color-hover: tint-color($btn-lead-secondary-bg-color, 10%);
 
     background-color: $btn-lead-secondary-bg-color-hover;
