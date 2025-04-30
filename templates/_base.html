@@ -1,172 +1,185 @@
-{%- let urls = &base_context.urls -%}
+    {%- let urls = &base_context.urls -%}
 
-<!DOCTYPE html>
-<html lang="en" class="h-100">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Mateusz Maćkowski and Cot contributors">
-    <meta name="keywords" content="Rust, Cot, web, framework, open-source">
-    <meta name="generator" content="cot-site based on Cot framework">
-    <title>{% block title %}{% endblock %} | Cot</title>
+    <!DOCTYPE html>
+    <html lang="en" class="h-100">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Mateusz Maćkowski and Cot contributors">
+        <meta name="keywords" content="Rust, Cot, web, framework, open-source">
+        <meta name="generator" content="cot-site based on Cot framework">
+        <title>{% block title %}{% endblock %} | Cot</title>
 
-    <script src="/static/js/color-modes.js"></script>
-    <link href="/static/css/main.css" rel="stylesheet">
+        <!-- Open Graph Meta Tags -->
+        <meta property="og:title" content="Cot">
+        <meta property="og:description" content="The Rust web framework for lazy developers. Build secure, type-safe web apps with ease.">
+        <meta property="og:image" content="https://cot.rs/static/images/favicon-512.png">
+        <meta property="og:url" content="https://cot.rs">
+        <meta property="og:type" content="website">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Convergence&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Parkinsans:wght@300&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Convergence&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Parkinsans:wght@300&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet"></noscript>
+        <!-- Twitter/X Card Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Cot">
+        <meta name="twitter:description" content="The Rust web framework for lazy developers. Build secure, type-safe web apps with ease.">
+        <meta name="twitter:image" content="https://cot.rs/static/images/favicon-512.png">
 
-    <link rel="alternate icon" type="image/png" href="/static/images/favicon-32.png">
-    <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg">
-    <link rel="apple-touch-icon" href="/static/images/favicon-180.png" sizes="180x180">
-    <link rel="manifest" href="/static/images/site.webmanifest">
-    {%- block head -%}{%- endblock -%}
-</head>
-<body class="bg-body d-flex flex-column h-100">
+        <script src="/static/js/color-modes.js"></script>
+        <link href="/static/css/main.css" rel="stylesheet">
 
-{%- include "icons/common_icons.svg" -%}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Convergence&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Parkinsans:wght@300&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link href="https://fonts.googleapis.com/css2?family=Convergence&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Parkinsans:wght@300&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet"></noscript>
 
-<nav class="navbar navbar-expand-lg fixed-top{% block navbar_classes %} border-bottom theme-bg{% endblock %}" data-bs-theme="dark">
-    <div class="container">
-        {%- if guide is defined -%}
-        <button class="navbar-toggler p-2 me-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#cot-guide-chapters" aria-controls="cot-guide-chapters" aria-label="Toggle guide navigation">
-            <svg class="bi"><use href="#list"></use></svg>
-            <span class="d-none fs-6 pe-1">Browse</span>
-        </button>
-        {%- endif -%}
+        <link rel="alternate icon" type="image/png" href="/static/images/favicon-32.png">
+        <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg">
+        <link rel="apple-touch-icon" href="/static/images/favicon-180.png" sizes="180x180">
+        <link rel="manifest" href="/static/images/site.webmanifest">
+        {%- block head -%}{%- endblock -%}
+    </head>
+    <body class="bg-body d-flex flex-column h-100">
 
-        <a class="navbar-brand" href="{{ cot::reverse!(urls, "index")? }}" aria-label="Go to homepage"><img src="/static/images/cot-dark.svg" alt="" width="30" height="24">Cot</a>
-        <button class="ms-auto navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cot-offcanvas-navbar" aria-controls="cot-offcanvas-navbar" aria-label="Toggle navigation">
-            <svg class="bi"><use href="#three-dots"></use></svg>
-        </button>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="cot-offcanvas-navbar" aria-labelledby="cot-offcanvas-navbar-label">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="cot-offcanvas-navbar-label">Cot</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    {%- include "icons/common_icons.svg" -%}
+
+    <nav class="navbar navbar-expand-lg fixed-top{% block navbar_classes %} border-bottom theme-bg{% endblock %}" data-bs-theme="dark">
+        <div class="container">
+            {%- if guide is defined -%}
+            <button class="navbar-toggler p-2 me-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#cot-guide-chapters" aria-controls="cot-guide-chapters" aria-label="Toggle guide navigation">
+                <svg class="bi"><use href="#list"></use></svg>
+                <span class="d-none fs-6 pe-1">Browse</span>
+            </button>
+            {%- endif -%}
+
+            <a class="navbar-brand" href="{{ cot::reverse!(urls, "index")? }}" aria-label="Go to homepage"><img src="/static/images/cot-dark.svg" alt="" width="30" height="24">Cot</a>
+            <button class="ms-auto navbar-toggler p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cot-offcanvas-navbar" aria-controls="cot-offcanvas-navbar" aria-label="Toggle navigation">
+                <svg class="bi"><use href="#three-dots"></use></svg>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="cot-offcanvas-navbar" aria-labelledby="cot-offcanvas-navbar-label">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="cot-offcanvas-navbar-label">Cot</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    {%- let route_name = base_context.route_name -%}
+                    <ul class="navbar-nav flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link{% if route_name == "guide" || route_name == "guide_version" || route_name == "guide_page" %} active{% endif %}" href="{{ cot::reverse!(urls, "guide")? }}">Guide</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://docs.rs/cot">Docs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if route_name == "faq" %} active{% endif %}" href="{{ cot::reverse!(urls, "faq")? }}">FAQ</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/cot-rs/cot" aria-label="Cot repository on GitHub">
+                                <svg class="bi"><use href="#github"></use></svg><span class="d-lg-none ms-2">GitHub</span>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="cot-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (dark)">
+                                <svg class="bi my-1 theme-icon-active"><use href="#moon-stars-fill"></use></svg>
+                                <span class="d-lg-none ms-2" id="cot-theme-text">Toggle theme</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-xxl-start">
+                                <li>
+                                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                                        <svg class="bi me-2"><use href="#sun-fill"></use></svg>Light
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                                        <svg class="bi me-2"><use href="#moon-stars-fill"></use></svg>Dark
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+                                        <svg class="bi me-2"><use href="#circle-half"></use></svg>Auto
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="offcanvas-body">
-                {%- let route_name = base_context.route_name -%}
-                <ul class="navbar-nav flex-grow-1 pe-3">
-                    <li class="nav-item">
-                        <a class="nav-link{% if route_name == "guide" || route_name == "guide_version" || route_name == "guide_page" %} active{% endif %}" href="{{ cot::reverse!(urls, "guide")? }}">Guide</a>
+        </div>
+    </nav>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <footer class="border-top theme-bg mt-auto">
+        <div class="container row row-cols-1 row-cols-sm-2 row-cols-lg-5 py-5 mx-auto">
+            <div class="col mb-3 text-start text-lg-center">
+                <a href="/" class="d-block mb-3 link-body-emphasis text-decoration-none" title="Go to Cot homepage">
+                    <img src="/static/images/cot-dark.svg" alt="" width="80" height="64" class="mx-lg-auto d-block">
+                </a>
+                <p class="text-body-secondary">&copy; 2024-2025 Cot contributors</p>
+            </div>
+
+            <div class="col mb-3">
+                <h5>Learn More</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="{{ cot::reverse!(urls, "licenses")? }}" class="nav-link p-0 text-body-secondary">Licenses</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://docs.rs/cot">Docs</a>
+                    <li class="nav-item mb-2">
+                        <a href="{{ cot::reverse!(urls, "faq")? }}" class="nav-link p-0 text-body-secondary">FAQ</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link{% if route_name == "faq" %} active{% endif %}" href="{{ cot::reverse!(urls, "faq")? }}">FAQ</a>
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/cot-rs/cot/blob/master/CODE_OF_CONDUCT.md" class="nav-link p-0 text-body-secondary">Code of Conduct</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://github.com/cot-rs/cot" aria-label="Cot repository on GitHub">
-                            <svg class="bi"><use href="#github"></use></svg><span class="d-lg-none ms-2">GitHub</span>
-                        </a>
+            </div>
+            <div class="col mb-3">
+                <h5>Get Involved</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/cot-rs/cot/blob/master/CONTRIBUTING.md" class="nav-link p-0 text-body-secondary">Contribute to Cot</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="cot-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (dark)">
-                            <svg class="bi my-1 theme-icon-active"><use href="#moon-stars-fill"></use></svg>
-                            <span class="d-lg-none ms-2" id="cot-theme-text">Toggle theme</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-xxl-start">
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
-                                    <svg class="bi me-2"><use href="#sun-fill"></use></svg>Light
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-                                    <svg class="bi me-2"><use href="#moon-stars-fill"></use></svg>Dark
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
-                                    <svg class="bi me-2"><use href="#circle-half"></use></svg>Auto
-                                </button>
-                            </li>
-                        </ul>
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/cot-rs/cot/issues/new" class="nav-link p-0 text-body-secondary">Submit a bug</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/cot-rs/cot/blob/master/SECURITY.md" class="nav-link p-0 text-body-secondary">Security</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col mb-3">
+                <h5>Get Help</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/cot-rs/cot/discussions/categories/q-a" class="nav-link p-0 text-body-secondary">GitHub Discussions</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="https://stackoverflow.com/tags/cot" class="nav-link p-0 text-body-secondary">Stack Overflow</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="https://discord.cot.rs/" class="nav-link p-0 text-body-secondary">Discord</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col mb-3">
+                <h5>Community</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/cot-rs/cot" class="nav-link p-0 text-body-secondary">GitHub</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="https://discord.cot.rs/" class="nav-link p-0 text-body-secondary">Discord</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="https://github.com/sponsors/cot-rs/" class="nav-link p-0 text-body-secondary">Sponsor Cot</a>
                     </li>
                 </ul>
             </div>
         </div>
-    </div>
-</nav>
+    </footer>
 
-<main>{% block content %}{% endblock %}</main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-<footer class="border-top theme-bg mt-auto">
-    <div class="container row row-cols-1 row-cols-sm-2 row-cols-lg-5 py-5 mx-auto">
-        <div class="col mb-3 text-start text-lg-center">
-            <a href="/" class="d-block mb-3 link-body-emphasis text-decoration-none" title="Go to Cot homepage">
-                <img src="/static/images/cot-dark.svg" alt="" width="80" height="64" class="mx-lg-auto d-block">
-            </a>
-            <p class="text-body-secondary">&copy; 2024-2025 Cot contributors</p>
-        </div>
-
-        <div class="col mb-3">
-            <h5>Learn More</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item mb-2">
-                    <a href="{{ cot::reverse!(urls, "licenses")? }}" class="nav-link p-0 text-body-secondary">Licenses</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="{{ cot::reverse!(urls, "faq")? }}" class="nav-link p-0 text-body-secondary">FAQ</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/cot-rs/cot/blob/master/CODE_OF_CONDUCT.md" class="nav-link p-0 text-body-secondary">Code of Conduct</a>
-                </li>
-            </ul>
-        </div>
-        <div class="col mb-3">
-            <h5>Get Involved</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/cot-rs/cot/blob/master/CONTRIBUTING.md" class="nav-link p-0 text-body-secondary">Contribute to Cot</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/cot-rs/cot/issues/new" class="nav-link p-0 text-body-secondary">Submit a bug</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/cot-rs/cot/blob/master/SECURITY.md" class="nav-link p-0 text-body-secondary">Security</a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="col mb-3">
-            <h5>Get Help</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/cot-rs/cot/discussions/categories/q-a" class="nav-link p-0 text-body-secondary">GitHub Discussions</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://stackoverflow.com/tags/cot" class="nav-link p-0 text-body-secondary">Stack Overflow</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://discord.cot.rs/" class="nav-link p-0 text-body-secondary">Discord</a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="col mb-3">
-            <h5>Community</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/cot-rs/cot" class="nav-link p-0 text-body-secondary">GitHub</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://discord.cot.rs/" class="nav-link p-0 text-body-secondary">Discord</a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="https://github.com/sponsors/cot-rs/" class="nav-link p-0 text-body-secondary">Sponsor Cot</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-</body>
-</html>
+    </body>
+    </html>
