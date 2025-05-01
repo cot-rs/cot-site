@@ -58,6 +58,7 @@ struct GuideTemplate<'a> {
     guide: &'a MdPage,
     versions: &'static [&'static str],
     version: &'a str,
+    active_versions: Vec<bool>,
     base_context: &'a BaseContext,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
@@ -123,11 +124,15 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
     let guide = guide_map.get(page).ok_or_else(cot::Error::not_found)?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
 
+    // let active_versions = ALL_VERSIONS.iter().map(|v| v == file_version).collect();
+    let active_versions = ALL_VERSIONS.iter().map(|&v| v == version).collect();
+
     let guide_template = GuideTemplate {
         link_categories: &link_categories,
         guide,
         versions: ALL_VERSIONS,
         version,
+        active_versions,
         base_context: &base_context,
         prev,
         next,
