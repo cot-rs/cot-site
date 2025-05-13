@@ -114,8 +114,8 @@ This is how you specify the URL the view will be available at – in this case, 
 You can add more views by adding more routes to the `Router` by simply defining more functions and registering them in the `router` method:
 
 ```rust
-async fn hello() -> cot::Result<Response> {
-    Ok(Response::new_html(StatusCode::OK, Body::fixed("Hello World!")))
+async fn hello() -> Html {
+    Html::new("Hello World!")
 }
 
 // inside `impl App`:
