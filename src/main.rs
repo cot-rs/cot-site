@@ -18,8 +18,8 @@ use rinja::filters::{HtmlSafe, Safe};
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
-pub(crate) const LATEST_VERSION: &str = "v0.2";
-pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.2", "v0.1"];
+pub(crate) const LATEST_VERSION: &str = "v0.3";
+pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.3", "v0.2", "v0.1"];
 
 #[derive(Debug, Clone)]
 struct BaseContext {

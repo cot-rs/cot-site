@@ -40,7 +40,7 @@ pre.syntax-highlighting {
   @extend .rounded-3;
   overflow-x: auto;
 
-  .keyword, .continuation.line.shell, .entity.tag.html {
+  .keyword, .storage.type.impl.rust, .continuation.line.shell, .entity.tag.html {
     color: var(--syntax-highlighting-kw-color);
   }
 
