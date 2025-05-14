@@ -76,7 +76,7 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
     let file_link = if prefix.is_empty() {
         link
     } else {
-        &format!("{}/{}", prefix, link)
+        &format!("{prefix}/{link}")
     };
     let md_page_content = read_md_page(file_link);
 
