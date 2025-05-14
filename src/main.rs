@@ -1,20 +1,22 @@
 mod guides;
 
-use cot::bytes::Bytes;
+use std::time::Duration;
+
+use askama::Template;
+use askama::filters::{HtmlSafe, Safe};
 use cot::cli::CliMetadata;
-use cot::config::ProjectConfig;
+use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
+use cot::html::Html;
 use cot::http::request::Parts;
 use cot::project::{App, MiddlewareContext, Project, RegisterAppsContext, RootHandlerBuilder};
 use cot::request::RequestExt;
-use cot::request::extractors::{FromRequestParts, Path};
-use cot::response::{Response, ResponseExt};
+use cot::request::extractors::{FromRequestParts, Path, StaticFiles};
+use cot::response::{IntoResponse, Response};
 use cot::router::{Route, Router, Urls};
-use cot::static_files::StaticFilesMiddleware;
-use cot::{AppBuilder, Body, BoxedHandler, StatusCode, reverse_redirect, static_files};
+use cot::static_files::{StaticFile, StaticFilesMiddleware};
+use cot::{AppBuilder, BoxedHandler, reverse_redirect, static_files};
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
-use rinja::Template;
-use rinja::filters::{HtmlSafe, Safe};
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
@@ -24,15 +26,21 @@ pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.3", "v0.2", "v0.1"];
 #[derive(Debug, Clone)]
 struct BaseContext {
     urls: Urls,
+    static_files: StaticFiles,
     route_name: String,
 }
 
 impl FromRequestParts for BaseContext {
     async fn from_request_parts(parts: &mut Parts) -> cot::Result<Self> {
         let urls = Urls::from_request_parts(parts).await?;
+        let static_files = StaticFiles::from_request_parts(parts).await?;
         let route_name = parts.route_name().unwrap_or_default().to_owned();
 
-        Ok(Self { urls, route_name })
+        Ok(Self {
+            urls,
+            static_files,
+            route_name,
+        })
     }
 }
 
@@ -42,13 +50,13 @@ struct IndexTemplate<'a> {
     base_context: &'a BaseContext,
 }
 
-async fn index(base_context: BaseContext) -> cot::Result<Response> {
+async fn index(base_context: BaseContext) -> cot::Result<Html> {
     let index_template = IndexTemplate {
         base_context: &base_context,
     };
     let rendered = index_template.render()?;
 
-    Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
+    Ok(Html::new(rendered))
 }
 
 #[derive(Debug, Template)]
@@ -91,7 +99,7 @@ async fn guide(base_context: BaseContext) -> cot::Result<Response> {
 async fn guide_version(
     base_context: BaseContext,
     Path(version): Path<String>,
-) -> cot::Result<Response> {
+) -> cot::Result<Html> {
     page_response(base_context, &version, DEFAULT_GUIDE_PAGE)
 }
 
@@ -107,10 +115,10 @@ async fn guide_page(
         )?);
     }
 
-    page_response(base_context, &version, &page)
+    page_response(base_context, &version, &page).into_response()
 }
 
-fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::Result<Response> {
+fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::Result<Html> {
     let file_version = if version == "latest" {
         LATEST_VERSION
     } else {
@@ -134,7 +142,7 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
     };
 
     let rendered = guide_template.render()?;
-    Ok(Response::new_html(StatusCode::OK, Body::fixed(rendered)))
+    Ok(Html::new(rendered))
 }
 
 #[derive(Debug, Template)]
@@ -144,28 +152,22 @@ struct MdPageTemplate<'a> {
     base_context: &'a BaseContext,
 }
 
-async fn faq(base_context: BaseContext) -> cot::Result<Response> {
+async fn faq(base_context: BaseContext) -> cot::Result<Html> {
     let template = MdPageTemplate {
         page: &md_page!("", "faq"),
         base_context: &base_context,
     };
 
-    Ok(Response::new_html(
-        StatusCode::OK,
-        Body::fixed(template.render()?),
-    ))
+    Ok(Html::new(template.render()?))
 }
 
-async fn licenses(base_context: BaseContext) -> cot::Result<Response> {
+async fn licenses(base_context: BaseContext) -> cot::Result<Html> {
     let template = MdPageTemplate {
         page: &md_page!("", "licenses"),
         base_context: &base_context,
     };
 
-    Ok(Response::new_html(
-        StatusCode::OK,
-        Body::fixed(template.render()?),
-    ))
+    Ok(Html::new(template.render()?))
 }
 
 struct CotSiteApp;
@@ -186,17 +188,18 @@ impl App for CotSiteApp {
         ])
     }
 
-    fn static_files(&self) -> Vec<(String, Bytes)> {
+    fn static_files(&self) -> Vec<StaticFile> {
         static_files!(
-            "css/main.css",
-            "js/color-modes.js",
-            "images/cot-dark.svg",
-            "images/favicon.svg",
-            "images/favicon-32.png",
-            "images/favicon-180.png",
-            "images/favicon-192.png",
-            "images/favicon-512.png",
-            "images/site.webmanifest"
+            "favicon.ico",
+            "static/css/main.css",
+            "static/js/color-modes.js",
+            "static/images/cot-dark.svg",
+            "static/images/favicon.svg",
+            "static/images/favicon-32.png",
+            "static/images/favicon-180.png",
+            "static/images/favicon-192.png",
+            "static/images/favicon-512.png",
+            "static/images/site.webmanifest"
         )
     }
 }
@@ -210,7 +213,15 @@ impl Project for CotSiteProject {
 
     fn config(&self, _config_name: &str) -> cot::Result<ProjectConfig> {
         // we don't need to load any config
-        Ok(ProjectConfig::default())
+        Ok(ProjectConfig::builder()
+            .static_files(
+                StaticFilesConfig::builder()
+                    .url("/")
+                    .rewrite(StaticFilesPathRewriteMode::QueryParam)
+                    .cache_timeout(Duration::from_secs(365 * 24 * 60 * 60))
+                    .build(),
+            )
+            .build())
     }
 
     fn register_apps(&self, modules: &mut AppBuilder, _app_context: &RegisterAppsContext) {

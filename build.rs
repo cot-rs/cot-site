@@ -1,4 +1,4 @@
-const CSS_PATH: &str = "static/css";
+const CSS_PATH: &str = "static/static/css";
 
 fn main() {
     build_css();

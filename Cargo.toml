@@ -14,15 +14,15 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-comrak = "0.37"
-cot = { version = "0.2", default-features = false }
+askama = "0.14"
+comrak = "0.39"
+cot = { version = "0.3", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"
-lightningcss = "1.0.0-alpha.65"
+lightningcss = "1.0.0-alpha.66"
 proc-macro2 = "1"
 quote = "1"
-rinja = "0.3"
 serde = "1"
 serde_yml = "0.0.12"
 syn = "2"
@@ -32,10 +32,10 @@ syntect = "5"
 nightly = ["cot-site-macros/nightly"]
 
 [dependencies]
+askama.workspace = true
 cot = { workspace = true, features = ["live-reload"] }
 cot-site-common.workspace = true
 cot-site-macros.workspace = true
-rinja.workspace = true
 
 [build-dependencies]
 grass.workspace = true

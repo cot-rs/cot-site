@@ -1,18 +1,5 @@
 services:
   web:
     build: .
-    container_name: cot_site_web
+    container_name: cot_site
     restart: unless-stopped
-    volumes:
-      - ./static-files:/app/static
-
-  proxy:
-    build: ./nginx
-    container_name: cot_site_proxy
-    restart: unless-stopped
-    volumes:
-      - ./static-files:/app/static
-    ports:
-      - "8000:80"
-    depends_on:
-      - web
