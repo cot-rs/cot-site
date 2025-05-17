@@ -5,8 +5,8 @@
     <ul class="dropdown-menu">
         {%- for ver in versions -%}
         <li><a
-                class="dropdown-item"
-                href="{{ cot::reverse!(urls, "guide_version", version = ver)? }}"
+            class="dropdown-item{% if ver == &version %} active{% endif %}"
+            href="{{ cot::reverse!(urls, "guide_version", version = ver)? }}"
             >{{ ver }}</a></li>
         {%- endfor -%}
     </ul>
