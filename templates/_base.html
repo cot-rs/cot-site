@@ -10,6 +10,16 @@
     <meta name="generator" content="cot-site based on Cot framework">
     <title>{% block title %}{% endblock %} | Cot</title>
 
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Cot">
+    <meta property="og:description" content="The Rust web framework for lazy developers. Build secure, type-safe web apps with ease.">
+    <meta property="og:image" content="https://cot.rs/static/images/favicon-512.png">
+    <meta property="og:url" content="https://cot.rs">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter/X Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+
     <script src="{{ base_context.static_files.url_for("static/js/color-modes.js")? }}"></script>
     <link href="{{ base_context.static_files.url_for("static/css/main.css")? }}" rel="stylesheet">
 
