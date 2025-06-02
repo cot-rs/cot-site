@@ -548,9 +548,9 @@ dependencies = [
 
 [[package]]
 name = "cot"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af50109af4bf8b34f3d0bf34f44497acaf499d14ce3d1d05702b13ece853d7bc"
+checksum = "a09bfd6ab05c8b7ff888764d22ace113345289de063e6537bd7a8749dd5f8aea"
 dependencies = [
  "ahash 0.8.12",
  "askama",
@@ -630,9 +630,9 @@ dependencies = [
 
 [[package]]
 name = "cot_codegen"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18b0bc21c91949ca80291bf3fec03a3d4fe26334a5650b94d1aea27cd8a9f399"
+checksum = "c5d56e189377d5ee28ee1fb40722be52f13557f321a2c72bf2fa2feb9b875041"
 dependencies = [
  "darling",
  "heck",
@@ -643,9 +643,9 @@ dependencies = [
 
 [[package]]
 name = "cot_macros"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db727c0d2ab11c05a5a4006ab982298c3361a243f72e715333a0ca5512f929dd"
+checksum = "663fddb913690a8db0e75e813ab9118711b4c7adb32a484998dc81a4ac46df5b"
 dependencies = [
  "cot_codegen",
  "darling",
