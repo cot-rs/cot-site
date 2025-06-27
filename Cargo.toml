@@ -20,7 +20,7 @@ cot = { version = "0.3", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"
-lightningcss = "1.0.0-alpha.66"
+lightningcss = "1.0.0-alpha.67"
 proc-macro2 = "1"
 quote = "1"
 serde = "1"
