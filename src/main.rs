@@ -1,20 +1,27 @@
 mod guides;
 
+use std::ops::Deref;
 use std::time::Duration;
 
 use askama::Template;
 use askama::filters::{HtmlSafe, Safe};
 use cot::cli::CliMetadata;
 use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
+use cot::error::handler::{DynErrorPageHandler, FromErrorRequestParts};
 use cot::html::Html;
 use cot::http::request::Parts;
-use cot::project::{App, MiddlewareContext, Project, RegisterAppsContext, RootHandlerBuilder};
+use cot::project::{
+    App, MiddlewareContext, Project, RegisterAppsContext, RootHandlerBuilder, RootHandlerBuilt,
+};
 use cot::request::RequestExt;
 use cot::request::extractors::{FromRequestParts, Path, StaticFiles};
 use cot::response::{IntoResponse, Response};
 use cot::router::{Route, Router, Urls};
 use cot::static_files::{StaticFile, StaticFilesMiddleware};
-use cot::{AppBuilder, BoxedHandler, reverse_redirect, static_files};
+use cot::{
+    AppBuilder, BoxedHandler, StatusCode, impl_from_error_request_parts, reverse_redirect,
+    static_files,
+};
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
 
@@ -23,24 +30,27 @@ use crate::guides::{get_prev_next_link, parse_guides};
 pub(crate) const LATEST_VERSION: &str = "v0.3";
 pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.3", "v0.2", "v0.1"];
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, FromRequestParts, FromErrorRequestParts)]
 struct BaseContext {
     urls: Urls,
     static_files: StaticFiles,
-    route_name: String,
+    route_name: RouteName,
 }
 
-impl FromRequestParts for BaseContext {
-    async fn from_request_parts(parts: &mut Parts) -> cot::Result<Self> {
-        let urls = Urls::from_request_parts(parts).await?;
-        let static_files = StaticFiles::from_request_parts(parts).await?;
-        let route_name = parts.route_name().unwrap_or_default().to_owned();
+#[derive(Debug, Clone)]
+struct RouteName(String);
 
-        Ok(Self {
-            urls,
-            static_files,
-            route_name,
-        })
+impl FromRequestParts for RouteName {
+    async fn from_request_parts(parts: &mut Parts) -> cot::Result<Self> {
+        let route_name = parts.route_name().unwrap_or_default().to_owned();
+        Ok(Self(route_name))
+    }
+}
+impl_from_error_request_parts!(RouteName);
+
+impl PartialEq<str> for RouteName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
     }
 }
 
@@ -51,6 +61,8 @@ struct IndexTemplate<'a> {
 }
 
 async fn index(base_context: BaseContext) -> cot::Result<Html> {
+    panic!("haha pedale");
+
     let index_template = IndexTemplate {
         base_context: &base_context,
     };
@@ -232,12 +244,37 @@ impl Project for CotSiteProject {
         &self,
         handler: RootHandlerBuilder,
         context: &MiddlewareContext,
-    ) -> BoxedHandler {
+    ) -> RootHandlerBuilt {
         let handler = handler.middleware(StaticFilesMiddleware::from_context(context));
         #[cfg(debug_assertions)]
         let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::new());
         handler.build()
     }
+
+    fn server_error_handler(&self) -> DynErrorPageHandler {
+        DynErrorPageHandler::new(handle_error)
+    }
+}
+
+async fn handle_error(
+    base_context: BaseContext,
+    error: cot::Error,
+) -> cot::Result<impl IntoResponse> {
+    #[derive(Debug, Template)]
+    #[template(path = "error.html")]
+    struct ErrorTemplate<'a> {
+        base_context: &'a BaseContext,
+        error: cot::Error,
+    }
+
+    let status_code = error.status_code();
+    let error_template = ErrorTemplate {
+        base_context: &base_context,
+        error,
+    };
+    let rendered = error_template.render()?;
+
+    Ok(Html::new(rendered).with_status(status_code))
 }
 
 #[cot::main]

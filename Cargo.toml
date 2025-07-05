@@ -16,7 +16,7 @@ resolver = "2"
 [workspace.dependencies]
 askama = "0.14"
 comrak = "0.39"
-cot = { version = "0.3", default-features = false }
+cot = { path = "/home/m4tx/projects/cot/cot", version = "0.3", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"
