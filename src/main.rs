@@ -6,15 +6,18 @@ use askama::Template;
 use askama::filters::{HtmlSafe, Safe};
 use cot::cli::CliMetadata;
 use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
+use cot::error::handler::{DynErrorPageHandler, RequestError};
+use cot::error::not_found::NotFound;
 use cot::html::Html;
-use cot::http::request::Parts;
-use cot::project::{App, MiddlewareContext, Project, RegisterAppsContext, RootHandlerBuilder};
-use cot::request::RequestExt;
-use cot::request::extractors::{FromRequestParts, Path, StaticFiles};
+use cot::project::{
+    App, MiddlewareContext, Project, RegisterAppsContext, RootHandler, RootHandlerBuilder,
+};
+use cot::request::extractors::{FromRequestHead, Path, StaticFiles};
+use cot::request::{RequestExt, RequestHead};
 use cot::response::{IntoResponse, Response};
 use cot::router::{Route, Router, Urls};
 use cot::static_files::{StaticFile, StaticFilesMiddleware};
-use cot::{AppBuilder, BoxedHandler, reverse_redirect, static_files};
+use cot::{AppBuilder, reverse_redirect, static_files};
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
 
@@ -23,24 +26,26 @@ use crate::guides::{get_prev_next_link, parse_guides};
 pub(crate) const LATEST_VERSION: &str = "v0.3";
 pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.3", "v0.2", "v0.1"];
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, FromRequestHead)]
 struct BaseContext {
     urls: Urls,
     static_files: StaticFiles,
-    route_name: String,
+    route_name: RouteName,
 }
 
-impl FromRequestParts for BaseContext {
-    async fn from_request_parts(parts: &mut Parts) -> cot::Result<Self> {
-        let urls = Urls::from_request_parts(parts).await?;
-        let static_files = StaticFiles::from_request_parts(parts).await?;
-        let route_name = parts.route_name().unwrap_or_default().to_owned();
+#[derive(Debug, Clone)]
+struct RouteName(String);
 
-        Ok(Self {
-            urls,
-            static_files,
-            route_name,
-        })
+impl FromRequestHead for RouteName {
+    async fn from_request_head(head: &RequestHead) -> cot::Result<Self> {
+        let route_name = head.route_name().unwrap_or_default().to_owned();
+        Ok(Self(route_name))
+    }
+}
+
+impl PartialEq<str> for RouteName {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
     }
 }
 
@@ -125,10 +130,10 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
         version
     };
     if !ALL_VERSIONS.contains(&file_version) {
-        return Err(cot::Error::not_found());
+        return Err(NotFound::new().into());
     }
     let (link_categories, guide_map) = parse_guides(file_version);
-    let guide = guide_map.get(page).ok_or_else(cot::Error::not_found)?;
+    let guide = guide_map.get(page).ok_or_else(NotFound::new)?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
 
     let guide_template = GuideTemplate {
@@ -228,16 +233,37 @@ impl Project for CotSiteProject {
         modules.register_with_views(CotSiteApp, "");
     }
 
-    fn middlewares(
-        &self,
-        handler: RootHandlerBuilder,
-        context: &MiddlewareContext,
-    ) -> BoxedHandler {
+    fn middlewares(&self, handler: RootHandlerBuilder, context: &MiddlewareContext) -> RootHandler {
         let handler = handler.middleware(StaticFilesMiddleware::from_context(context));
         #[cfg(debug_assertions)]
         let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::new());
         handler.build()
     }
+
+    fn server_error_handler(&self) -> DynErrorPageHandler {
+        DynErrorPageHandler::new(handle_error)
+    }
+}
+
+async fn handle_error(
+    base_context: BaseContext,
+    error: RequestError,
+) -> cot::Result<impl IntoResponse> {
+    #[derive(Debug, Template)]
+    #[template(path = "error.html")]
+    struct ErrorTemplate<'a> {
+        base_context: &'a BaseContext,
+        error: RequestError,
+    }
+
+    let status_code = error.status_code();
+    let error_template = ErrorTemplate {
+        base_context: &base_context,
+        error,
+    };
+    let rendered = error_template.render()?;
+
+    Ok(Html::new(rendered).with_status(status_code))
 }
 
 #[cot::main]

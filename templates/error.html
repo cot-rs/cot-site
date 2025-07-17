@@ -1,0 +1,24 @@
+{% extends "_base.html" %}
+
+{% block title %}Error{% endblock %}
+
+{% block content -%}
+<div class="col-lg-6 mx-auto d-flex justify-content-center flex-column py-5 px-2 text-center h-100">
+    <h1>{{ error.status_code().canonical_reason().unwrap_or("Error") }}</h1>
+
+    <p class="lead">
+        {%- if error.status_code() == cot::StatusCode::NOT_FOUND -%}
+            The page you are looking for was not found.
+        {%- else -%}
+            An unexpected error occurred.<br/>
+            Please try again in a few minutes, or <a href="https://github.com/cot-rs/cot-site/issues/new">let us know on GitHub</a> if the problem persists.
+        {%- endif -%}
+    </p>
+
+    {%- if error.status_code() == cot::StatusCode::NOT_FOUND -%}
+        <div class="d-grid gap-4 d-sm-flex justify-content-sm-center mt-4">
+            <a href="{{ cot::reverse!(urls, "index")? }}" class="btn btn-primary btn-lead px-4 gap-3">Go Home<svg class="bi ms-2"><use href="#arrow-right"></use></svg></a>
+        </div>
+    {%- endif -%}
+</div>
+{%- endblock %}
