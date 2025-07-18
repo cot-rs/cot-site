@@ -21,7 +21,7 @@ use cot_site_macros::md_page;
 use crate::guides::{get_prev_next_link, parse_guides};
 
 pub(crate) const LATEST_VERSION: &str = "v0.3";
-pub(crate) const ALL_VERSIONS: &[&str] = &["latest", "v0.3", "v0.2", "v0.1"];
+pub(crate) const ALL_VERSIONS: &[&str] = &["master", "v0.3", "v0.2", "v0.1"];
 
 #[derive(Debug, Clone)]
 struct BaseContext {
@@ -66,6 +66,8 @@ struct GuideTemplate<'a> {
     guide: &'a MdPage,
     versions: &'static [&'static str],
     version: &'a str,
+    display_version: &'a str,
+    canonical_link: &'a str,
     base_context: &'a BaseContext,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
@@ -130,12 +132,16 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
     let (link_categories, guide_map) = parse_guides(file_version);
     let guide = guide_map.get(page).ok_or_else(cot::Error::not_found)?;
     let (prev, next) = get_prev_next_link(&link_categories, page);
+    let canonical_link = canonical_link(&base_context.urls, file_version, page)
+        .expect("Failed to create canonical link");
 
     let guide_template = GuideTemplate {
         link_categories: &link_categories,
         guide,
         versions: ALL_VERSIONS,
         version,
+        display_version: file_version,
+        canonical_link: &canonical_link,
         base_context: &base_context,
         prev,
         next,
@@ -143,6 +149,18 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
 
     let rendered = guide_template.render()?;
     Ok(Html::new(rendered))
+}
+
+fn canonical_link(urls: &Urls, version: &str, page: &str) -> cot::Result<String> {
+    const BASE_URL: &str = "https://cot.rs";
+
+    let path = if page == DEFAULT_GUIDE_PAGE {
+        cot::reverse!(urls, "guide_version", version = version)?
+    } else {
+        cot::reverse!(urls, "guide_page", version = version, page = page)?
+    };
+
+    Ok(format!("{BASE_URL}{path}"))
 }
 
 #[derive(Debug, Template)]

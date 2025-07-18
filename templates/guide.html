@@ -2,6 +2,12 @@
 
 {% block title %}{{ guide.title }} | Guide{% endblock %}
 
+{% block head %}
+    {% let display_version = display_version %}
+    {% let guide = guide %}
+    <link rel="canonical" href="{{ canonical_link }}" />
+{% endblock %}
+
 {% block content -%}
 <div class="container">
     <div class="row">
@@ -26,11 +32,17 @@
         {%- include "_md_page_toc.html" -%}
 
         <article class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
-            {%- if (version != "latest") && (version != latest_version) -%}
+            {%- if version != "latest" && version != "master" && version != latest_version -%}
             <div class="alert alert-warning" role="alert">
                 This guide is for an old Cot's version. Please check out the <a
                     href="{{ cot::reverse!(urls, "guide_version", version = "latest")? }}"
                 >latest</a> version!
+            </div>
+            {%- endif -%}
+            {%- if version == "master" -%}
+            <div class="alert alert-warning" role="alert">
+                This guide is for an <strong>unreleased</strong> version of Cot.
+                If that's not what you want, check out the <a href="{{ cot::reverse!(urls, "guide_version", version = "latest")? }}">latest</a> version!
             </div>
             {%- endif -%}
             <h1>{{ guide.title }}</h1>
