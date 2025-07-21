@@ -30,7 +30,6 @@ repos:
       - id: fmt
         name: cargo fmt
         files: ^.*\.(rs|toml)$
-        exclude: ^cot-cli/src/project_template/
         language: rust
         entry: cargo fmt
         pass_filenames: false

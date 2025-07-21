@@ -6,8 +6,8 @@ use askama::Template;
 use askama::filters::{HtmlSafe, Safe};
 use cot::cli::CliMetadata;
 use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
+use cot::error::NotFound;
 use cot::error::handler::{DynErrorPageHandler, RequestError};
-use cot::error::not_found::NotFound;
 use cot::html::Html;
 use cot::project::{
     App, MiddlewareContext, Project, RegisterAppsContext, RootHandler, RootHandlerBuilder,
@@ -240,7 +240,7 @@ impl Project for CotSiteProject {
         handler.build()
     }
 
-    fn server_error_handler(&self) -> DynErrorPageHandler {
+    fn error_handler(&self) -> DynErrorPageHandler {
         DynErrorPageHandler::new(handle_error)
     }
 }

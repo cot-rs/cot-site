@@ -15,8 +15,8 @@ resolver = "2"
 
 [workspace.dependencies]
 askama = "0.14"
-comrak = "0.39"
-cot = { git = "https://github.com/cot-rs/cot", rev = "eca4bd61ba0cb5b421786040d31cde05cc6935ce", version = "0.3", default-features = false }
+comrak = "0.40"
+cot = { git = "https://github.com/cot-rs/cot", rev = "a1671c49632aea032b59480289fac425f5577de7", version = "0.3", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"
