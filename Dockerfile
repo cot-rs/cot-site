@@ -3,7 +3,7 @@ WORKDIR /usr/src/cot-site
 COPY . .
 RUN cargo install --path . --locked
 
-FROM docker.io/library/debian:12-slim
+FROM docker.io/library/debian:13-slim
 COPY --from=builder /usr/local/cargo/bin/cot-site /usr/local/bin/cot-site
 RUN mkdir /app
 
