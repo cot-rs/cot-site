@@ -6,6 +6,7 @@ title: FAQ
 
 * [The very website you are looking at right now!](https://cot.rs) ([source code](https://github.com/cot-rs/cot))
 * [Mateusz Maćkowski's blog](https://mackow.ski) ([source](https://github.com/m4tx/m4txblog))
+* The backend for [ChomboGen](https://hand.chombo.club/), web service generating images of Riichi Mahjong hands ([source code](https://github.com/m4tx/chombo-gen/tree/master/chombo-gen-backend))
 * Brewnerator, an experimental beer recipe viewer ([source code](https://github.com/brewnerator/brewnerator))
 * An example implementation of server-side detection of using `curl | bash` in the CLI ([source code](https://github.com/m4tx/curl-bash-attack))
 
