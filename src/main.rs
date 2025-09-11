@@ -23,8 +23,8 @@ use cot_site_macros::md_page;
 
 use crate::guides::{get_prev_next_link, parse_guides};
 
-pub(crate) const LATEST_VERSION: &str = "v0.3";
-pub(crate) const ALL_VERSIONS: &[&str] = &["master", "v0.3", "v0.2", "v0.1"];
+pub(crate) const LATEST_VERSION: &str = "v0.4";
+pub(crate) const ALL_VERSIONS: &[&str] = &["master", "v0.4", "v0.3", "v0.2", "v0.1"];
 
 #[derive(Debug, Clone, FromRequestHead)]
 struct BaseContext {

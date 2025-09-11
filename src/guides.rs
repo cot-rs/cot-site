@@ -88,6 +88,24 @@ fn get_categories_for_version(version: &str) -> Vec<(&'static str, Vec<MdPage>)>
                 md_page!("v0.3", "testing"),
             ],
         )],
+        "v0.4" => vec![
+            (
+                "Getting started",
+                vec![
+                    md_page!("v0.4", "introduction"),
+                    md_page!("v0.4", "templates"),
+                    md_page!("v0.4", "forms"),
+                    md_page!("v0.4", "db-models"),
+                    md_page!("v0.4", "admin-panel"),
+                    md_page!("v0.4", "static-files"),
+                    md_page!("v0.4", "error-pages"),
+                    md_page!("v0.4", "openapi"),
+                    md_page!("v0.4", "testing"),
+                ],
+            ),
+            ("Upgrading", vec![md_page!("v0.4", "upgrade-guide")]),
+            ("About", vec![md_page!("v0.4", "framework-comparison")]),
+        ],
         "master" => vec![
             (
                 "Getting started",
