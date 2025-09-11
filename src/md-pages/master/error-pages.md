@@ -99,7 +99,9 @@ async fn view(request: Request) -> cot::Result<Response> {
 
     // 500 Internal Server Error
     return Err(Error::internal("Something went wrong"));
-    // or:
+    // or, by re-raising a custom error:
+    return Err(Error::internal(std::io::Error::other("oh no!")));
+    // or, by panicking:
     panic!("Something went wrong");
 }
 ```
