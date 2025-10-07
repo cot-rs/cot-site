@@ -46,7 +46,7 @@ repos:
       - id: shellcheck
 
   - repo: https://github.com/AleksaC/hadolint-py
-    rev: v2.12.1b3
+    rev: v2.14.0
     hooks:
       - id: hadolint
         files: (Dockerfile|.dockerfile)$
