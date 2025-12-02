@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::fmt::Write;
 use std::sync::Mutex;
 
 use comrak::adapters::{HeadingAdapter, HeadingMeta};
@@ -53,14 +53,14 @@ impl HeadingAdapter for MdPageHeadingAdapter {
         output: &mut dyn Write,
         heading: &HeadingMeta,
         _sourcepos: Option<Sourcepos>,
-    ) -> std::io::Result<()> {
+    ) -> std::fmt::Result {
         if heading.level == 1 {
             return write!(output, "<h{}>", heading.level);
         }
 
         let anchor = {
             let mut anchorizer = self.anchorizer.lock().unwrap();
-            anchorizer.anchorize(heading.content.clone())
+            anchorizer.anchorize(&heading.content)
         };
 
         {
@@ -81,7 +81,7 @@ impl HeadingAdapter for MdPageHeadingAdapter {
         )
     }
 
-    fn exit(&self, output: &mut dyn Write, heading: &HeadingMeta) -> std::io::Result<()> {
+    fn exit(&self, output: &mut dyn Write, heading: &HeadingMeta) -> std::fmt::Result {
         write!(output, "</h{}>", heading.level)
     }
 }
