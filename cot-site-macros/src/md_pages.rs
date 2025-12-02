@@ -91,7 +91,7 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
     options.extension.table = true;
     options.extension.front_matter_delimiter = Some("---".to_string());
     options.parse.smart = true;
-    options.render.unsafe_ = true;
+    options.render.r#unsafe = true;
 
     let heading_adapter = MdPageHeadingAdapter {
         anchorizer: Mutex::new(comrak::Anchorizer::new()),
@@ -107,11 +107,13 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
             .expect("failed to load syntax set"),
         )
         .build();
-    let render_plugins = comrak::RenderPlugins::builder()
+    let render_plugins = comrak::options::RenderPlugins::builder()
         .codefence_syntax_highlighter(&syntax_highlighter)
         .heading_adapter(&heading_adapter)
         .build();
-    let plugins = comrak::Plugins::builder().render(render_plugins).build();
+    let plugins = comrak::options::Plugins::builder()
+        .render(render_plugins)
+        .build();
 
     let md_page_content =
         comrak::markdown_to_html_with_plugins(&md_page_content, &options, &plugins);
