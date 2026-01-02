@@ -1,4 +1,4 @@
-FROM docker.io/library/rust:1.91 AS builder
+FROM docker.io/library/rust:1.92 AS builder
 WORKDIR /usr/src/cot-site
 COPY . .
 RUN cargo install --path . --locked
