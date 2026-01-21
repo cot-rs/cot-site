@@ -14,9 +14,9 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-askama = "0.14"
+askama = "0.15"
 comrak = "0.49"
-cot = { version = "0.4", default-features = false }
+cot = { version = "0.5", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"

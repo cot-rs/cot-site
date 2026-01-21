@@ -2,7 +2,6 @@ mod guides;
 
 use std::time::Duration;
 
-use askama::Template;
 use askama::filters::{HtmlSafe, Safe};
 use cot::cli::CliMetadata;
 use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
@@ -17,7 +16,7 @@ use cot::request::{RequestExt, RequestHead};
 use cot::response::{IntoResponse, Response};
 use cot::router::{Route, Router, Urls};
 use cot::static_files::{StaticFile, StaticFilesMiddleware};
-use cot::{AppBuilder, reverse_redirect, static_files};
+use cot::{AppBuilder, Template, reverse_redirect, static_files};
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_macros::md_page;
 
