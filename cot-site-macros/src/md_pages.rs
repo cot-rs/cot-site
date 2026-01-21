@@ -1,3 +1,5 @@
+mod rendering;
+
 use std::path::Path;
 use std::sync::Mutex;
 
@@ -6,6 +8,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::LitStr;
 use syn::parse::{Parse, ParseStream};
+
+use crate::md_pages::rendering::markdown_to_html;
 
 pub(super) struct MdPageInput {
     pub(super) prefix: String,
@@ -32,7 +36,7 @@ fn read_md_page(link: &str) -> String {
     #[cfg(feature = "nightly")]
     {
         let path_str = path.to_str().expect("path is not valid UTF-8");
-        proc_macro::tracked_path::path(path_str);
+        proc_macro::tracked::path(path_str);
     }
 
     std::fs::read_to_string(path).expect("failed to read file")
@@ -115,8 +119,7 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
         .render(render_plugins)
         .build();
 
-    let md_page_content =
-        comrak::markdown_to_html_with_plugins(&md_page_content, &options, &plugins);
+    let md_page_content = markdown_to_html(&md_page_content, &options, &plugins);
     let sections = heading_adapter.sections.lock().unwrap().clone();
     let root_section = fix_section_children(&sections);
 
