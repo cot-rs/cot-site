@@ -198,4 +198,4 @@ Cot tries to be as consistent as possible when it comes to the database engine y
 
 ## Summary
 
-In this chapter you've learned how to define your own models in Cot, how to interact with the database using these models, and how to define foreign key relationships between models. In the next chapter, we'll try to register these models in the admin panel so that you can manage them through an easy-to-use web interface.
+In this chapter you learned how to define your own models in Cot, how to interact with the database using these models, and how to define foreign key relationships between models. In the next chapter, we'll try to register these models in the admin panel so that you can manage them through an easy-to-use web interface.

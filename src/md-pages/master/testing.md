@@ -18,7 +18,7 @@ By employing Cot's testing utilities, you'll be able to verify that each piece o
 
 ## General Overview
 
-Cot provides several built-in utilities located in the [`cot::test` module](https://docs.rs/cot/0.3/cot/test/index.html) to help you create and run tests for your application.
+Cot provides several built-in utilities located in the [`cot::test` module](https://docs.rs/cot/0.5/cot/test/index.html) to help you create and run tests for your application.
 
 Typical Rust projects keep their tests in:
 - A dedicated `tests/` directory (for integration tests).

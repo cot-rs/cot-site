@@ -4,7 +4,7 @@ title: Upgrade Guide
 
 Each version of Cot introduces new features, improvements, and sometimes breaking changes. This guide will help you understand the changes made in each version and how to adapt your code accordingly.
 
-As a general rule, try to upgrade one minor version at a time. Many breaking changes are introduced by first deprecating a feature in one minor version and then removing it in the next. This gives you time to adapt your code before the feature is removed, while the Rust compiler will notice you about the exact changes you need to make.
+As a general rule, try to upgrade one minor version at a time. Many breaking changes are introduced by first deprecating a feature in one minor version and then removing it in the next. This gives you time to adapt your code before the feature is removed, while the Rust compiler will notify you about the exact changes you need to make.
 
 Sometimes, though, the changes need to be made in a backwards-incompatible manner. This page will help you understand those changes and how to adapt your code.
 

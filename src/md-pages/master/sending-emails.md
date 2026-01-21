@@ -43,13 +43,10 @@ type = "console"
 You can access the email sender from the `Request` object.
 
 ```rust
-use cot::request::Request;
-use cot::email::EmailMessage;
-use cot::common_types::Email;
+use cot::email::{Email, EmailMessage};
+use cot::html::Html;
 
-async fn send_welcome_email(request: Request) -> cot::Result<Response> {
-    let email_sender = request.email();
-
+async fn send_welcome_email(email_sender: Email) -> cot::Result<Html> {
     let message = EmailMessage::builder()
         .from(Email::try_from("no-reply@example.com").unwrap())
         .to(vec![Email::try_from("user@example.com").unwrap()])
@@ -59,7 +56,7 @@ async fn send_welcome_email(request: Request) -> cot::Result<Response> {
 
     email_sender.send(message).await?;
 
-    Ok(Response::new_html(200, "Email sent!".into()))
+    Ok(Html::new("Email sent!"))
 }
 ```
 

@@ -36,12 +36,10 @@ pool_size = 20 # Optional: connection pool size
 You can access the cache from the `Request` object (or `ProjectContext`). The cache interface provides standard methods like `get`, `insert`, `remove`, etc.
 
 ```rust
-use cot::request::Request;
-use cot::response::Response;
+use cot::cache::Cache;
+use cot::html::Html;
 
-async fn cache_example(request: Request) -> cot::Result<Response> {
-    let cache = request.cache();
-
+async fn cache_example(cache: Cache) -> cot::Result<Html> {
     // Insert a value (uses default expiration if set in config, or infinite)
     cache.insert("user_1_name", "Alice").await?;
 
@@ -52,7 +50,7 @@ async fn cache_example(request: Request) -> cot::Result<Response> {
         println!("Found user: {}", n);
     }
 
-    Ok(Response::new_html(200, "OK".into()))
+    Ok(Html::new("OK"))
 }
 ```
 
