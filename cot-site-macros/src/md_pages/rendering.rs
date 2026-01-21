@@ -41,8 +41,8 @@ fn render_table_custom<'a, T>(
     } else {
         if !node
             .last_child()
-            .unwrap()
-            .same_node(node.first_child().unwrap())
+            .expect("table node has no children")
+            .same_node(node.first_child().expect("table node has no children"))
         {
             context.cr()?;
             context.write_str("</tbody>")?;

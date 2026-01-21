@@ -33,7 +33,7 @@ pool_size = 20 # Optional: connection pool size
 
 ## Usage
 
-You can access the cache from the `Request` object (or `ProjectContext`). The cache interface provides standard methods like `get`, `insert`, `remove`, etc.
+You can access the cache by using the `Cache` extractor. The cache interface provides standard methods like `get`, `insert`, `remove`, etc.
 
 ```rust
 use cot::cache::Cache;
@@ -70,15 +70,30 @@ cache.insert_expiring(
 ).await?;
 ```
 
-### Advanced Usage
+## Advanced Topics
 
-You can also use `get_or_insert_with` to lazily compute and cache values:
+#### Lazy Computation
+
+You can use `get_or_insert_with` to lazily compute and cache values:
 
 ```rust
 let value: String = cache.get_or_insert_with("expensive_key", || async {
     // Perform expensive computation
     Ok("expensive_result".to_string())
 }).await?;
+```
+
+#### Prefix
+
+Sharing a cache instance between different environments (e.g., production and dev), or between different versions of the same
+application can cause data collisions and bugs. To prevent this, you can specify a prefix for the cache keys. When a prefix
+is set, all keys will be formatted as `{prefix}:{key}`, ensuring each server instance has its own isolated namespace.
+
+The prefix can be set in the configuration file:
+
+```toml
+[cache]
+prefix = "v1"
 ```
 
 ## Cache Backends
