@@ -8,6 +8,13 @@
 
 This is the repository for the source of the website for the [Cot web framework](https://github.com/cot-rs/cot).
 
+## Submodules
+The cot-site repo imports syntax highlighting packages as submodules, which should be pulled initially using the command below before running:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Development
 
 Make sure you have `cargo` installed. You can get it through [rustup](https://rustup.rs/).
