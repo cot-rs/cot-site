@@ -15,7 +15,7 @@ resolver = "2"
 
 [workspace.dependencies]
 askama = "0.15"
-comrak = "0.49"
+comrak = "0.50"
 cot = { version = "0.5", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
