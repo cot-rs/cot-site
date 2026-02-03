@@ -15,6 +15,7 @@ resolver = "2"
 
 [workspace.dependencies]
 askama = "0.15"
+chrono = "0.4"
 comrak = "0.50"
 cot = { version = "0.5", default-features = false }
 cot-site-common = { path = "cot-site-common" }
@@ -33,6 +34,7 @@ nightly = ["cot-site-macros/nightly"]
 
 [dependencies]
 askama.workspace = true
+chrono.workspace = true
 cot = { workspace = true, features = ["live-reload"] }
 cot-site-common.workspace = true
 cot-site-macros.workspace = true
