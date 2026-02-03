@@ -1,4 +1,5 @@
 mod guides;
+mod template_util;
 
 use std::time::Duration;
 
