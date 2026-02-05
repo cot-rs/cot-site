@@ -112,7 +112,7 @@
             <a href="/" class="d-block mb-3 link-body-emphasis text-decoration-none" title="Go to Cot homepage">
                 <img src="{{ base_context.static_files.url_for("static/images/cot-dark.svg")? }}" alt="" width="80" height="64" class="mx-lg-auto d-block">
             </a>
-            <p class="text-body-secondary">&copy; 2024-2025 Cot contributors</p>
+            <p class="text-body-secondary">&copy; 2024-{{ template_util::current_year() }} Cot contributors</p>
         </div>
 
         <div class="col mb-3">
