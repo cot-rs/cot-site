@@ -49,10 +49,6 @@ There is a variety ORMs available in Rust, but none of them have the following f
 
 While building an ORM is a huge task, we're in luck, because we are using [sea-query](https://github.com/SeaQL/sea-query), a project that powers the great [SeaORM](https://www.sea-ql.org/SeaORM/) library. This means that we can focus on the features that are important to us, while the heavy lifting is done by the battle tested sea-query library.
 
-## Should I use Cot in production?
-
-While we'd like to say yes, we can't really recommend to run Cot in production. Cot is still in its early stages of development and might be missing features you might want to depend on. API breakages are also expected as we continue to improve the framework. We'd love you to try it out and provide feedback, though!
-
 ## Where can I report a bug or suggest an enhancement in Cot?
 
 You can report bugs or suggest enhancements by opening an issue on the [Cot GitHub repository](https://github.com/cot-rs/cot/issues). We'd love to hear your feedback!
