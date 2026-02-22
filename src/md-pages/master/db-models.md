@@ -42,19 +42,32 @@ This will create a new file in your `migrations` directory in the crate's src di
 In order to write a model instance to the database, you can use the `save` method. Note that you need to have an instance of the `Database` structure to do this – typically you can get it from the request object in your view. Here's an example of how you can save a new link to the database inside a view:
 
 ```rust
-use cot::request::extractors::RequestDb;
+use cot::db::Database;
 
-async fn create_link(RequestDb(db): RequestDb) -> cot::Result<Html> {
+async fn create_link(db: Database) -> cot::Result<Html> {
     let mut link = Link {
         id: Auto::default(),
         slug: LimitedString::new("slug").unwrap(),
         url: "https://example.com".to_string(),
     };
-    link.save(db).await?;
+    link.save(&db).await?;
 
     // ...
 }
 ```
+
+## Supported field types
+
+Cot supports many of the common Rust types as model fields, including:
+
+* Integers: `i8`, `i16`, `i32`, `i64`, `u8`, `u16`, `u32`, `u64`
+* Floats: `f32`, `f64`
+* Strings: `String`, `LimitedString<N>`
+* Boolean: `bool`
+* Dates and times (using `chrono` crate): `NaiveDate`, `NaiveTime`, `NaiveDateTime`, `DateTime<Utc>`, `DateTime<FixedOffset>`
+* Binary data: `Vec<u8>`
+* Foreign keys: `ForeignKey<T>`
+* Optional values: `Option<T>` for any of the above types
 
 ### Updating models
 
@@ -106,8 +119,23 @@ As you can see, the `query!` macro takes the model type as the first argument, f
 To delete a model from the database, you can use the `delete` method of the `Query` object returned by the `query!` macro. Here's an example of how you can delete a link from the database:
 
 ```rust
-query!(Link, $slug == LimitedString::new("cot").unwrap()).delete(db).await?;
+query!(Link, $slug == "cot").delete(&db).await?;
 ```
+
+### Atomic updates
+
+Sometimes you might want to perform an atomic update on a set of rows, for example to increment a counter. You can use the `update` method of the `Query` object to do this. This method takes a list of field-expression pairs that should be updated.
+
+```rust
+use cot::db::Model;
+use cot::db::query::ExprAdd;
+
+query!(Link, $slug == "cot").update(&db, vec![
+    (<Link as Model>::Fields::visits.identifier(), <Link as Model>::Fields::visits.add(1))
+]).await?;
+```
+
+This will result in an SQL `UPDATE` statement that increments the `visits` column atomically in the database.
 
 ### Bulk operations
 
