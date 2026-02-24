@@ -19,12 +19,10 @@ use cot::router::{Route, Router, Urls};
 use cot::static_files::{StaticFile, StaticFilesMiddleware};
 use cot::{AppBuilder, Template, reverse_redirect, static_files};
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
+use cot_site_common::{ALL_VERSIONS, LATEST_VERSION};
 use cot_site_macros::md_page;
 
 use crate::guides::{get_prev_next_link, parse_guides};
-
-pub(crate) const LATEST_VERSION: &str = "v0.5";
-pub(crate) const ALL_VERSIONS: &[&str] = &["master", "v0.5", "v0.4", "v0.3", "v0.2", "v0.1"];
 
 #[derive(Debug, Clone, FromRequestHead)]
 struct BaseContext {
