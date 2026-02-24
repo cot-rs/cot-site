@@ -55,7 +55,7 @@ impl FromStr for Version {
         };
 
         let s = s.trim_start_matches('v');
-        
+
         // canonicalize version string by adding ".0" for missing minor/patch
         let parts: Vec<&str> = s.split('.').collect();
         let s = match parts.len() {
