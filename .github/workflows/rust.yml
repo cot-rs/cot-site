@@ -42,8 +42,16 @@ jobs:
       - name: Cache Cargo registry
         uses: Swatinem/rust-cache@v2
 
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: nextest
+
       - name: Build
         run: cargo +${{ matrix.rust }} build
+
+      - name: Test
+        run: cargo +${{ matrix.version }} nextest run --all-features
 
       - name: Test docs
         run: cargo +${{ matrix.rust }} test

@@ -54,17 +54,47 @@ impl FromStr for Version {
             s
         };
 
-        let s = s.trim_start_matches('v');
-
         // canonicalize version string by adding ".0" for missing minor/patch
-        let parts: Vec<&str> = s.split('.').collect();
-        let s = match parts.len() {
-            1 => format!("{}.0.0", parts[0]),
-            2 => format!("{}.{}.0", parts[0], parts[1]),
-            _ => s.to_string(),
-        };
+        let s = canonicalize_version_string(s);
 
         let semver_version = SemverVersion::parse(s.as_str())?;
         Ok(Version(semver_version))
+    }
+}
+
+fn canonicalize_version_string(s: &str) -> String {
+    let s = s.trim_start_matches('v');
+    let parts: Vec<&str> = s.split('.').collect();
+    match parts.len() {
+        1 => format!("{}.0.0", parts[0]),
+        2 => format!("{}.{}.0", parts[0], parts[1]),
+        _ => s.to_string(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_version_parsing() {
+        let v = Version::from_str("v0.5").unwrap();
+        assert_eq!(v.to_string(), "0.5.0");
+
+        let v = Version::from_str("0.5").unwrap();
+        assert_eq!(v.to_string(), "0.5.0");
+
+        let v = Version::from_str("master").unwrap();
+        assert_eq!(v.to_string(), canonicalize_version_string(LATEST_VERSION));
+
+        let v = Version::from_str("").unwrap();
+        assert_eq!(v.to_string(), canonicalize_version_string(LATEST_VERSION));
+    }
+
+    #[test]
+    fn test_canonicalize_version_string() {
+        assert_eq!(canonicalize_version_string("v0.5"), "0.5");
+        assert_eq!(canonicalize_version_string("0.5"), "0.5");
+        assert_eq!(canonicalize_version_string("v0.5.1"), "0.5.1");
+        assert_eq!(canonicalize_version_string("0.5.1"), "0.5.1");
     }
 }

@@ -3,7 +3,7 @@ use std::fmt::Write;
 use comrak::html::{
     ChildRendering, Context, format_document_with_formatter, format_node_default, render_sourcepos,
 };
-use comrak::nodes::{AstNode, NodeCode, NodeValue};
+use comrak::nodes::{AstNode, NodeLink, NodeValue};
 use comrak::options::Plugins;
 use comrak::{Arena, Options, parse_document};
 use cot_site_common::Version;
@@ -44,9 +44,7 @@ fn format_node_custom<'a>(
 ) -> Result<ChildRendering, std::fmt::Error> {
     match node.data.borrow().value {
         NodeValue::Table(_) => render_table_custom(context, node, entering),
-        NodeValue::Code(NodeCode {
-            num_backticks: 1, ..
-        }) => render_code_custom(context, node, entering),
+        NodeValue::Link(ref ln) => render_link_custom(context, node, entering, ln),
         _ => format_node_default(context, node, entering),
     }
 }
@@ -78,64 +76,86 @@ fn render_table_custom<'a>(
     Ok(ChildRendering::HTML)
 }
 
-// regex that captures: optional [display], required <cot::...>, optional |type
-// examples matched:
-//   [Display]<cot::a::b::Name>|struct
-//   <cot::a::Name>|fn
-//   [Display]<cot::a::b::Name>
-const REGEX: &str =
-    r"^\s*(?:\[(?P<display>[^\]]+)\])?\s*<(?P<route>cot::[^>]+)>(?:\|(?P<ty>[A-Za-z0-9_]+))?\s*$";
+// This regex matches the format used in
+// rustdoc links: https://doc.rust-lang.org/rustdoc/write-documentation/linking-to-items-by-name.html#namespaces-and-disambiguators
+// The format is:
+// type@cot::a::b::Name
+// where type is optional and can be one of: struct, enum, trait, fn, macro,
+// const, static. If type is not provided, we assume it's a module.
+const REGEX_: &str =
+    r"^\s*(?:\[(?P<display>[^\]]+)\])?\s*(?P<ty>[A-Za-z0-9_]+)@(?P<route>cot::[A-Za-z0-9_:]+)\s*$";
 
-fn render_code_custom<'a>(
+fn resolve_url(route: &str, user_data: &UserData) -> String {
+    let re = Regex::new(REGEX_).unwrap();
+
+    if let Some(caps) = re.captures(route) {
+        let version = user_data.version.to_string();
+        let mut parts = vec!["https://docs.rs/cot", version.as_str(), "cot"];
+
+        let ty = caps.name("ty").map(|m| m.as_str());
+        let route = caps
+            .name("route")
+            .expect(&format!("could not resolve route: {route}"))
+            .as_str();
+
+        parts.extend(
+            route
+                .split("::")
+                .skip(1)
+                .take(route.split("::").count() - 2)
+                .collect::<Vec<&str>>(),
+        );
+        let last_part = route.split("::").last().unwrap();
+
+        let f_str: String;
+        if let Some(ty) = ty {
+            f_str = format!("{ty}.{last_part}.html");
+            parts.push(&f_str);
+        } else {
+            // if there is no type, we assume it's a module.
+            parts.push(last_part);
+        }
+        let v = parts.join("/");
+        v
+    } else {
+        route.to_string()
+    }
+}
+
+fn render_link_custom<'a>(
     context: &mut Context<UserData>,
-    node: &'a AstNode<'a>,
+    _node: &'a AstNode<'a>,
     entering: bool,
+    nl: &NodeLink,
 ) -> Result<ChildRendering, std::fmt::Error> {
-    if entering {
-        let node_data = node.data.borrow();
-        let code = match &node_data.value {
-            NodeValue::Code(code) => code,
-            _ => return format_node_default(context, node, entering),
+    let url = resolve_url(&nl.url, &context.user);
+    let node = AstNode::from(NodeValue::Link(Box::new(NodeLink {
+        url,
+        title: nl.title.clone(),
+    })));
+
+    format_node_default(context, &node, entering)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_resolve_url() {
+        let user_data = UserData {
+            version: Version::new(1, 2, 3),
         };
 
-        let code_str = &code.literal;
-        let re = Regex::new(REGEX).unwrap();
+        let route = "struct@cot::a::b::Name";
+        let url = resolve_url(route, &user_data);
+        assert_eq!(url, "https://docs.rs/cot/1.2.3/cot/a/b/struct.Name.html");
 
-        if let Some(caps) = re.captures(code_str) {
-            let route = caps.name("route").unwrap().as_str();
-            let display = {
-                let d = caps.name("display").map_or(route, |m| m.as_str());
-                context.escape(d)?;
-                d
-            };
-            let ty = caps.name("ty").map(|m| m.as_str());
-            let last_part = route.split("::").last().unwrap();
-            let last_part = if let Some(ty) = ty {
-                format!("{ty}.{last_part}")
-            } else {
-                last_part.to_string()
-            };
+        let route = "cot::a::b";
+        let url = resolve_url(route, &user_data);
+        assert_eq!(url, "https://docs.rs/cot/1.2.3/cot/a/b");
 
-            let version = &context.user;
-            let link = format!(
-                "https://docs.rs/cot/{}/cot/{}/{}.html",
-                version.version.to_string(),
-                route
-                    .split("::")
-                    .skip(1)
-                    .take(route.split("::").count() - 2)
-                    .collect::<Vec<&str>>()
-                    .join("/"),
-                last_part
-            );
-
-            context.write_str(&format!(
-                "<a href=\"{link}\" target=\"_blank\" rel=\"noopener noreferrer\">{display}</a>"
-            ))?;
-        } else {
-            return format_node_default(context, node, entering);
-        }
+        let route = "http://example.com";
+        let url = resolve_url(route, &user_data);
+        assert_eq!(url, "http://example.com");
     }
-
-    Ok(ChildRendering::HTML)
 }
