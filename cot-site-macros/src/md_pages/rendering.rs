@@ -83,6 +83,7 @@ fn render_table_custom<'a>(
 // where type is optional and can be one of the options mentioned here: https://rust-lang.github.io/rfcs/1946-intra-rustdoc-links.html#path-ambiguities.
 // If type is not provided, we assume it's a module.
 const REGEX: &str = r"^\s*(?:\[(?P<display>[^\]]+)\])?\s*(?:(?P<ty>[A-Za-z0-9_]+)@|@)?(?P<route>cot::[A-Za-z0-9_:]+)\s*$";
+const COT_RUSTDOC_BASE_URL: &str = "https://docs.rs/cot";
 
 fn resolve_url(route: &str, user_data: &UserData) -> String {
     let re = Regex::new(REGEX).unwrap();
@@ -90,7 +91,7 @@ fn resolve_url(route: &str, user_data: &UserData) -> String {
     if let Some(caps) = re.captures(route) {
         let version = user_data.version.to_string();
         let mut parts: Vec<String> = vec![
-            "https://docs.rs/cot".to_string(),
+            COT_RUSTDOC_BASE_URL.to_string(),
             version,
             "cot".to_string(),
         ];
