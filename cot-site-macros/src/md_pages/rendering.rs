@@ -90,11 +90,8 @@ fn resolve_url(route: &str, user_data: &UserData) -> String {
 
     if let Some(caps) = re.captures(route) {
         let version = user_data.version.to_string();
-        let mut parts: Vec<String> = vec![
-            COT_RUSTDOC_BASE_URL.to_string(),
-            version,
-            "cot".to_string(),
-        ];
+        let mut parts: Vec<String> =
+            vec![COT_RUSTDOC_BASE_URL.to_string(), version, "cot".to_string()];
 
         let ty = caps.name("ty").map(|m| m.as_str());
 
