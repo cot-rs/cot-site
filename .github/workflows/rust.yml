@@ -51,7 +51,7 @@ jobs:
         run: cargo +${{ matrix.rust }} build
 
       - name: Test
-        run: cargo +${{ matrix.rust }} nextest run --all-features
+        run: cargo +${{ matrix.rust }} nextest run --workspace
 
       - name: Test docs
         run: cargo +${{ matrix.rust }} test
