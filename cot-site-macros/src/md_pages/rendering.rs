@@ -106,14 +106,13 @@ fn resolve_url(route: &str, user_data: &UserData) -> String {
 
         // we're interested in everything between "cot" and the last segment
         if segs.len() > 2 {
-            parts.extend(segs[1..segs.len()-1].iter().map(|s| s.to_string()));
+            parts.extend(segs[1..segs.len() - 1].iter().map(|s| s.to_string()));
         }
 
         let last_part = segs.last().expect("route split produced no segments");
         if let Some(ty) = ty {
             parts.push(format!("{}.{}.html", ty, last_part))
-        }
-        else{
+        } else {
             parts.push(last_part.to_string())
         }
 
@@ -163,7 +162,10 @@ mod tests {
         test_resolve!("attr@invalid::a::b::name", "attr@invalid::a::b::name");
         test_resolve!("http://example.com", "http://example.com");
         test_resolve!("cot::name", "https://docs.rs/cot/1.2.3/cot/name");
-        test_resolve!("struct@cot::Name", "https://docs.rs/cot/1.2.3/cot/struct.Name.html");
+        test_resolve!(
+            "struct@cot::Name",
+            "https://docs.rs/cot/1.2.3/cot/struct.Name.html"
+        );
         test_resolve!("cot", "cot");
         test_resolve!("cot::", "cot::");
     }
