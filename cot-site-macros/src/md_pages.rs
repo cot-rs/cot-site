@@ -1,8 +1,10 @@
 mod rendering;
 
 use std::path::Path;
+use std::str::FromStr;
 use std::sync::Mutex;
 
+use cot_site_common::Version;
 use cot_site_common::md_pages::{FrontMatter, MdPage, MdPageHeadingAdapter, Section};
 use proc_macro2::TokenStream;
 use quote::quote;
@@ -119,7 +121,8 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
         .render(render_plugins)
         .build();
 
-    let md_page_content = markdown_to_html(&md_page_content, &options, &plugins);
+    let version = Version::from_str(prefix).expect("invalid version in md page prefix");
+    let md_page_content = markdown_to_html(&md_page_content, &options, &plugins, version);
     let sections = heading_adapter.sections.lock().unwrap().clone();
     let root_section = fix_section_children(&sections);
 

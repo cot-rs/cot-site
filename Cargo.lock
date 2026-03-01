@@ -670,7 +670,9 @@ name = "cot-site-common"
 version = "0.1.0"
 dependencies = [
  "comrak",
+ "semver",
  "serde",
+ "thiserror",
 ]
 
 [[package]]
