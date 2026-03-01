@@ -17,7 +17,6 @@ quote.workspace = true
 serde_yml.workspace = true
 syn.workspace = true
 syntect = { workspace = true, features = ["dump-load"] }
-regex = { workspace = true, features = ["default"] }
 
 [build-dependencies]
 syntect = { workspace = true, features = ["dump-create"] }
