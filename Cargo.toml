@@ -26,8 +26,10 @@ proc-macro2 = "1"
 quote = "1"
 serde = "1"
 serde_yml = "0.0.12"
+semver = "1.0.27"
 syn = "2"
 syntect = "5"
+thiserror = "2.0.18"
 
 [features]
 nightly = ["cot-site-macros/nightly"]

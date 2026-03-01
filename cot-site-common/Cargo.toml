@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 comrak.workspace = true
 serde.workspace = true
+semver.workspace = true
+thiserror.workspace = true
