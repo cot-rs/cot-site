@@ -113,11 +113,11 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
     let segs: Vec<&str> = route_str.split("::").collect();
     if segs.len() > 2 {
         parts.extend(
+            // we are only interested in the segments between "cot" (which is the first) and the
+            // last segment, so we skip the first and take all but the last
+            // segment
             segs.iter()
                 .skip(1)
-                // we are only interested in the segments between "cot" (which is the first) and the
-                // last segment, so we skip the first and take all but the last
-                // segment
                 .take(segs.len() - 2)
                 .map(|s| s.to_string()),
         );
