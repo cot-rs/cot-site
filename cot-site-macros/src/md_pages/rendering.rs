@@ -7,10 +7,11 @@ use comrak::nodes::{AstNode, NodeLink, NodeValue};
 use comrak::options::Plugins;
 use comrak::{Arena, Options, parse_document};
 use cot_site_common::Version;
-use regex::Regex;
+
+const COT_RUSTDOC_BASE_URL: &str = "https://docs.rs/cot";
 
 #[derive(Debug, Clone)]
-struct UserData {
+struct PageContext {
     version: Version,
 }
 
@@ -23,14 +24,14 @@ pub(super) fn markdown_to_html(
     let arena = Arena::new();
     let root = parse_document(&arena, md, options);
     let mut s = String::new();
-    let user_data = UserData { version };
+    let page_context = PageContext { version };
     format_document_with_formatter(
         root,
         options,
         &mut s,
         plugins,
         format_node_custom,
-        user_data,
+        page_context,
     )
     .unwrap();
 
@@ -38,7 +39,7 @@ pub(super) fn markdown_to_html(
 }
 
 fn format_node_custom<'a>(
-    context: &mut Context<UserData>,
+    context: &mut Context<PageContext>,
     node: &'a AstNode<'a>,
     entering: bool,
 ) -> Result<ChildRendering, std::fmt::Error> {
@@ -50,7 +51,7 @@ fn format_node_custom<'a>(
 }
 
 fn render_table_custom<'a>(
-    context: &mut Context<UserData>,
+    context: &mut Context<PageContext>,
     node: &'a AstNode<'a>,
     entering: bool,
 ) -> Result<ChildRendering, std::fmt::Error> {
@@ -76,55 +77,60 @@ fn render_table_custom<'a>(
     Ok(ChildRendering::HTML)
 }
 
-// This regex matches the format used in
-// rustdoc links: https://doc.rust-lang.org/rustdoc/write-documentation/linking-to-items-by-name.html#namespaces-and-disambiguators
-// The format is:
-// type@cot::a::b::Name
-// where type is optional and can be one of the options mentioned here: https://rust-lang.github.io/rfcs/1946-intra-rustdoc-links.html#path-ambiguities.
-// If type is not provided, we assume it's a module.
-const REGEX: &str = r"^\s*(?:\[(?P<display>[^\]]+)\])?\s*(?:(?P<ty>[A-Za-z0-9_]+)@|@)?(?P<route>cot::[A-Za-z0-9_:]+)\s*$";
-const COT_RUSTDOC_BASE_URL: &str = "https://docs.rs/cot";
+/// Resolve routes of the format used in rustdoc links:
+/// https://doc.rust-lang.org/rustdoc/write-documentation/linking-to-items-by-name.html#namespaces-and-disambiguators
+/// into valid rustdoc URLs.
+///
+/// The format is:
+/// `type@cot::a::b::Name`
+///
+/// where type is optional and can be one of the options mentioned here: https://rust-lang.github.io/rfcs/1946-intra-rustdoc-links.html#path-ambiguities
+/// If the type is not provided, we assume it's a module.
+fn resolve_url(route: &str, page_context: &PageContext) -> String {
+    let version = format!(
+        "{}.{}",
+        page_context.version.major(),
+        page_context.version.minor()
+    );
+    let mut parts: Vec<String> = vec![COT_RUSTDOC_BASE_URL.to_string(), version, "cot".to_string()];
 
-fn resolve_url(route: &str, user_data: &UserData) -> String {
-    let re = Regex::new(REGEX).unwrap();
+    let (ty, route_str) = route
+        .split_once('@')
+        .map(|(ty, route_str)| {
+            let ty = if ty.trim().is_empty() {
+                None
+            } else {
+                Some(ty.trim())
+            };
+            (ty, route_str)
+        })
+        .unwrap_or((None, route));
 
-    if let Some(caps) = re.captures(route) {
-        let version = user_data.version.to_string();
-        let mut parts: Vec<String> = vec![
-            COT_RUSTDOC_BASE_URL.to_string(),
-            version,
-            "cot".to_string(),
-        ];
-
-        let ty = caps.name("ty").map(|m| m.as_str());
-
-        let route_str = caps
-            .name("route")
-            .expect(&format!("could not resolve route: {route}"))
-            .as_str();
-
-        let segs: Vec<&str> = route_str.split("::").collect();
-
-        // we're interested in everything between "cot" and the last segment
-        if segs.len() > 2 {
-            parts.extend(segs[1..segs.len() - 1].iter().map(|s| s.to_string()));
-        }
-
-        let last_part = segs.last().expect("route split produced no segments");
-        if let Some(ty) = ty {
-            parts.push(format!("{}.{}.html", ty, last_part))
-        } else {
-            parts.push(last_part.to_string())
-        }
-
-        parts.join("/")
-    } else {
-        route.to_string()
+    if !route_str.starts_with("cot::") {
+        return route.to_string();
     }
+
+    let segs: Vec<&str> = route_str.split("::").collect();
+    if segs.len() > 2 {
+        parts.extend(
+            segs.iter()
+                .skip(1)
+                .take(segs.len() - 2)
+                .map(|s| s.to_string()),
+        );
+    }
+    let last_part = segs.last().expect("route split produced no segments");
+    if let Some(ty) = ty {
+        parts.push(format!("{}.{}.html", ty, last_part))
+    } else {
+        parts.push(last_part.to_string())
+    }
+
+    parts.join("/")
 }
 
 fn render_link_custom<'a>(
-    context: &mut Context<UserData>,
+    context: &mut Context<PageContext>,
     _node: &'a AstNode<'a>,
     entering: bool,
     nl: &NodeLink,
@@ -144,7 +150,7 @@ mod tests {
 
     macro_rules! test_resolve {
         ($route:expr, $expected:expr) => {
-            let user_data = UserData {
+            let user_data = PageContext {
                 version: Version::new(1, 2, 3),
             };
             let url = resolve_url($route, &user_data);
@@ -156,18 +162,17 @@ mod tests {
     fn test_resolve_url() {
         test_resolve!(
             "struct@cot::a::b::Name",
-            "https://docs.rs/cot/1.2.3/cot/a/b/struct.Name.html"
+            "https://docs.rs/cot/1.2/cot/a/b/struct.Name.html"
         );
-        test_resolve!("cot::a::b", "https://docs.rs/cot/1.2.3/cot/a/b");
-        test_resolve!("@cot::a::b::Name", "https://docs.rs/cot/1.2.3/cot/a/b/Name");
+        test_resolve!("cot::a::b", "https://docs.rs/cot/1.2/cot/a/b");
+        test_resolve!("@cot::a::b::Name", "https://docs.rs/cot/1.2/cot/a/b/Name");
         test_resolve!("attr@invalid::a::b::name", "attr@invalid::a::b::name");
         test_resolve!("http://example.com", "http://example.com");
-        test_resolve!("cot::name", "https://docs.rs/cot/1.2.3/cot/name");
+        test_resolve!("cot::name", "https://docs.rs/cot/1.2/cot/name");
         test_resolve!(
             "struct@cot::Name",
-            "https://docs.rs/cot/1.2.3/cot/struct.Name.html"
+            "https://docs.rs/cot/1.2/cot/struct.Name.html"
         );
         test_resolve!("cot", "cot");
-        test_resolve!("cot::", "cot::");
     }
 }

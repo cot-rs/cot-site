@@ -3,7 +3,9 @@
 use proc_macro::TokenStream;
 
 use crate::md_pages::MdPageInput;
+
 mod md_pages;
+
 #[proc_macro]
 pub fn md_page(input: TokenStream) -> TokenStream {
     let input = proc_macro2::TokenStream::from(input);
