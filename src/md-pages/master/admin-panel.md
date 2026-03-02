@@ -93,7 +93,7 @@ struct BlogPost {
 }
 ```
 
-Note however that in order to derive the `AdminModel` trait, you need to also derive the `Form` and `Model` traits (the latter is provided by the `#[model]` attribute). In addition to that, your model needs to implement the `Display` trait—for instance, in the case above, we could add it like so:
+Note however that in order to derive the  [`AdminModel`](trait@cot::admin::AdminModel) trait, you need to also derive the `Form` and `Model` traits (the latter is provided by the `#[model]` attribute). In addition to that, your model needs to implement the `Display` trait—for instance, in the case above, we could add it like so:
 
 ```rust
 impl Display for BlogPost {
@@ -103,7 +103,7 @@ impl Display for BlogPost {
 }
 ```
 
-After adding the `AdminModel` trait, you can add your model to the admin panel using `DefaultAdminModelManager`. This is as easy as adding the following code to your `App` implementation:
+After adding the [`AdminModel`](trait@cot::admin::AdminModel) trait, you can add your model to the admin panel using [`DefaultAdminModelManager`](struct@cot::admin::DefaultAdminModelManager). This is as easy as adding the following code to your [`App`](triat@cot::project::App) implementation:
 
 ```rust
 impl App for MyApp {

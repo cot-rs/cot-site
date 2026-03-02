@@ -6,7 +6,7 @@ Cot provides a flexible caching system that allows you to store and retrieve dat
 
 ## Configuration
 
-To use the caching system, you first need to configure it in your `ProjectConfig` (or via configuration files).
+To use the caching system, you first need to configure it in your[ `ProjectConfig`](struct@cot::config::ProjectConfig) (or via configuration files).
 
 ### Configuration via TOML
 
