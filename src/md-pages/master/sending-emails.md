@@ -6,7 +6,7 @@ Cot provides a unified interface for sending emails, allowing you to switch betw
 
 ## Configuration
 
-To use the email system, you need to enable the `email` feature in `cot` and configure it.
+To use the email system, you need to enable the [`email`](features@email) feature in `cot` and configure it.
 
 ### Enabling the Feature
 
@@ -31,7 +31,7 @@ url = "smtp://user:password@localhost:587" # For SMTP
 mechanism = "plain" # or "login", "xoauth2"
 ```
 
-For development, you might want to use the `console` transport, which prints emails to stdout:
+For development, you might want to use the [`console`](enum@cot::config::EmailTransportType::console) transport, which prints emails to stdout:
 
 ```toml
 [email.transport]
@@ -71,5 +71,5 @@ The `EmailMessage::builder()` provides a fluent interface to construct emails. I
 - **Html**: Set the HTML body (if supported).
 - **Attachments**: Add file attachments.
 
-See the [API reference](https://docs.rs/cot/0.5/cot/email/struct.EmailMessageBuilder.html)
+See the [API reference](struct@cot::email::EmailMessageBuilder)
 for more details.

@@ -93,7 +93,7 @@ async fn index() -> cot::Result<Html> {
 }
 ```
 
-Further in the file you can see that this view is registered in the `App` implementation:
+Further in the file you can see that this view is registered in the [`App`](trait@cot::project::App) implementation:
 
 ```rust
 struct CotTutorialApp;
@@ -241,7 +241,7 @@ This registers all the apps that your project is using.
     }
 ```
 
-This registers the middlewares that will be applied to all routes in the project. Note that the `LiveReloadMiddleware` may be dynamically disabled in runtime using config!
+This registers the middlewares that will be applied to all routes in the project. Note that the [`LiveReloadMiddleware`](struct@cot::middleware::LiveReloadMiddleware) may be dynamically disabled in runtime using config!
 
 ```rust
 #[cot::main]
