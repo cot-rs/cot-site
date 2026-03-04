@@ -1,13 +1,12 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use cot_site_common::md_pages::{MdPage, MdPageLink};
 use cot_site_macros::md_page;
 
 use crate::GuideLinkCategory;
 
-pub fn parse_guides(version: &str) -> (Vec<GuideLinkCategory>, HashMap<String, MdPage>) {
-    let categories = get_categories_for_version(version);
-
+pub fn parse_guides(categories: Vec<(&'static str, Vec<MdPage>)>) -> ParsedPagesForVersion {
     let categories_links = categories
         .iter()
         .map(|(title, guides)| GuideLinkCategory {
@@ -21,7 +20,21 @@ pub fn parse_guides(version: &str) -> (Vec<GuideLinkCategory>, HashMap<String, M
         .map(|guide| (guide.link.clone(), guide))
         .collect();
 
-    (categories_links, guide_map)
+    ParsedPagesForVersion {
+        categories_links,
+        guide_map,
+    }
+}
+
+#[derive(Debug)]
+pub(crate) struct ParsedPagesForVersion {
+    pub(crate) categories_links: Vec<GuideLinkCategory>,
+    pub(crate) guide_map: HashMap<String, MdPage>,
+}
+
+#[derive(Debug)]
+pub(crate) struct ParsedPages {
+    pub(crate) version_map: HashMap<&'static str, ParsedPagesForVersion>,
 }
 
 pub fn get_prev_next_link<'a>(
@@ -46,105 +59,106 @@ pub fn get_prev_next_link<'a>(
     (prev, None)
 }
 
-fn get_categories_for_version(version: &str) -> Vec<(&'static str, Vec<MdPage>)> {
-    match version {
-        "v0.1" => vec![(
-            "Getting started",
-            vec![
-                md_page!("v0.1", "introduction"),
-                md_page!("v0.1", "templates"),
-                md_page!("v0.1", "forms"),
-                md_page!("v0.1", "db-models"),
-                md_page!("v0.1", "admin-panel"),
-                md_page!("v0.1", "static-files"),
-                md_page!("v0.1", "error-pages"),
-                md_page!("v0.1", "testing"),
-            ],
-        )],
-        "v0.2" => vec![(
-            "Getting started",
-            vec![
-                md_page!("v0.2", "introduction"),
-                md_page!("v0.2", "templates"),
-                md_page!("v0.2", "forms"),
-                md_page!("v0.2", "db-models"),
-                md_page!("v0.2", "admin-panel"),
-                md_page!("v0.2", "static-files"),
-                md_page!("v0.2", "error-pages"),
-                md_page!("v0.2", "testing"),
-            ],
-        )],
-        "v0.3" => vec![(
-            "Getting started",
-            vec![
-                md_page!("v0.3", "introduction"),
-                md_page!("v0.3", "templates"),
-                md_page!("v0.3", "forms"),
-                md_page!("v0.3", "db-models"),
-                md_page!("v0.3", "admin-panel"),
-                md_page!("v0.3", "static-files"),
-                md_page!("v0.3", "error-pages"),
-                md_page!("v0.3", "openapi"),
-                md_page!("v0.3", "testing"),
-            ],
-        )],
-        "v0.4" => vec![
-            (
+pub(crate) fn get_categories(master_version: Vec<(&'static str, Vec<MdPage>)>) -> ParsedPages {
+    let version_map = HashMap::from([
+        (
+            "v0.1",
+            vec![(
                 "Getting started",
                 vec![
-                    md_page!("v0.4", "introduction"),
-                    md_page!("v0.4", "templates"),
-                    md_page!("v0.4", "forms"),
-                    md_page!("v0.4", "db-models"),
-                    md_page!("v0.4", "admin-panel"),
-                    md_page!("v0.4", "static-files"),
-                    md_page!("v0.4", "error-pages"),
-                    md_page!("v0.4", "openapi"),
-                    md_page!("v0.4", "testing"),
+                    md_page!("v0.1", "introduction"),
+                    md_page!("v0.1", "templates"),
+                    md_page!("v0.1", "forms"),
+                    md_page!("v0.1", "db-models"),
+                    md_page!("v0.1", "admin-panel"),
+                    md_page!("v0.1", "static-files"),
+                    md_page!("v0.1", "error-pages"),
+                    md_page!("v0.1", "testing"),
                 ],
-            ),
-            ("Upgrading", vec![md_page!("v0.4", "upgrade-guide")]),
-        ],
-        "v0.5" => vec![
-            (
+            )],
+        ),
+        (
+            "v0.2",
+            vec![(
                 "Getting started",
                 vec![
-                    md_page!("v0.5", "introduction"),
-                    md_page!("v0.5", "templates"),
-                    md_page!("v0.5", "forms"),
-                    md_page!("v0.5", "db-models"),
-                    md_page!("v0.5", "admin-panel"),
-                    md_page!("v0.5", "static-files"),
-                    md_page!("v0.5", "sending-emails"),
-                    md_page!("v0.5", "caching"),
-                    md_page!("v0.5", "error-pages"),
-                    md_page!("v0.5", "openapi"),
-                    md_page!("v0.5", "testing"),
+                    md_page!("v0.2", "introduction"),
+                    md_page!("v0.2", "templates"),
+                    md_page!("v0.2", "forms"),
+                    md_page!("v0.2", "db-models"),
+                    md_page!("v0.2", "admin-panel"),
+                    md_page!("v0.2", "static-files"),
+                    md_page!("v0.2", "error-pages"),
+                    md_page!("v0.2", "testing"),
                 ],
-            ),
-            ("Upgrading", vec![md_page!("v0.5", "upgrade-guide")]),
-            ("About", vec![md_page!("v0.5", "framework-comparison")]),
-        ],
-        "master" => vec![
-            (
+            )],
+        ),
+        (
+            "v0.3",
+            vec![(
                 "Getting started",
                 vec![
-                    md_page!("master", "introduction"),
-                    md_page!("master", "templates"),
-                    md_page!("master", "forms"),
-                    md_page!("master", "db-models"),
-                    md_page!("master", "admin-panel"),
-                    md_page!("master", "static-files"),
-                    md_page!("master", "sending-emails"),
-                    md_page!("master", "caching"),
-                    md_page!("master", "error-pages"),
-                    md_page!("master", "openapi"),
-                    md_page!("master", "testing"),
+                    md_page!("v0.3", "introduction"),
+                    md_page!("v0.3", "templates"),
+                    md_page!("v0.3", "forms"),
+                    md_page!("v0.3", "db-models"),
+                    md_page!("v0.3", "admin-panel"),
+                    md_page!("v0.3", "static-files"),
+                    md_page!("v0.3", "error-pages"),
+                    md_page!("v0.3", "openapi"),
+                    md_page!("v0.3", "testing"),
                 ],
-            ),
-            ("Upgrading", vec![md_page!("master", "upgrade-guide")]),
-            ("About", vec![md_page!("master", "framework-comparison")]),
-        ],
-        _ => unreachable!(),
-    }
+            )],
+        ),
+        (
+            "v0.4",
+            vec![
+                (
+                    "Getting started",
+                    vec![
+                        md_page!("v0.4", "introduction"),
+                        md_page!("v0.4", "templates"),
+                        md_page!("v0.4", "forms"),
+                        md_page!("v0.4", "db-models"),
+                        md_page!("v0.4", "admin-panel"),
+                        md_page!("v0.4", "static-files"),
+                        md_page!("v0.4", "error-pages"),
+                        md_page!("v0.4", "openapi"),
+                        md_page!("v0.4", "testing"),
+                    ],
+                ),
+                ("Upgrading", vec![md_page!("v0.4", "upgrade-guide")]),
+            ],
+        ),
+        (
+            "v0.5",
+            vec![
+                (
+                    "Getting started",
+                    vec![
+                        md_page!("v0.5", "introduction"),
+                        md_page!("v0.5", "templates"),
+                        md_page!("v0.5", "forms"),
+                        md_page!("v0.5", "db-models"),
+                        md_page!("v0.5", "admin-panel"),
+                        md_page!("v0.5", "static-files"),
+                        md_page!("v0.5", "sending-emails"),
+                        md_page!("v0.5", "caching"),
+                        md_page!("v0.5", "error-pages"),
+                        md_page!("v0.5", "openapi"),
+                        md_page!("v0.5", "testing"),
+                    ],
+                ),
+                ("Upgrading", vec![md_page!("v0.5", "upgrade-guide")]),
+                ("About", vec![md_page!("v0.5", "framework-comparison")]),
+            ],
+        ),
+        ("master", master_version),
+    ]);
+
+    let version_map = version_map
+        .into_iter()
+        .map(|(version, pages)| (version, parse_guides(pages)))
+        .collect();
+    ParsedPages { version_map }
 }
