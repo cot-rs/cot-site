@@ -119,7 +119,7 @@ impl Project for MyProject {
 }
 ```
 
-Don't forget to include the `StaticFilesMiddleware` as it's required for the Swagger UI to serve its CSS and JavaScript files!
+Don't forget to include the [`StaticFilesMiddleware`](struct@cot::static_files::StaticFilesMiddleware) as it's required for the Swagger UI to serve its CSS and JavaScript files!
 
 ## Complete Example
 

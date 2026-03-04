@@ -336,7 +336,7 @@ impl HtmlSafe for Item {}
 
 Be very cautious when marking output as safe; you are responsible for ensuring that the content doesn’t introduce security risks.
 
-To simplify generating safe HTML in Rust, Cot provides the [`HtmlTag`](https://docs.rs/cot/0.5/cot/html/struct.HtmlTag.html) type. It automatically applies escaping where necessary.
+To simplify generating safe HTML in Rust, Cot provides the [`HtmlTag`](struct@cot::html::HtmlTag) type. It automatically applies escaping where necessary.
 
 ```rust
 impl Display for Item {

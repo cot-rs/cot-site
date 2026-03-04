@@ -95,7 +95,7 @@ async fn index(request: Request) -> cot::Result<Response> {
 }
 ```
 
-Further in the file you can see that this view is registered in the `App` implementation:
+Further in the file you can see that this view is registered in the [`App`](trait@cot::project::App) implementation:
 
 ```rust
 struct CotTutorialApp;
@@ -111,7 +111,7 @@ impl App for CotTutorialApp {
 
 This is how you specify the URL the view will be available at – in this case, the view is available at the root URL of your application. The `"index"` string is the name of the view, which you can use to reverse the URL in your templates – more on that in the next chapter.
 
-You can add more views by adding more routes to the `Router` by simply defining more functions and registering them in the `router` method:
+You can add more views by adding more routes to the [`Router`](struct@cot::router::Router) by simply defining more functions and registering them in the `router` method:
 
 ```rust
 async fn hello(request: Request) -> cot::Result<Response> {
@@ -224,7 +224,7 @@ This registers all the apps that your project is using.
     }
 ```
 
-This registers the middlewares that will be applied to all routes in the project. Note that the `LiveReloadMiddleware` may be dynamically disabled in runtime using config!
+This registers the middlewares that will be applied to all routes in the project. Note that the [`LiveReloadMiddleware`](struct@cot::middleware::LiveReloadMiddleware) may be dynamically disabled in runtime using config!
 
 ```rust
 #[cot::main]

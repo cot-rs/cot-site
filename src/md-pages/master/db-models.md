@@ -39,7 +39,7 @@ This will create a new file in your `migrations` directory in the crate's src di
 
 ### Saving models
 
-In order to write a model instance to the database, you can use the `save` method. Note that you need to have an instance of the `Database` structure to do this – typically you can get it from the request object in your view. Here's an example of how you can save a new link to the database inside a view:
+In order to write a model instance to the database, you can use the `save` method. Note that you need to have an instance of the [`Database`](struct@cot::db::Database) structure to do this – typically you can get it from the request object in your view. Here's an example of how you can save a new link to the database inside a view:
 
 ```rust
 use cot::request::extractors::RequestDb;
@@ -65,7 +65,7 @@ link.url = "https://example.org".to_string();
 link.save(db).await?;
 ```
 
-Note that `.save()` is a convenient method that can be used for both creating new rows and updating existing ones. If the primary key of the model is set to `Auto`, the method will always create a new row in the database. If the primary key is set to a specific value, the method will update the row with that primary key, or create a new one if it doesn't exist.
+Note that `.save()` is a convenient method that can be used for both creating new rows and updating existing ones. If the primary key of the model is set to [`Auto`](enum@cot::db::Auto), the method will always create a new row in the database. If the primary key is set to a specific value, the method will update the row with that primary key, or create a new one if it doesn't exist.
 
 If you specifically want to update a row in the database for given primary key, you can use the `update` method:
 
@@ -103,7 +103,7 @@ As you can see, the [`Query`](struct@cot::db::query::Query) macro takes the mode
 
 ### Deleting models
 
-To delete a model from the database, you can use the `delete` method of the `Query` object returned by the `query!` macro. Here's an example of how you can delete a link from the database:
+To delete a model from the database, you can use the `delete` method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query) macro. Here's an example of how you can delete a link from the database:
 
 ```rust
 query!(Link, $slug == LimitedString::new("cot").unwrap()).delete(db).await?;
@@ -142,7 +142,7 @@ Link::bulk_insert_or_update(db, &mut links).await?;
 
 ## Foreign keys
 
-To define a foreign key relationship between two models, you can use the `ForeignKey` type. Here's an example of how you can define a foreign key relationship between a `Link` model and some other `User` model:
+To define a foreign key relationship between two models, you can use the [`ForeignKey`](enum@cot::db::ForeignKey) type. Here's an example of how you can define a foreign key relationship between a `Link` model and some other `User` model:
 
 ```rust
 use cot::db::ForeignKey;

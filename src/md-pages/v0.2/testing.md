@@ -33,11 +33,11 @@ cargo test
 
 ## Unit Testing
 
-Unit tests focus on testing small, isolated pieces of your application, such as individual functions, request handlers, or utility methods. Cot's `TestRequestBuilder` utility helps you create HTTP request objects in a lightweight way, without spinning up a full HTTP server.
+Unit tests focus on testing small, isolated pieces of your application, such as individual functions, request handlers, or utility methods. Cot's [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) utility helps you create HTTP request objects in a lightweight way, without spinning up a full HTTP server.
 
 ### Test Request Builder
 
-The `TestRequestBuilder` offers a fluent API for constructing HTTP requests that can be dispatched to your request handlers directly:
+The [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) offers a fluent API for constructing HTTP requests that can be dispatched to your request handlers directly:
 
 ```rust
 // Create a GET request
@@ -72,11 +72,11 @@ let request = TestRequestBuilder::post("/")
 
 ## Integration Testing
 
-Integration tests check how multiple parts of your application work together. Cot provides a `Client` struct to help you simulate end-to-end HTTP interactions with a fully running instance of your application.
+Integration tests check how multiple parts of your application work together. Cot provides a [`Client`](struct@cot::test::Client) struct to help you simulate end-to-end HTTP interactions with a fully running instance of your application.
 
 ### Test Client
 
-The `Client` struct lets you create a temporary instance of your Cot application and perform HTTP requests against it:
+The [`Client`](struct@cot::test::Client) struct lets you create a temporary instance of your Cot application and perform HTTP requests against it:
 
 ```rust
 let project = CotProject::builder()
@@ -174,7 +174,7 @@ test_db.cleanup().await?;
 
 Cot's testing framework provides a robust and flexible approach to ensuring the quality of your application.
 
-- **Unit tests** with `TestRequestBuilder` help you verify that individual components behave as expected.
-- **Integration tests** with `Client` let you test your entire application in a near-production environment, while `TestDatabase` give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
+- **Unit tests** with [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) help you verify that individual components behave as expected.
+- **Integration tests** with [`Client`](struct@cot::test::Client) let you test your entire application in a near-production environment, while `TestDatabase` give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
 
 By integrating these testing tools into your workflow, you can deploy your Cot applications with greater confidence. Happy testing!

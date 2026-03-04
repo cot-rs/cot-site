@@ -72,7 +72,7 @@ let request = TestRequestBuilder::post("/")
 
 ## Integration Testing
 
-Integration tests check how multiple parts of your application work together. Cot provides a `Client` struct to help you simulate end-to-end HTTP interactions with a fully running instance of your application.
+Integration tests check how multiple parts of your application work together. Cot provides a [`Client`](struct@cot::test::Client) struct to help you simulate end-to-end HTTP interactions with a fully running instance of your application.
 
 ### Test Client
 
@@ -236,7 +236,7 @@ Please refer to the documentation of these crates for more information on how to
 Cot's testing framework provides a robust and flexible approach to ensuring the quality of your application.
 
 - **Unit tests** with [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) help you verify that individual components behave as expected.
-- **Integration tests** with `Client` let you test your entire application in a near-production environment, while [`TestDatabase`](struct@cot::test::TestDatabase) and [`TestCache`](struct@cot::test::TestCache) give you confidence that your data and caching layers are functioning correctly.
+- **Integration tests** with [`Client`](struct@cot::test:Client) let you test your entire application in a near-production environment, while [`TestDatabase`](struct@cot::test::TestDatabase) and [`TestCache`](struct@cot::test::TestCache) give you confidence that your data and caching layers are functioning correctly.
 - **End-to-end tests** with [`TestServerBuilder`](struct@cot::test::TestServerBuilder) allow you to verify your full application workflows in a real-world scenario.
 
 By integrating these testing tools into your workflow, you can deploy your Cot applications with greater confidence. Happy testing!

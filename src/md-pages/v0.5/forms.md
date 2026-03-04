@@ -6,7 +6,7 @@ Cot has form processing capabilities that allows you to create forms and handle 
 
 ## Form trait
 
-The core of the form processing lies in the `Form` trait inside the `cot::form` module. This trait is used to define the form and the fields that are part of the form. Below is an example of how you can define a form:
+The core of the form processing lies in the [`Form`](trait@cot::form::Form) trait inside the [`cot::form`](cot::form) module. This trait is used to define the form and the fields that are part of the form. Below is an example of how you can define a form:
 
 ```rust
 use cot::form::Form;
