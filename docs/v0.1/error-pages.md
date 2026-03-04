@@ -82,10 +82,10 @@ Create `404.html`:
     <title>404 Not Found</title>
 </head>
 <body>
-    <h1 class="error-code">404</h1>
-    <h2>Page Not Found</h2>
-    <p>Oopsies! The page you're looking for doesn't exist.</p>
-    <p><a href="/">Return to Homepage</a></p>
+<h1 class="error-code">404</h1>
+<h2>Page Not Found</h2>
+<p>Oopsies! The page you're looking for doesn't exist.</p>
+<p><a href="/">Return to Homepage</a></p>
 </body>
 </html>
 ```
