@@ -9,6 +9,7 @@ use comrak::{Arena, Options, parse_document};
 use cot_site_common::Version;
 
 const COT_RUSTDOC_BASE_URL: &str = "https://docs.rs/cot";
+const COT_RUSTDOC_CRATE_LINK: &str = "https://docs.rs/crate/cot";
 
 #[derive(Debug, Clone)]
 struct PageContext {
@@ -92,7 +93,7 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
         page_context.version.major(),
         page_context.version.minor()
     );
-    let mut parts: Vec<String> = vec![COT_RUSTDOC_BASE_URL.to_string(), version, "cot".to_string()];
+    let mut parts: Vec<String> = vec![COT_RUSTDOC_BASE_URL.to_string(), version];
 
     let (ty, route_str) = route
         .split_once('@')
@@ -106,7 +107,7 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
         })
         .unwrap_or((None, route));
 
-    if !route_str.starts_with("cot::") {
+    if !route_str.starts_with("cot::") && ty != Some("features") {
         return route.to_string();
     }
 
@@ -122,9 +123,27 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
                 .map(|s| s.to_string()),
         );
     }
-    let last_part = segs.last().expect("route split produced no segments");
+    let (last_part, extras) = segs
+        .last()
+        .expect("route split produced no segments")
+        .split_once('#')
+        .map(|(last_part, extras)| (last_part, Some(extras)))
+        .unwrap_or((segs.last().unwrap(), None));
+
     if let Some(ty) = ty {
-        parts.push(format!("{}.{}.html", ty, last_part))
+        match ty {
+            "features" => {
+                parts[0] = COT_RUSTDOC_CRATE_LINK.to_string();
+                parts.push(format!("features#{}", last_part))
+            }
+            other => {
+                let mut part_str = format!("cot/{}.{}.html", other, last_part);
+                if let Some(extras) = extras {
+                    part_str.push_str(&format!("#{}", extras));
+                }
+                parts.push(part_str);
+            }
+        }
     } else {
         parts.push(last_part.to_string())
     }

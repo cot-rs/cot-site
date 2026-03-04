@@ -83,12 +83,12 @@ fn create_router() -> Router {
 
 The key differences from standard routes are:
 
-- Using `with_api_handler` instead of `with_handler`
-- Using `api_post` instead of `post`
+- Using [`with_api_handler`](struct@cot::router::Route#method.with_api_handler) instead of [`with_handler`](struct@cot::router::Route#method.with_handler)
+- Using [`api_post`](fn@cot::router::method::openapi::api_post) instead of [`post`](fn@cot::router::method::post)
 
 ### Register the Swagger UI App
 
-To expose the interactive documentation UI, register the `SwaggerUi` app in your project:
+To expose the interactive documentation UI, register the [`SwaggerUi`](struct@cot::openapi::swagger_ui::SwaggerUi) app in your project:
 
 ```rust
 use cot::openapi::swagger_ui::SwaggerUi;

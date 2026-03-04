@@ -63,7 +63,7 @@ async fn send_welcome_email(email_sender: EmailService) -> cot::Result<Html> {
 
 ## Email Message Builder
 
-The `EmailMessage::builder()` provides a fluent interface to construct emails. It supports:
+The [`EmailMessage::builder()`](struct@cot::email::EmailMessage#method.builder) provides a fluent interface to construct emails. It supports:
 
 - **From/To/Cc/Bcc**: Set recipients and sender.
 - **Subject**: Set the email subject.

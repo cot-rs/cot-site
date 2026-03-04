@@ -39,7 +39,7 @@ This will create a new file in your `migrations` directory in the crate's src di
 
 ### Saving models
 
-In order to write a model instance to the database, you can use the `save` method. Note that you need to have an instance of the [`Database`](struct@cot::db::Database) structure to do this – typically you can get it from the request object in your view. Here's an example of how you can save a new link to the database inside a view:
+In order to write a model instance to the database, you can use the [`save`](trait@cot::db::Model#method.save) method. Note that you need to have an instance of the [`Database`](struct@cot::db::Database) structure to do this – typically you can get it from the request object in your view. Here's an example of how you can save a new link to the database inside a view:
 
 ```rust
 use cot::request::extractors::RequestDb;
@@ -67,14 +67,14 @@ link.save(db).await?;
 
 Note that `.save()` is a convenient method that can be used for both creating new rows and updating existing ones. If the primary key of the model is set to [`Auto`](enum@cot::db::Auto), the method will always create a new row in the database. If the primary key is set to a specific value, the method will update the row with that primary key, or create a new one if it doesn't exist.
 
-If you specifically want to update a row in the database for given primary key, you can use the `update` method:
+If you specifically want to update a row in the database for given primary key, you can use the [`update`](trait@cot::db::Model#method.update) method:
 
 ```rust
 link.url = "https://example.org".to_string();
 link.update(db).await?;
 ```
 
-Similarly, if you want to insert a new row in the database and cause an error if a row with the same primary key already exists, you can use the `insert` method:
+Similarly, if you want to insert a new row in the database and cause an error if a row with the same primary key already exists, you can use the [`insert`](trait@cot::db::Model#method.insert) method:
 
 ```rust
 let mut link = Link {
@@ -103,7 +103,7 @@ As you can see, the [`query!`](macro@cot::db::query) macro takes the model type 
 
 ### Deleting models
 
-To delete a model from the database, you can use the `delete` method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query) macro. Here's an example of how you can delete a link from the database:
+To delete a model from the database, you can use the [`delete`](trait@cot::db::Model#method.delete) method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query) macro. Here's an example of how you can delete a link from the database:
 
 ```rust
 query!(Link, $slug == LimitedString::new("cot").unwrap()).delete(db).await?;
@@ -136,7 +136,7 @@ pub struct User {
 
 When you define a foreign key relationship, Cot will automatically create a foreign key constraint in the database. This constraint will ensure that the value in the `user_id` field of the `Link` model corresponds to a valid primary key in the `User` model.
 
-When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the `get` method of the [`ForeignKey`](enum@cot::db::ForeignKey) object. Here's an example of how you can fetch the related user for a link:
+When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the [`get`](trait@cot::db::Model#method.get) method of the [`ForeignKey`](enum@cot::db::ForeignKey) object. Here's an example of how you can fetch the related user for a link:
 
 ```rust
 let mut link = query!(Link, $slug == LimitedString::new("cot").unwrap())
@@ -163,7 +163,7 @@ url = "postgresql://user:password@localhost/dbname"
 url = "mysql://user:password@localhost/dbname"
 ```
 
-Cot tries to be as consistent as possible when it comes to the database engine you are using. This means that you can use SQLite for development and testing, and then switch to PostgreSQL or MySQL for production without changing your code. The only thing you need to do is to change the `url` value in the configuration file!
+Cot tries to be as consistent as possible when it comes to the database engine you are using. This means that you can use SQLite for development and testing, and then switch to PostgreSQL or MySQL for production without changing your code. The only thing you need to do is to change the [`url`](struct@cot::config::DatabaseConfig#structfield.url) value in the configuration file!
 
 ## Summary
 

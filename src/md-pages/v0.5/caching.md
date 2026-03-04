@@ -33,7 +33,7 @@ pool_size = 20 # Optional: connection pool size
 
 ## Usage
 
-You can access the cache by using the `Cache` extractor. The cache interface provides standard methods like `get`, `insert`, `remove`, etc.
+You can access the cache by using the `Cache` extractor. The cache interface provides standard methods like [`get`](struct@cot::cache::Cache#method.get), [`insert`](struct@cot::cache::Cache#method.insert), [`remove`](struct@cot::cache::Cache#method.remove), etc.
 
 ```rust
 use cot::cache::Cache;
@@ -74,7 +74,7 @@ cache.insert_expiring(
 
 #### Lazy Computation
 
-You can use `get_or_insert_with` to lazily compute and cache values:
+You can use [`get_or_insert_with`](struct@cot::cache::Cache#method.get_or_insert_with) to lazily compute and cache values:
 
 ```rust
 let value: String = cache.get_or_insert_with("expensive_key", || async {

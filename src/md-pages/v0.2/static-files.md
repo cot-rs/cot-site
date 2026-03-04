@@ -12,7 +12,7 @@ The Cot CLI generates a `static` directory in your project root, which serves as
 
 ### Registering Static Files
 
-To serve static files, you'll need to register them in your application's `static_files()` method within the `CotApp` implementation. Here's a basic example:
+To serve static files, you'll need to register them in your application's [`static_files()`](trait@cot::project::App#method.static_files) method within the `CotApp` implementation. Here's a basic example:
 
 ```rust
 impl CotApp for MyApp {
