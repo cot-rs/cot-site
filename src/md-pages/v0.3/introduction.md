@@ -95,7 +95,7 @@ async fn index() -> cot::Result<Html> {
 }
 ```
 
-Further in the file you can see that this view is registered in the [`App`](triat@cot::project::App) implementation:
+Further in the file you can see that this view is registered in the [`App`](trait@cot::project::App) implementation:
 
 ```rust
 struct CotTutorialApp;

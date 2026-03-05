@@ -81,7 +81,7 @@ There are several ways how can you use the forms in your templates. The easiest 
 </form>
 ```
 
-This is especially useful for prototyping new forms, as it doesn't allow you to customize the rendering of your form. If you need a bit more control, you can use the `form.fields()` method to render the fields individually:
+This is especially useful for prototyping new forms, as it doesn't allow you to customize the rendering of your form. If you need a bit more control, you can use the [`form.fields()`](trait@cot::form::FormContext#tymethod.fields) method to render the fields individually:
 
 ```html.j2
 {% let request = request %}

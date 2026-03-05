@@ -166,7 +166,7 @@ test_db.cleanup().await?;
 - PostgreSQL and MySQL test databases are created with the prefix `test_cot__`.
 - The SQLite database is in-memory by default.
 - Form data is currently only supported with POST requests.
-- Custom migrations can be added using the `add_migrations` method on [`TestDatabase`](struct@cot::test::TestDatabase).
+- Custom migrations can be added using the [`add_migrations`](struct@cot::test::TestDatabase#method.add_migrations) method on [`TestDatabase`](struct@cot::test::TestDatabase).
 
 ---
 

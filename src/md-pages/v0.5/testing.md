@@ -166,7 +166,7 @@ test_db.cleanup().await?;
 - PostgreSQL and MySQL test databases are created with the prefix `test_cot__`.
 - The SQLite database is in-memory by default.
 - Form data is currently only supported with POST requests.
-- Custom migrations can be added using the `add_migrations` method on `TestDatabase`.
+- Custom migrations can be added using the [`add_migrations`](struct@cot::test::TestDatabase#method.add_migrations) method on [`TestDatabase`](struct@cot::test::TestDatabase).
 
 ## Test Cache
 
@@ -198,7 +198,7 @@ The Redis test cache uses a randomized key prefix to ensure isolation between te
 
 Cot provides an end-to-end testing framework that allows you to test your entire application in a near-production environment. This is particularly useful for testing complex workflows that involve multiple components, such as user authentication, database interactions, external API calls, and your application's UI. By using the end-to-end testing framework you will be able to send real HTTP requests or use web automation tools to simulate user interactions with your application.
 
-The end-to-end testing framework consists of two parts: the [`cot::e2e_test`](macro@cot::e2e_test) macro and the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct. The [`cot::e2e_test`](macro@cot::e2e_test) macro allows you to define end-to-end tests that allow you to run your project in the background, while the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct allows you to create a test server that you can send your requests to. An example of how to use the [`cot::e2e_test`](macro@cot::e2e_test) macro and the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct is shown below in a simple test that checks if the server is running and returns the `Hello world!` response:
+The end-to-end testing framework consists of two parts: the [`cot::e2e_test`](attr@cot::e2e_test) macro and the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct. The [`cot::e2e_test`](attr@cot::e2e_test) macro allows you to define end-to-end tests that allow you to run your project in the background, while the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct allows you to create a test server that you can send your requests to. An example of how to use the [`cot::e2e_test`](attr@cot::e2e_test) macro and the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct is shown below in a simple test that checks if the server is running and returns the `Hello world!` response:
 
 ```rust
 struct TestProject;

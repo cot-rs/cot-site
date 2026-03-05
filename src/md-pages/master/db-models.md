@@ -103,7 +103,7 @@ As you can see, the [`Query`](struct@cot::db::query::Query) macro takes the mode
 
 ### Deleting models
 
-To delete a model from the database, you can use the [`delete`](trait@cot::db::Model#method.delete) method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query) macro. Here's an example of how you can delete a link from the database:
+To delete a model from the database, you can use the [`delete`](struct@cot::db::query::Query#method.delete) method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query) macro. Here's an example of how you can delete a link from the database:
 
 ```rust
 query!(Link, $slug == LimitedString::new("cot").unwrap()).delete(db).await?;
@@ -167,7 +167,7 @@ pub struct User {
 
 When you define a foreign key relationship, Cot will automatically create a foreign key constraint in the database. This constraint will ensure that the value in the `user_id` field of the `Link` model corresponds to a valid primary key in the `User` model.
 
-When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the [`get`](trait@cot::db::Model#method.get) method of the [`ForeignKey`](enum@cot::db::ForeignKey) object. Here's an example of how you can fetch the related user for a link:
+When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the [`get`](enum@cot::db::ForeignKey#method.get) method of the [`ForeignKey`](enum@cot::db::ForeignKey) object. Here's an example of how you can fetch the related user for a link:
 
 ```rust
 let mut link = query!(Link, $slug == LimitedString::new("cot").unwrap())

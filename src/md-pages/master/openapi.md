@@ -16,7 +16,7 @@ This chapter will guide you through setting up OpenAPI in your Cot project and s
 
 ## Prerequisites
 
-To use OpenAPI features in Cot, you need to enable the [`openapi`](features@openai) and [`swagger-ui`](features@swagger-ui) features in your project's `Cargo.toml`:
+To use OpenAPI features in Cot, you need to enable the [`openapi`](features@openapi) and [`swagger-ui`](features@swagger-ui) features in your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
@@ -30,7 +30,7 @@ The [`schemars`](https://docs.rs/schemars/latest/schemars/) crate is necessary f
 
 ### Define Your Data Types
 
-First, define your request and response data types with `serde` for serialization and [`schemars`](https://docs.rs/schemars/latest/schemars/) for schema generation:
+First, define your request and response data types with [`serde`](https://docs.rs/serde/latest/serde/) for serialization and [`schemars`](https://docs.rs/schemars/latest/schemars/) for schema generation:
 
 ```rust
 use serde::{Deserialize, Serialize};
@@ -253,7 +253,7 @@ Route::with_api_handler("/users", api_get(list_users))
 
 ### Excluding Routes from OpenAPI Documentation
 
-Sometimes you might want to exclude certain routes from your API documentation. You can do this by using `NoApi`:
+Sometimes you might want to exclude certain routes from your API documentation. You can do this by using [`NoApi`](struct@cot::openapi::NoApi):
 
 ```rust
 use cot::openapi::NoApi;

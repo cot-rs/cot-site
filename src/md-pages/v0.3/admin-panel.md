@@ -91,7 +91,7 @@ struct BlogPost {
 }
 ```
 
-Note however that in order to derive the [`AdminModel`](trait@cot::admin::AdminModel) trait, you need to also derive the [`Form`](triait@cot::form::Form) and [`Model`](triait@cot::db::Model) traits (the latter is provided by the [`#[model]`](attr@cot::db::model) attribute). In addition to that, your model needs to implement the `Display` trait—for instance, in the case above, we could add it like so:
+Note however that in order to derive the [`AdminModel`](trait@cot::admin::AdminModel) trait, you need to also derive the [`Form`](trait@cot::form::Form) and [`Model`](trait@cot::db::Model) traits (the latter is provided by the [`#[model]`](attr@cot::db::model) attribute). In addition to that, your model needs to implement the `Display` trait—for instance, in the case above, we could add it like so:
 
 ```rust
 impl Display for BlogPost {

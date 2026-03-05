@@ -2,7 +2,7 @@
 title: Sending Emails
 ---
 
-Cot provides a unified interface for sending emails, allowing you to switch between different email backends (like SMTP, Memory, or Console) easily. This is powered by the popular [`lettre`](https://crates.io/crates/lettre) crate.
+Cot provides a unified interface for sending emails, allowing you to switch between different [`email backends`](cot::email::transport) (like [`SMTP`](cot::email::transport::smtp), or [`Console`](cot::email::transport::console)) easily. This is powered by the popular [`lettre`](https://crates.io/crates/lettre) crate.
 
 ## Configuration
 
@@ -31,7 +31,7 @@ url = "smtp://user:password@localhost:587" # For SMTP
 mechanism = "plain" # or "login", "xoauth2"
 ```
 
-For development, you might want to use the [`console`](enum@cot::config::EmailTransportType::console) transport, which prints emails to stdout:
+For development, you might want to use the [`Console`](cot::email::transport::console) transport, which prints emails to stdout:
 
 ```toml
 [email.transport]

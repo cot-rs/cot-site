@@ -103,7 +103,7 @@ let response = client.request(request).await?;
 
 ## Test Database
 
-Cot's testing utilities also include the `TestDatabase` struct, which helps you create temporary databases for your tests. This allows you to test how your application interacts with data storage without polluting your real database.
+Cot's testing utilities also include the [`TestDatabase`](struct@cot::test::TestDatabase) struct, which helps you create temporary databases for your tests. This allows you to test how your application interacts with data storage without polluting your real database.
 
 ```rust
 // Create SQLite test database (in-memory)
@@ -166,7 +166,7 @@ test_db.cleanup().await?;
 - PostgreSQL and MySQL test databases are created with the prefix `test_cot__`.
 - The SQLite database is in-memory by default.
 - Form data is currently only supported with POST requests.
-- Custom migrations can be added using the `add_migrations` method on `TestDatabase`.
+- Custom migrations can be added using the [`add_migrations`](struct@cot::test::TestDatabase#method.add_migrations) method on [`TestDatabase`](struct@cot::test::TestDatabase).
 
 ---
 
@@ -175,6 +175,6 @@ test_db.cleanup().await?;
 Cot's testing framework provides a robust and flexible approach to ensuring the quality of your application.
 
 - **Unit tests** with [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) help you verify that individual components behave as expected.
-- **Integration tests** with [`Client`](struct@cot::test::Client) let you test your entire application in a near-production environment, while `TestDatabase` give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
+- **Integration tests** with [`Client`](struct@cot::test::Client) let you test your entire application in a near-production environment, while [`TestDatabase`](struct@cot::test::TestDatabase) give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
 
 By integrating these testing tools into your workflow, you can deploy your Cot applications with greater confidence. Happy testing!

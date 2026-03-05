@@ -64,7 +64,7 @@ rewrite = "query_param"  # set to "none" to disable hashing
 cache_timeout = "1year"  # "Cache-Control" header value
 ```
 
-Please refer to [humantime crate documentation](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) on the details about the `cache_timeout` configuration format.
+Please refer to [humantime crate documentation](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) on the details about the [`cache_timeout`](struct@cot::config::StaticFilesConfig#structfield.cache_timeout) configuration format.
 
 ## Production Deployment
 

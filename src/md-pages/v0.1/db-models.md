@@ -6,7 +6,7 @@ Cot comes with its own ORM (Object-Relational Mapping) system, which is a layer 
 
 ## Defining models
 
-To define a model in Cot, you need to create a new Rust structure that implements the [`Model`](triait@cot::db::Model) trait. This trait requires you to define the name of the table that the model corresponds to, as well as the fields that the table should have. Here's an example of a simple model that represents a link in a link shortener service:
+To define a model in Cot, you need to create a new Rust structure that implements the [`Model`](trait@cot::db::Model) trait. This trait requires you to define the name of the table that the model corresponds to, as well as the fields that the table should have. Here's an example of a simple model that represents a link in a link shortener service:
 
 ```rust
 use cot::db::{model, Auto, LimitedString};
@@ -63,7 +63,7 @@ link.url = "https://example.org".to_string();
 link.save(request.db()).await?;
 ```
 
-Note that `.save()` is a convenient method that can be used for both creating new rows and updating existing ones. If the primary key of the model is set to [`Auto`](enum@cot::db::Auto), the method will always create a new row in the database. If the primary key is set to a specific value, the method will update the row with that primary key, or create a new one if it doesn't exist.
+Note that [`.save()`](trait@cot::db::Model#method.save) is a convenient method that can be used for both creating new rows and updating existing ones. If the primary key of the model is set to [`Auto`](enum@cot::db::Auto), the method will always create a new row in the database. If the primary key is set to a specific value, the method will update the row with that primary key, or create a new one if it doesn't exist.
 
 If you specifically want to update a row in the database for given primary key, you can use the [`update`](trait@cot::db::Model#method.update) method:
 
@@ -101,7 +101,7 @@ As you can see, the [`query!`](macro@cot::db::query)  macro takes the model type
 
 ### Deleting models
 
-To delete a model from the database, you can use the [`delete`](trait@cot::db::Model#method.delete) method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query)  macro. Here's an example of how you can delete a link from the database:
+To delete a model from the database, you can use the [`delete`](struct@cot::db::query::Query#method.delete) method of the [`Query`](struct@cot::db::query::Query) object returned by the [`query!`](macro@cot::db::query)  macro. Here's an example of how you can delete a link from the database:
 
 ```rust
 query!(Link, $slug == LimitedString::new("cot").unwrap()).delete(request.db()).await?;
@@ -134,7 +134,7 @@ pub struct User {
 
 When you define a foreign key relationship, Cot will automatically create a foreign key constraint in the database. This constraint will ensure that the value in the `user_id` field of the `Link` model corresponds to a valid primary key in the `User` model.
 
-When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the [`get`](trait@cot::db::Model#method.get) method of the [`ForeignKey`](enum@cot::db::ForeignKey) object. Here's an example of how you can fetch the related user for a link:
+When you retrieve a model that has a foreign key relationship, Cot will not automatically fetch the related model and populate the foreign key field with the corresponding value. Instead, you need to explicitly fetch the related model using the [`get`](enum@cot::db::ForeignKey#method.get) method of the [`ForeignKey`](enum@cot::db::ForeignKey) object. Here's an example of how you can fetch the related user for a link:
 
 ```rust
 let mut link = query!(Link, $slug == LimitedString::new("cot").unwrap())
