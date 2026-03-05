@@ -9,6 +9,7 @@ use comrak::{Arena, Options, parse_document};
 use cot_site_common::Version;
 
 const COT_RUSTDOC_BASE_URL: &str = "https://docs.rs/cot";
+const COT_RUSTDOC_CRATE_OVERVIEW_URL: &str = "https://docs.rs/crate/cot";
 
 #[derive(Debug, Clone)]
 struct PageContext {
@@ -86,13 +87,49 @@ fn render_table_custom<'a>(
 ///
 /// where type is optional and can be one of the options mentioned here: https://rust-lang.github.io/rfcs/1946-intra-rustdoc-links.html#path-ambiguities
 /// If the type is not provided, we assume it's a module.
+///
+/// We try to follow the same structure as rustdoc links as much as we can.
+/// However, there some special cases to be aware of:
+///
+/// ## Methods
+/// Methods in rustdoc follow the format `method@cot::a::b`. However, in our
+/// case, we want to be able to tell what type the method belongs to and whether
+/// it is a required method or not (rustdoc links provide different URLs for
+/// required and provided methods). To achieve this, we require the type the
+/// method belongs to be specified as the type in the route. We also require the
+/// method name to be specified as an internal navigation link, e.g. `struct@
+/// cot::a::b::Name#method` for a provided method and
+/// `trait@cot::a::b::Name#tymethod` for a required method. Note the `tymethod`
+/// suffix for required methods and the `method` suffix for provided methods.
+///
+/// Examples
+/// ```
+/// # reference to `foo` method of `Name` struct in `cot::a::b` module
+/// struct@cot::a::b::Name#method.foo -> https://docs.rs/cot/0.5.0/cot/a/b/struct.Name.html#method.foo
+/// # reference to `foo` required method of `Name` trait in `cot::a::b` module
+/// trait@cot::a::b::Name#tymethod -> https://docs.rs/cot/0.5.0/cot/a/b/trait.Name.html#tymethod
+/// ```
+///
+/// ## Features
+/// Reference to features should follow the format `features@featue_name`, where
+/// `feature_name` is the name of the feature.
+///
+/// # Other Internal Navigation Links
+/// Other types such as struct fields follow the same format as methods.
+///
+/// Examples:
+///
+/// ```
+/// # reference to a `url` field in the `DatabaseConfig` struct in the `cot::config` module.
+/// struct@cot::config::DatabaseConfig#structfield.url -> https://docs.rs/cot/0.5.0/cot/config/struct.DatabaseConfig.html/structfield.url
+/// ```
 fn resolve_url(route: &str, page_context: &PageContext) -> String {
     let version = format!(
         "{}.{}",
         page_context.version.major(),
         page_context.version.minor()
     );
-    let mut parts: Vec<String> = vec![COT_RUSTDOC_BASE_URL.to_string(), version, "cot".to_string()];
+    let mut parts: Vec<String> = vec![COT_RUSTDOC_BASE_URL.to_string(), version];
 
     let (ty, route_str) = route
         .split_once('@')
@@ -106,25 +143,43 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
         })
         .unwrap_or((None, route));
 
-    if !route_str.starts_with("cot::") {
+    if !route_str.starts_with("cot::") && ty != Some("features") {
         return route.to_string();
     }
 
     let segs: Vec<&str> = route_str.split("::").collect();
-    if segs.len() > 2 {
+    if segs.len() > 1 {
         parts.extend(
-            // we are only interested in the segments between "cot" (which is the first) and the
-            // last segment, so we skip the first and take all but the last
-            // segment
-            segs.iter()
-                .skip(1)
-                .take(segs.len() - 2)
-                .map(|s| s.to_string()),
+            // we are only interested in everything but the last segement.
+            segs.iter().take(segs.len() - 1).map(|s| s.to_string()),
         );
     }
-    let last_part = segs.last().expect("route split produced no segments");
+
+    // the last segment can contain an internal navigation link, e.g.
+    // `struct@cot::a::b::Name#method`.
+    let (last_part, internal_nav_link) = segs
+        .last()
+        .expect("route split produced no segments")
+        .split_once('#')
+        .map(|(last_part, extras)| (last_part, Some(extras)))
+        .unwrap_or((segs.last().unwrap(), None));
+
     if let Some(ty) = ty {
-        parts.push(format!("{}.{}.html", ty, last_part))
+        match ty {
+            "features" => {
+                // features use the crate overview page instead of the regular doc.rs page.
+                parts[0] = COT_RUSTDOC_CRATE_OVERVIEW_URL.to_string();
+                parts.push(format!("features#{}", last_part))
+            }
+            other => {
+                let mut part_str = format!("{}.{}.html", other, last_part);
+                // add the internal navigation link if it exists.
+                if let Some(internal_nav_link) = internal_nav_link {
+                    part_str.push_str(&format!("#{}", internal_nav_link));
+                }
+                parts.push(part_str);
+            }
+        }
     } else {
         parts.push(last_part.to_string())
     }

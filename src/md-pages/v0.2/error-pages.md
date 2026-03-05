@@ -129,7 +129,7 @@ async fn view(request: Request) -> cot::Result<Response> {
 }
 ```
 
-Note that any messages that you pass to the `Error` structure will only be displayed in debug mode. In production, the user will see your custom error pages that do not have access to the error message.
+Note that any messages that you pass to the [`Error`](struct@cot::Error) structure will only be displayed in debug mode. In production, the user will see your custom error pages that do not have access to the error message.
 
 ## Handling specific errors
 
