@@ -27,13 +27,20 @@ impl Parse for MdPageInput {
     }
 }
 
+pub(super) struct ExternalMdPageInput {
+    pub(super) link: String,
+}
+
+impl Parse for ExternalMdPageInput {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let link = input.parse::<LitStr>()?.value();
+        Ok(Self { link })
+    }
+}
+
 fn read_md_page(link: &str) -> String {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let path = Path::new(&manifest_dir)
-        .join("src")
-        .join("md-pages")
-        .join(link)
-        .with_extension("md");
+    let path = Path::new(&manifest_dir).join(link).with_extension("md");
 
     #[cfg(feature = "nightly")]
     {
@@ -41,6 +48,8 @@ fn read_md_page(link: &str) -> String {
         proc_macro::tracked::path(path_str);
     }
 
+    println!("{}", path.display());
+    eprintln!("{}", path.display());
     std::fs::read_to_string(path).expect("failed to read file")
 }
 
@@ -78,7 +87,7 @@ fn quote_section(section: &Section) -> TokenStream {
     section
 }
 
-pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
+pub(super) fn parse_md_page(prefix: &str, link: &str, version: &str) -> MdPage {
     let file_link = if prefix.is_empty() {
         link
     } else {
@@ -121,7 +130,7 @@ pub(super) fn parse_md_page(prefix: &str, link: &str) -> MdPage {
         .render(render_plugins)
         .build();
 
-    let version = Version::from_str(prefix).expect("invalid version in md page prefix");
+    let version = Version::from_str(version).expect("invalid version in md page prefix");
     let md_page_content = markdown_to_html(&md_page_content, &options, &plugins, version);
     let sections = heading_adapter.sections.lock().unwrap().clone();
     let root_section = fix_section_children(&sections);
