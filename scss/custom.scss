@@ -252,3 +252,22 @@ button.navbar-toggler {
 .version-switcher {
   min-width: 5em;
 }
+
+#cot-search {
+  background-image: url("/static/images/search.svg");
+  background-repeat: no-repeat;
+  background-blend-mode: difference;
+  padding-left: 2rem;
+  background-position: 0.5rem 0.4rem;
+}
+
+.search-result-sub-item::before {
+  content: "\2937 ";
+  position: absolute;
+  left: -0.1em;
+}
+
+.search-result-sub-item {
+  padding-left: 1rem;
+  position: relative;
+}
