@@ -75,6 +75,7 @@ struct GuideTemplate<'a> {
     display_version: &'a str,
     canonical_link: &'a str,
     base_context: &'a BaseContext,
+    search_index: SearchIndex,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
 }
@@ -106,13 +107,15 @@ async fn guide(base_context: BaseContext) -> cot::Result<Response> {
 
 async fn guide_version(
     base_context: BaseContext,
+    search_index: SearchIndex,
     Path(version): Path<String>,
 ) -> cot::Result<Html> {
-    page_response(base_context, &version, DEFAULT_GUIDE_PAGE)
+    page_response(base_context, search_index, &version, DEFAULT_GUIDE_PAGE)
 }
 
 async fn guide_page(
     base_context: BaseContext,
+    search_index: SearchIndex,
     Path((version, page)): Path<(String, String)>,
 ) -> cot::Result<Response> {
     if page == DEFAULT_GUIDE_PAGE {
@@ -123,10 +126,15 @@ async fn guide_page(
         )?);
     }
 
-    page_response(base_context, &version, &page).into_response()
+    page_response(base_context, search_index, &version, &page).into_response()
 }
 
-fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::Result<Html> {
+fn page_response(
+    base_context: BaseContext,
+    search_index: SearchIndex,
+    version: &str,
+    page: &str,
+) -> cot::Result<Html> {
     let file_version = if version == "latest" {
         LATEST_VERSION
     } else {
@@ -149,6 +157,7 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
         display_version: file_version,
         canonical_link: &canonical_link,
         base_context: &base_context,
+        search_index,
         prev,
         next,
     };
@@ -234,7 +243,7 @@ impl App for CotSiteApp {
             Route::with_handler_and_name("/guide/", guide, "guide"),
             Route::with_handler_and_name("/guide/{version}/", guide_version, "guide_version"),
             Route::with_handler_and_name("/guide/{version}/{page}/", guide_page, "guide_page"),
-            Route::with_handler("/_pagefind/{file}", serve_pagefind),
+            Route::with_handler_and_name("/_pagefind/{file}", serve_pagefind, "serve_pagefind"),
             Route::with_handler("/_pagefind/{dir}/{file}", serve_pagefind_2),
         ])
     }

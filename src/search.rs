@@ -16,7 +16,7 @@ static SEARCH_INDEX: tokio::sync::OnceCell<SearchIndex> = tokio::sync::OnceCell:
 
 pub const SEARCH_INDEX_TIMEOUT: Duration = Duration::from_secs(365 * 24 * 60 * 60); // 1 year
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct SearchIndex {
     files: Arc<HashMap<String, Vec<u8>>>,
 }
@@ -66,6 +66,16 @@ impl SearchIndex {
 
     pub fn get_file(&self, path: &str) -> Option<&[u8]> {
         self.files.get(path).map(|v| v.as_slice())
+    }
+
+    pub fn get_pagefind_url(&self, urls: &Urls) -> String {
+        let url = cot::reverse!(urls, "serve_pagefind", file = "pagefind.js")
+            .expect("Failed to reverse URL for pagefind.js");
+        let file = self
+            .get_file("pagefind.js")
+            .expect("pagefind.js should be in the search index");
+        let file_hash = hex::encode(&blake3::hash(file).as_slice()[0..6]);
+        format!("{}?v={}", url, file_hash)
     }
 }
 
