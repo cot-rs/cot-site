@@ -22,14 +22,28 @@
             </div>
         </div>
 
-        <aside class="d-none d-lg-block pt-4 me-xxl-5 col-auto sticky-sidebar">
-            {%- include "_guide_chapters.html" -%}
+        <aside class="col-12 col-lg-auto pt-4 me-xxl-5 sticky-sidebar">
+            <div class="mb-3 me-lg-2">
+                <input type="search" class="form-control form-control-sm rounded-pill" id="cot-search" placeholder="Search guide..." aria-label="Search guide">
+            </div>
+
+            <div class="d-none d-lg-block">
+                {%- include "_guide_chapters.html" -%}
+            </div>
         </aside>
 
         {%- let page = guide -%}
         {%- let redirect_version = version -%}
         {%- let latest_version = **versions[1] -%}
         {%- include "_md_page_toc.html" -%}
+
+        <div id="search-results" class="col cot-guide mt-3 px-lg-3 px-xl-5 d-none">
+            <div class="d-flex align-items-center">
+                <h1 class="flex-grow-1">Search results for "<span id="search-query"></span>"</h1>
+                <button type="button" class="btn-close ms-2" aria-label="Close search results" id="search-close"></button>
+            </div>
+            <div id="search-results-list" class="mt-4"></div>
+        </div>
 
         <article class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
             {%- if version != "latest" && version != "master" && version != latest_version -%}
@@ -66,4 +80,13 @@
         </article>
     </div>
 </div>
+
+<script type="module">
+    const currentVersion = "{{ display_version }}";
+    const pagefind = await import("{{ search_index.get_pagefind_url(base_context.urls) }}");
+
+    import { initSearch } from "{{ base_context.static_files.url_for("static/js/search.js")? }}";
+
+    initSearch(pagefind, currentVersion);
+</script>
 {%- endblock %}

@@ -66,7 +66,7 @@ impl Version {
 
 impl Display for Version {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0.to_string())
+        write!(f, "{}", self.0)
     }
 }
 
@@ -75,7 +75,7 @@ impl FromStr for Version {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // replace "master" with latest version
-        let s = if s == MASTER_VERSION || s == "" {
+        let s = if s == MASTER_VERSION || s.is_empty() {
             LATEST_VERSION
         } else {
             s

@@ -1,4 +1,5 @@
 mod guides;
+mod search;
 mod template_util;
 
 use std::time::Duration;
@@ -9,6 +10,7 @@ use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
 use cot::error::NotFound;
 use cot::error::handler::{DynErrorPageHandler, RequestError};
 use cot::html::Html;
+use cot::http::header;
 use cot::project::{
     App, MiddlewareContext, Project, RegisterAppsContext, RootHandler, RootHandlerBuilder,
 };
@@ -23,6 +25,7 @@ use cot_site_common::{ALL_VERSIONS, LATEST_VERSION};
 use cot_site_macros::md_page;
 
 use crate::guides::{get_prev_next_link, parse_guides};
+use crate::search::{SEARCH_INDEX_TIMEOUT, SearchIndex};
 
 #[derive(Debug, Clone, FromRequestHead)]
 struct BaseContext {
@@ -72,6 +75,7 @@ struct GuideTemplate<'a> {
     display_version: &'a str,
     canonical_link: &'a str,
     base_context: &'a BaseContext,
+    search_index: SearchIndex,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
 }
@@ -103,13 +107,15 @@ async fn guide(base_context: BaseContext) -> cot::Result<Response> {
 
 async fn guide_version(
     base_context: BaseContext,
+    search_index: SearchIndex,
     Path(version): Path<String>,
 ) -> cot::Result<Html> {
-    page_response(base_context, &version, DEFAULT_GUIDE_PAGE)
+    page_response(base_context, search_index, &version, DEFAULT_GUIDE_PAGE)
 }
 
 async fn guide_page(
     base_context: BaseContext,
+    search_index: SearchIndex,
     Path((version, page)): Path<(String, String)>,
 ) -> cot::Result<Response> {
     if page == DEFAULT_GUIDE_PAGE {
@@ -120,10 +126,15 @@ async fn guide_page(
         )?);
     }
 
-    page_response(base_context, &version, &page).into_response()
+    page_response(base_context, search_index, &version, &page).into_response()
 }
 
-fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::Result<Html> {
+fn page_response(
+    base_context: BaseContext,
+    search_index: SearchIndex,
+    version: &str,
+    page: &str,
+) -> cot::Result<Html> {
     let file_version = if version == "latest" {
         LATEST_VERSION
     } else {
@@ -146,6 +157,7 @@ fn page_response(base_context: BaseContext, version: &str, page: &str) -> cot::R
         display_version: file_version,
         canonical_link: &canonical_link,
         base_context: &base_context,
+        search_index,
         prev,
         next,
     };
@@ -191,6 +203,31 @@ async fn licenses(base_context: BaseContext) -> cot::Result<Html> {
     Ok(Html::new(template.render()?))
 }
 
+// TODO: remove when Cot supports wildcard routes
+async fn serve_pagefind_2(
+    index: SearchIndex,
+    Path((dir, file)): Path<(String, String)>,
+) -> cot::Result<impl IntoResponse> {
+    serve_pagefind(index, Path(format!("{dir}/{file}"))).await
+}
+
+async fn serve_pagefind(
+    index: SearchIndex,
+    Path(path): Path<String>,
+) -> cot::Result<impl IntoResponse> {
+    let content = index.get_file(&path).ok_or_else(NotFound::new)?;
+    let mime = mime_guess::from_path(&path).first_or_octet_stream();
+
+    Ok(content
+        .to_vec()
+        .with_content_type(mime.to_string())
+        .with_header(
+            header::CACHE_CONTROL,
+            header::HeaderValue::from_str(&format!("max-age={}", SEARCH_INDEX_TIMEOUT.as_secs()))
+                .expect("failed to create cache control header"),
+        ))
+}
+
 struct CotSiteApp;
 
 impl App for CotSiteApp {
@@ -206,6 +243,8 @@ impl App for CotSiteApp {
             Route::with_handler_and_name("/guide/", guide, "guide"),
             Route::with_handler_and_name("/guide/{version}/", guide_version, "guide_version"),
             Route::with_handler_and_name("/guide/{version}/{page}/", guide_page, "guide_page"),
+            Route::with_handler_and_name("/_pagefind/{file}", serve_pagefind, "serve_pagefind"),
+            Route::with_handler("/_pagefind/{dir}/{file}", serve_pagefind_2),
         ])
     }
 
@@ -214,13 +253,15 @@ impl App for CotSiteApp {
             "favicon.ico",
             "static/css/main.css",
             "static/js/color-modes.js",
+            "static/js/search.js",
             "static/images/cot-dark.svg",
             "static/images/favicon.svg",
             "static/images/favicon-32.png",
             "static/images/favicon-180.png",
             "static/images/favicon-192.png",
             "static/images/favicon-512.png",
-            "static/images/site.webmanifest"
+            "static/images/search.svg",
+            "static/images/site.webmanifest",
         )
     }
 }

@@ -15,31 +15,43 @@ resolver = "2"
 
 [workspace.dependencies]
 askama = "0.15"
+blake3 = "1.8"
 chrono = "0.4"
 comrak = "0.50"
 cot = { version = "0.5", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"
+hex = "0.4"
 lightningcss = "1.0.0-alpha.68"
+mime_guess = "2"
+pagefind = "1.4"
 proc-macro2 = "1"
 quote = "1"
+semver = "1.0.27"
 serde = "1"
 serde_yml = "0.0.12"
-semver = "1.0.27"
 syn = "2"
 syntect = "5"
 thiserror = "2.0.18"
+tokio = { version = "1", features = ["sync", "macros", "rt-multi-thread"] }
+tracing = "0.1"
 
 [features]
 nightly = ["cot-site-macros/nightly"]
 
 [dependencies]
 askama.workspace = true
+blake3.workspace = true
 chrono.workspace = true
 cot = { workspace = true, features = ["live-reload"] }
 cot-site-common.workspace = true
 cot-site-macros.workspace = true
+hex.workspace = true
+mime_guess.workspace = true
+pagefind.workspace = true
+tokio.workspace = true
+tracing.workspace = true
 
 [build-dependencies]
 grass.workspace = true
