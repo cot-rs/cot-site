@@ -18,7 +18,7 @@ By employing Cot's testing utilities, you'll be able to verify that each piece o
 
 ## General Overview
 
-Cot provides several built-in utilities located in the [`cot::test` module](https://docs.rs/cot/0.3/cot/test/index.html) to help you create and run tests for your application.
+Cot provides several built-in utilities located in the [`cot::test` module](cot::test) to help you create and run tests for your application.
 
 Typical Rust projects keep their tests in:
 - A dedicated `tests/` directory (for integration tests).
@@ -33,11 +33,11 @@ cargo test
 
 ## Unit Testing
 
-Unit tests focus on testing small, isolated pieces of your application, such as individual functions, request handlers, or utility methods. Cot's `TestRequestBuilder` utility helps you create HTTP request objects in a lightweight way, without spinning up a full HTTP server.
+Unit tests focus on testing small, isolated pieces of your application, such as individual functions, request handlers, or utility methods. Cot's [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) utility helps you create HTTP request objects in a lightweight way, without spinning up a full HTTP server.
 
 ### Test Request Builder
 
-The `TestRequestBuilder` offers a fluent API for constructing HTTP requests that can be dispatched to your request handlers directly:
+The [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) offers a fluent API for constructing HTTP requests that can be dispatched to your request handlers directly:
 
 ```rust
 // Create a GET request
@@ -72,7 +72,7 @@ let request = TestRequestBuilder::post("/")
 
 ## Integration Testing
 
-Integration tests check how multiple parts of your application work together. Cot provides a `Client` struct to help you simulate end-to-end HTTP interactions with a fully running instance of your application.
+Integration tests check how multiple parts of your application work together. Cot provides a [`Client`](struct@cot::test::Client) struct to help you simulate end-to-end HTTP interactions with a fully running instance of your application.
 
 ### Test Client
 
@@ -103,7 +103,7 @@ let response = client.request(request).await?;
 
 ## Test Database
 
-Cot's testing utilities also include the `TestDatabase` struct, which helps you create temporary databases for your tests. This allows you to test how your application interacts with data storage without polluting your real database.
+Cot's testing utilities also include the [`TestDatabase`](struct@cot::test::TestDatabase) struct, which helps you create temporary databases for your tests. This allows you to test how your application interacts with data storage without polluting your real database.
 
 ```rust
 // Create SQLite test database (in-memory)
@@ -166,13 +166,13 @@ test_db.cleanup().await?;
 - PostgreSQL and MySQL test databases are created with the prefix `test_cot__`.
 - The SQLite database is in-memory by default.
 - Form data is currently only supported with POST requests.
-- Custom migrations can be added using the `add_migrations` method on `TestDatabase`.
+- Custom migrations can be added using the [`add_migrations`](struct@cot::test::TestDatabase#method.add_migrations) method on [`TestDatabase`](struct@cot::test::TestDatabase).
 
 ## End-to-end testing
 
 Cot provides an end-to-end testing framework that allows you to test your entire application in a near-production environment. This is particularly useful for testing complex workflows that involve multiple components, such as user authentication, database interactions, external API calls, and your application's UI. By using the end-to-end testing framework you will be able to send real HTTP requests or use web automation tools to simulate user interactions with your application.
 
-The end-to-end testing framework consists of two parts: the `cot::e2e_test` macro and the `TestServerBuilder` struct. The `cot::e2e_test` macro allows you to define end-to-end tests that allow you to run your project in the background, while the `TestServerBuilder` struct allows you to create a test server that you can send your requests to. An example of how to use the `cot::e2e_test` macro and the `TestServerBuilder` struct is shown below in a simple test that checks if the server is running and returns the `Hello world!` response:
+The end-to-end testing framework consists of two parts: the [`cot::e2e_test`](attr@cot::e2e_test) macro and the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct. The [`cot::e2e_test`](attr@cot::e2e_test) macro allows you to define end-to-end tests that allow you to run your project in the background, while the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct allows you to create a test server that you can send your requests to. An example of how to use the [`cot::e2e_test`](attr@cot::e2e_test) macro and the [`TestServerBuilder`](struct@cot::test::TestServerBuilder) struct is shown below in a simple test that checks if the server is running and returns the `Hello world!` response:
 
 ```rust
 struct TestProject;
@@ -209,8 +209,8 @@ Please refer to the documentation of these crates for more information on how to
 
 Cot's testing framework provides a robust and flexible approach to ensuring the quality of your application.
 
-- **Unit tests** with `TestRequestBuilder` help you verify that individual components behave as expected.
-- **Integration tests** with `Client` let you test your entire application in a near-production environment, while `TestDatabase` give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
+- **Unit tests** with [`TestRequestBuilder`](struct@cot::test::TestRequestBuilder) help you verify that individual components behave as expected.
+- **Integration tests** with [`Client`](struct@cot::test::Client) let you test your entire application in a near-production environment, while [`TestDatabase`](struct@cot::test::TestDatabase) give you confidence that your data layer is functioning correctly, whether you're using SQLite, PostgreSQL, or MySQL.
 - **End-to-end tests** TODO
 
 By integrating these testing tools into your workflow, you can deploy your Cot applications with greater confidence. Happy testing!
