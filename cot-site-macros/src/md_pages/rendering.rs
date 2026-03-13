@@ -111,7 +111,7 @@ fn render_table_custom<'a>(
 /// ```
 ///
 /// ## Features
-/// Reference to features should follow the format `features@featue_name`, where
+/// Reference to features should follow the format `feature@feature_name`, where
 /// `feature_name` is the name of the feature.
 ///
 /// # Other Internal Navigation Links
@@ -143,7 +143,7 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
         })
         .unwrap_or((None, route));
 
-    if !route_str.starts_with("cot::") && ty != Some("features") {
+    if !route_str.starts_with("cot::") && ty != Some("feature") {
         return route.to_string();
     }
 
@@ -161,14 +161,15 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
         .last()
         .expect("route split produced no segments")
         .split_once('#')
-        .map(|(last_part, extras)| (last_part, Some(extras)))
+        .map(|(last_part, internal_nav_link)| (last_part, Some(internal_nav_link)))
         .unwrap_or((segs.last().unwrap(), None));
 
     if let Some(ty) = ty {
         match ty {
-            "features" => {
+            "feature" => {
                 // features use the crate overview page instead of the regular doc.rs page.
                 parts[0] = COT_RUSTDOC_CRATE_OVERVIEW_URL.to_string();
+                // rustdoc uses `features`. we use `feature` for consistency with other types.
                 parts.push(format!("features#{}", last_part))
             }
             other => {

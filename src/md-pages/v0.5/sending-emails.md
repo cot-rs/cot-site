@@ -6,7 +6,7 @@ Cot provides a unified interface for sending emails, allowing you to switch betw
 
 ## Configuration
 
-To use the email system, you need to enable the [`email`](features@email) feature in `cot` and configure it.
+To use the email system, you need to enable the [`email`](feature@email) feature in `cot` and configure it.
 
 ### Enabling the Feature
 

@@ -16,7 +16,7 @@ This chapter will guide you through setting up OpenAPI in your Cot project and s
 
 ## Prerequisites
 
-To use OpenAPI features in Cot, you need to enable the [`openapi`](features@openapi) and [`swagger-ui`](features@swagger-ui) features in your project's `Cargo.toml`:
+To use OpenAPI features in Cot, you need to enable the [`openapi`](feature@openapi) and [`swagger-ui`](feature@swagger-ui) features in your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
