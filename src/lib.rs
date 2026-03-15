@@ -2,33 +2,32 @@ mod guides;
 mod search;
 mod template_util;
 
-use std::time::Duration;
+use std::sync::Arc;
 
 use askama::filters::{HtmlSafe, Safe};
-use cot::cli::CliMetadata;
-use cot::config::{ProjectConfig, StaticFilesConfig, StaticFilesPathRewriteMode};
+use async_trait::async_trait;
 use cot::error::NotFound;
-use cot::error::handler::{DynErrorPageHandler, RequestError};
+use cot::error::handler::RequestError;
 use cot::html::Html;
 use cot::http::header;
-use cot::project::{
-    App, MiddlewareContext, Project, RegisterAppsContext, RootHandler, RootHandlerBuilder,
-};
+use cot::project::App;
 use cot::request::extractors::{FromRequestHead, Path, StaticFiles};
 use cot::request::{RequestExt, RequestHead};
 use cot::response::{IntoResponse, Response};
 use cot::router::{Route, Router, Urls};
-use cot::static_files::{StaticFile, StaticFilesMiddleware};
-use cot::{AppBuilder, Template, reverse_redirect, static_files};
+use cot::static_files::StaticFile;
+use cot::{ProjectContext, Template, reverse_redirect, static_files};
+pub use cot_site_common;
 use cot_site_common::md_pages::{MdPage, MdPageLink, Section};
 use cot_site_common::{ALL_VERSIONS, LATEST_VERSION};
-use cot_site_macros::md_page;
+pub use cot_site_macros::external_md_page as md_page;
+use cot_site_macros::md_page as internal_md_page;
 
-use crate::guides::{get_prev_next_link, parse_guides};
-use crate::search::{SEARCH_INDEX_TIMEOUT, SearchIndex};
+use crate::guides::{ParsedPages, get_categories, get_prev_next_link};
+use crate::search::{SEARCH_INDEX, SEARCH_INDEX_TIMEOUT, SearchIndex, build_search_index};
 
 #[derive(Debug, Clone, FromRequestHead)]
-struct BaseContext {
+pub struct BaseContext {
     urls: Urls,
     static_files: StaticFiles,
     route_name: RouteName,
@@ -109,14 +108,22 @@ async fn guide_version(
     base_context: BaseContext,
     search_index: SearchIndex,
     Path(version): Path<String>,
+    pages: Arc<ParsedPages>,
 ) -> cot::Result<Html> {
-    page_response(base_context, search_index, &version, DEFAULT_GUIDE_PAGE)
+    page_response(
+        base_context,
+        search_index,
+        &version,
+        DEFAULT_GUIDE_PAGE,
+        pages,
+    )
 }
 
 async fn guide_page(
     base_context: BaseContext,
     search_index: SearchIndex,
     Path((version, page)): Path<(String, String)>,
+    pages: Arc<ParsedPages>,
 ) -> cot::Result<Response> {
     if page == DEFAULT_GUIDE_PAGE {
         return Ok(reverse_redirect!(
@@ -126,7 +133,7 @@ async fn guide_page(
         )?);
     }
 
-    page_response(base_context, search_index, &version, &page).into_response()
+    page_response(base_context, search_index, &version, &page, pages).into_response()
 }
 
 fn page_response(
@@ -134,23 +141,24 @@ fn page_response(
     search_index: SearchIndex,
     version: &str,
     page: &str,
+    pages: Arc<ParsedPages>,
 ) -> cot::Result<Html> {
     let file_version = if version == "latest" {
         LATEST_VERSION
     } else {
         version
     };
-    if !ALL_VERSIONS.contains(&file_version) {
-        return Err(NotFound::new().into());
-    }
-    let (link_categories, guide_map) = parse_guides(file_version);
-    let guide = guide_map.get(page).ok_or_else(NotFound::new)?;
-    let (prev, next) = get_prev_next_link(&link_categories, page);
+    let pages = pages
+        .version_map
+        .get(file_version)
+        .ok_or_else(NotFound::new)?;
+    let guide = pages.guide_map.get(page).ok_or_else(NotFound::new)?;
+    let (prev, next) = get_prev_next_link(&pages.categories_links, page);
     let canonical_link = canonical_link(&base_context.urls, file_version, page)
         .expect("Failed to create canonical link");
 
     let guide_template = GuideTemplate {
-        link_categories: &link_categories,
+        link_categories: &pages.categories_links,
         guide,
         versions: ALL_VERSIONS,
         version,
@@ -187,7 +195,7 @@ struct MdPageTemplate<'a> {
 
 async fn faq(base_context: BaseContext) -> cot::Result<Html> {
     let template = MdPageTemplate {
-        page: &md_page!("", "faq"),
+        page: &internal_md_page!("", "faq"),
         base_context: &base_context,
     };
 
@@ -196,7 +204,7 @@ async fn faq(base_context: BaseContext) -> cot::Result<Html> {
 
 async fn licenses(base_context: BaseContext) -> cot::Result<Html> {
     let template = MdPageTemplate {
-        page: &md_page!("", "licenses"),
+        page: &internal_md_page!("", "licenses"),
         base_context: &base_context,
     };
 
@@ -228,23 +236,68 @@ async fn serve_pagefind(
         ))
 }
 
-struct CotSiteApp;
+#[derive(Debug)]
+pub struct CotSiteApp {
+    pages: Arc<ParsedPages>,
+}
 
+impl CotSiteApp {
+    pub fn new(master_pages: Vec<(&'static str, Vec<MdPage>)>) -> Self {
+        let pages = get_categories(master_pages);
+
+        Self {
+            pages: Arc::new(pages),
+        }
+    }
+}
+
+#[async_trait]
 impl App for CotSiteApp {
     fn name(&self) -> &'static str {
         "cot-site"
     }
 
     fn router(&self) -> Router {
+        let pages_guide_version = self.pages.clone();
+        let pages_guide_page = self.pages.clone();
+
         Router::with_urls([
             Route::with_handler_and_name("/", index, "index"),
             Route::with_handler_and_name("/faq/", faq, "faq"),
             Route::with_handler_and_name("/licenses/", licenses, "licenses"),
             Route::with_handler_and_name("/guide/", guide, "guide"),
-            Route::with_handler_and_name("/guide/{version}/", guide_version, "guide_version"),
-            Route::with_handler_and_name("/guide/{version}/{page}/", guide_page, "guide_page"),
             Route::with_handler_and_name("/_pagefind/{file}", serve_pagefind, "serve_pagefind"),
             Route::with_handler("/_pagefind/{dir}/{file}", serve_pagefind_2),
+            Route::with_handler_and_name(
+                "/guide/{version}/",
+                async move |base_context: BaseContext,
+                            search_index: SearchIndex,
+                            path: Path<String>| {
+                    guide_version(
+                        base_context,
+                        search_index,
+                        path,
+                        Arc::clone(&pages_guide_version),
+                    )
+                    .await
+                },
+                "guide_version",
+            ),
+            Route::with_handler_and_name(
+                "/guide/{version}/{page}/",
+                async move |base_context: BaseContext,
+                            search_index: SearchIndex,
+                            path: Path<(String, String)>| {
+                    guide_page(
+                        base_context,
+                        search_index,
+                        path,
+                        Arc::clone(&pages_guide_page),
+                    )
+                    .await
+                },
+                "guide_page",
+            ),
         ])
     }
 
@@ -264,45 +317,20 @@ impl App for CotSiteApp {
             "static/images/site.webmanifest",
         )
     }
-}
 
-struct CotSiteProject;
+    async fn init(&self, context: &mut ProjectContext) -> cot::Result<()> {
+        let router = context.router();
+        let urls = Urls::from(context);
+        let search_index = build_search_index(urls, Arc::clone(&self.pages)).await;
 
-impl Project for CotSiteProject {
-    fn cli_metadata(&self) -> CliMetadata {
-        cot::cli::metadata!()
-    }
-
-    fn config(&self, _config_name: &str) -> cot::Result<ProjectConfig> {
-        // we don't need to load any config
-        Ok(ProjectConfig::builder()
-            .static_files(
-                StaticFilesConfig::builder()
-                    .url("/")
-                    .rewrite(StaticFilesPathRewriteMode::QueryParam)
-                    .cache_timeout(Duration::from_secs(365 * 24 * 60 * 60))
-                    .build(),
-            )
-            .build())
-    }
-
-    fn register_apps(&self, modules: &mut AppBuilder, _app_context: &RegisterAppsContext) {
-        modules.register_with_views(CotSiteApp, "");
-    }
-
-    fn middlewares(&self, handler: RootHandlerBuilder, context: &MiddlewareContext) -> RootHandler {
-        let handler = handler.middleware(StaticFilesMiddleware::from_context(context));
-        #[cfg(debug_assertions)]
-        let handler = handler.middleware(cot::middleware::LiveReloadMiddleware::new());
-        handler.build()
-    }
-
-    fn error_handler(&self) -> DynErrorPageHandler {
-        DynErrorPageHandler::new(handle_error)
+        SEARCH_INDEX
+            .set(search_index)
+            .expect("search index should be set once");
+        Ok(())
     }
 }
 
-async fn handle_error(
+pub async fn cot_site_handle_error(
     base_context: BaseContext,
     error: RequestError,
 ) -> cot::Result<impl IntoResponse> {
@@ -322,9 +350,4 @@ async fn handle_error(
     let rendered = error_template.render()?;
 
     Ok(Html::new(rendered).with_status(status_code))
-}
-
-#[cot::main]
-fn main() -> impl Project {
-    CotSiteProject
 }

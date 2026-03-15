@@ -1,5 +1,5 @@
 <div align="center">
-<h1><a href="https://cot.rs">Cot Website</a></h1>
+<h1><a href="https://cot.rs">Cot Website Engine</a></h1>
 
 [![Rust Build Status](https://github.com/cot-rs/cot-site/workflows/Rust%20CI/badge.svg)](https://github.com/cot-rs/cot-site/actions/workflows/rust.yml)
 [![Docker Build Status](https://github.com/cot-rs/cot-site/workflows/Docker%20Images/badge.svg)](https://github.com/cot-rs/cot-site/actions/workflows/docker.yml)
@@ -8,42 +8,14 @@
 
 This is the repository for the source of the website for the [Cot web framework](https://github.com/cot-rs/cot).
 
+Note that this repository does not contain the guide pages themselves, and it serves mostly as an engine to build the website and render the Markdown files that are located in the [cot repository](https://github.com/cot-rs/cot/tree/master/docs).
+
 ## Submodules
 The cot-site repo imports syntax highlighting packages as submodules, which should be pulled initially using the command below before running:
 
 ```bash
 git submodule update --init --recursive
 ```
-
-## Development
-
-Make sure you have `cargo` installed. You can get it through [rustup](https://rustup.rs/).
-
-Then, the easiest way to run the development server is to run:
-
-```bash
-cargo run
-```
-
-The website doesn't need any external resources (such as the database), so nothing more is needed.
-
-### Modifying the guide or other Markdown files
-
-Because of the internals of Markdown processing macros work, you will need to use the nightly toolchain and enable the `nightly` features if you want to see the changes made to the Markdown files in the without using `cargo clean`:
-
-```bash
-cargo +nightly run --features nightly
-```
-
-### Live reloading
-
-To make the development more convenient, you can use [bacon](https://dystroy.org/bacon/) to get live reloading capabilities. After installing it, you can execute:
-
-```bash
-bacon serve
-```
-
-All the changes you do in Rust source files or the templates should be automatically reflected in the web browser.
 
 ## License
 
