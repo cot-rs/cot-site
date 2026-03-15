@@ -319,7 +319,6 @@ impl App for CotSiteApp {
     }
 
     async fn init(&self, context: &mut ProjectContext) -> cot::Result<()> {
-        let router = context.router();
         let urls = Urls::from(context);
         let search_index = build_search_index(urls, Arc::clone(&self.pages)).await;
 

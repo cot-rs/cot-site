@@ -5,10 +5,10 @@ fn main() {
 
     println!("cargo::rustc-check-cfg=cfg(cot_use_nightly)");
     if rustversion::cfg!(nightly) {
-        println!("cargo:rustc-cfg=cot_use_nightly");
+        println!("cargo::rustc-cfg=cot_use_nightly");
     }
 
-    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo::rerun-if-changed=build.rs");
 }
 
 fn build_syntax_highlighting_defs() {
