@@ -22,6 +22,6 @@ pub fn external_md_page(input: TokenStream) -> TokenStream {
 
     let ExternalMdPageInput { link } = syn::parse2(input).unwrap();
 
-    let md_page = md_pages::parse_md_page("../docs", &link, "master");
+    let md_page = md_pages::parse_md_page("..", &link, "master");
     md_pages::quote_md_page(&md_page).into()
 }
