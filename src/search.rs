@@ -5,14 +5,13 @@ use std::time::Duration;
 use cot::request::RequestHead;
 use cot::request::extractors::FromRequestHead;
 use cot::router::Urls;
-use cot_site_common::ALL_VERSIONS;
 use pagefind::api::PagefindIndex;
 use pagefind::options::PagefindServiceConfig;
 use tracing::info;
 
-use crate::guides::parse_guides;
+use crate::guides::ParsedPages;
 
-static SEARCH_INDEX: tokio::sync::OnceCell<SearchIndex> = tokio::sync::OnceCell::const_new();
+pub static SEARCH_INDEX: tokio::sync::OnceCell<SearchIndex> = tokio::sync::OnceCell::const_new();
 
 pub const SEARCH_INDEX_TIMEOUT: Duration = Duration::from_secs(365 * 24 * 60 * 60); // 1 year
 
@@ -22,7 +21,7 @@ pub struct SearchIndex {
 }
 
 impl SearchIndex {
-    pub async fn generate(urls: Urls) -> cot::Result<Self> {
+    pub async fn generate(urls: Urls, pages: Arc<ParsedPages>) -> cot::Result<Self> {
         let options = PagefindServiceConfig::builder()
             .keep_index_url(true)
             .force_language("en".to_string())
@@ -31,9 +30,8 @@ impl SearchIndex {
         let mut indexer = PagefindIndex::new(Some(options))
             .map_err(|e| cot::Error::internal(format!("Failed to initialize Pagefind: {}", e)))?;
 
-        for &version in ALL_VERSIONS {
-            let (_, guide_map) = parse_guides(version);
-            for (page_id, page) in guide_map {
+        for (version, pages) in &pages.version_map {
+            for (page_id, page) in &pages.guide_map {
                 let url = cot::reverse!(urls, "guide_page", version = version, page = page_id)
                     .expect("Failed to reverse URL for guide page");
                 let html = format!(
@@ -80,18 +78,15 @@ impl SearchIndex {
 }
 
 impl FromRequestHead for SearchIndex {
-    async fn from_request_head(head: &RequestHead) -> cot::Result<Self> {
-        let urls = Urls::from_request_head(head)
-            .await
-            .expect("Failed to extract URLs from request head");
+    async fn from_request_head(_head: &RequestHead) -> cot::Result<Self> {
         let index = SEARCH_INDEX
-            .get_or_init(async || build_search_index(urls).await)
-            .await;
+            .get()
+            .expect("search index should be initialized in init()");
         Ok(index.clone())
     }
 }
 
-async fn build_search_index(urls: Urls) -> SearchIndex {
+pub async fn build_search_index(urls: Urls, pages: Arc<ParsedPages>) -> SearchIndex {
     tokio::task::spawn_blocking(move || {
         // SearchIndex::generate is not Send due to the PagefindIndex it uses
         // internally, so we run it in a separate tokio runtime
@@ -101,7 +96,7 @@ async fn build_search_index(urls: Urls) -> SearchIndex {
             .unwrap();
         rt.block_on(async {
             info!("Generating search index...");
-            match SearchIndex::generate(urls).await {
+            match SearchIndex::generate(urls, pages).await {
                 Ok(index) => {
                     info!("Search index generated successfully");
                     index

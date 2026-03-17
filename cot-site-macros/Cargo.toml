@@ -2,6 +2,7 @@
 name = "cot-site-macros"
 version = "0.1.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
 
 [lib]
 proc-macro = true
@@ -19,4 +20,5 @@ syn.workspace = true
 syntect = { workspace = true, features = ["dump-load"] }
 
 [build-dependencies]
+rustversion.workspace = true
 syntect = { workspace = true, features = ["dump-create"] }
