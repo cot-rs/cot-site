@@ -242,6 +242,11 @@ pub struct CotSiteApp {
 }
 
 impl CotSiteApp {
+    /// Creates a new instance of [`CotSiteApp`].
+    ///
+    /// The `master_pages` parameter should contain a list of sections, where
+    /// each section is a tuple containing the name of the section and list
+    /// of pages inside it.
     pub fn new(master_pages: Vec<(&'static str, Vec<MdPage>)>) -> Self {
         let pages = get_categories(master_pages);
 
