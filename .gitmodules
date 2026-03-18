@@ -13,3 +13,6 @@
 [submodule "syntax-highlighting/sublime_toml_highlighting"]
 	path = syntax-highlighting/sublime_toml_highlighting
 	url = https://github.com/jasonwilliams/sublime_toml_highlighting.git
+[submodule "docs/v0.6"]
+	path = docs/v0.6
+	url = https://github.com/cot-rs/cot.git
