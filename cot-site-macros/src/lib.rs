@@ -12,7 +12,12 @@ pub fn md_page(input: TokenStream) -> TokenStream {
 
     let MdPageInput { prefix, link } = syn::parse2(input).unwrap();
 
-    let md_page = md_pages::parse_md_page(&format!("docs/{prefix}"), &link, &prefix);
+    let path_prefix = if prefix.is_empty() {
+        "docs/".to_string()
+    } else {
+        format!("docs/{prefix}/docs")
+    };
+    let md_page = md_pages::parse_md_page(&path_prefix, &link, &prefix);
     md_pages::quote_md_page(&md_page).into()
 }
 

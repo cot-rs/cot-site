@@ -152,6 +152,29 @@ pub(crate) fn get_categories(master_version: Vec<(&'static str, Vec<MdPage>)>) -
                 ("About", vec![md_page!("v0.5", "framework-comparison")]),
             ],
         ),
+        (
+            "v0.6",
+            vec![
+                (
+                    "Getting started",
+                    vec![
+                        md_page!("v0.6", "introduction"),
+                        md_page!("v0.6", "templates"),
+                        md_page!("v0.6", "forms"),
+                        md_page!("v0.6", "db-models"),
+                        md_page!("v0.6", "admin-panel"),
+                        md_page!("v0.6", "static-files"),
+                        md_page!("v0.6", "sending-emails"),
+                        md_page!("v0.6", "caching"),
+                        md_page!("v0.6", "error-pages"),
+                        md_page!("v0.6", "openapi"),
+                        md_page!("v0.6", "testing"),
+                    ],
+                ),
+                ("Upgrading", vec![md_page!("v0.6", "upgrade-guide")]),
+                ("About", vec![md_page!("v0.6", "framework-comparison")]),
+            ],
+        ),
         ("master", master_version),
     ]);
 
