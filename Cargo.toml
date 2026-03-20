@@ -19,7 +19,7 @@ askama = "0.15"
 async-trait = "0.1"
 blake3 = "1.8"
 chrono = "0.4"
-comrak = "0.50"
+comrak = { version = "0.51", default-features = false }
 # TODO: change to crates.io version once it's published
 cot = { git = "https://github.com/cot-rs/cot.git", rev = "6774ea6710e620e41ec162b258a21284eef5ab3e", default-features = false }
 cot-site-common = { path = "cot-site-common" }
