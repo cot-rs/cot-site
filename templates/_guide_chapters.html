@@ -23,49 +23,8 @@
             </strong>
 
             <ul class="fw-normal pb-2 small">
-                {%- for item in category.guides -%}
-                {%- let is_active = item.contains_active_page(&guide.link) -%}
-                {%- match item -%}
-
-                {%- when GuideCategoryItem::Page(link) -%}
-                <li>
-                    <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = link.link)? }}"
-                    class="guide-link d-inline-block{% if guide.link == link.link %} active{% endif %}">
-                    {{ link.title }}
-                    </a>
-                </li>
-
-                {%- when GuideCategoryItem::SubCategory { title, pages } -%}
-                {%- let collapse_id = item.collapse_id() -%}
-                <li class="guide-subcategory mt-1">
-                    <button
-                            class="guide-subcategory-toggle d-flex w-100 align-items-center justify-content-between{% if is_active %} active{% endif %}"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapse-{{ collapse_id }}"
-                            aria-expanded="{{ is_active }}"
-                            aria-controls="collapse-{{ collapse_id }}"
-                    >
-                        <span>{{ title }}</span>
-                        <svg class="guide-subcategory-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </button>
-                    <div class="collapse{% if is_active %} show{% endif %}" id="collapse-{{ collapse_id }}">
-                        <ul class="guide-subcategory-pages fw-normal small">
-                            {%- for page in pages -%}
-                            <li>
-                                <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = page.link)? }}"
-                                class="guide-link d-inline-block{% if guide.link == page.link %} active{% endif %}">
-                                {{ page.title }}
-                                </a>
-                            </li>
-                            {%- endfor -%}
-                        </ul>
-                    </div>
-                </li>
-
-                {%- endmatch -%}
+                {%- for guide_link in category.guides -%}
+                <li><a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = guide_link.link)? }}" class="d-inline-block{% if guide.link == guide_link.link %} active{% endif %}">{{ guide_link.title }}</a></li>
                 {%- endfor -%}
             </ul>
         </li>

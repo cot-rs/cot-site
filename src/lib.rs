@@ -64,47 +64,6 @@ async fn index(base_context: BaseContext) -> cot::Result<Html> {
     Ok(Html::new(rendered))
 }
 
-#[derive(Debug, Clone)]
-struct GuideLinkCategory {
-    title: &'static str,
-    guides: Vec<GuideCategoryItem>,
-}
-
-#[derive(Debug, Clone)]
-pub enum GuideCategoryItem {
-    Page(MdPageLink),
-    SubCategory {
-        title: &'static str,
-        pages: Vec<MdPageLink>,
-    },
-}
-
-impl GuideCategoryItem {
-    pub fn contains_active_page(&self, current_link: &str) -> bool {
-        match self {
-            GuideCategoryItem::SubCategory { pages, .. } => {
-                pages.iter().any(|p| p.link == current_link)
-            }
-            GuideCategoryItem::Page(_) => false,
-        }
-    }
-
-    pub fn collapse_id(&self) -> String {
-        match self {
-            GuideCategoryItem::SubCategory { title, .. } => title.to_lowercase().replace(' ', "-"),
-            GuideCategoryItem::Page(_) => String::new(),
-        }
-    }
-}
-
-pub enum GuideItem {
-    Page(MdPage),
-    SubCategory {
-        title: &'static str,
-        pages: Vec<MdPage>,
-    },
-}
-
 #[derive(Debug, Template)]
 #[template(path = "guide.html")]
 struct GuideTemplate<'a> {
@@ -118,6 +77,12 @@ struct GuideTemplate<'a> {
     search_index: SearchIndex,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
+}
+
+#[derive(Debug, Clone)]
+struct GuideLinkCategory {
+    title: &'static str,
+    guides: Vec<MdPageLink>,
 }
 
 fn render_section(section: &Section) -> Safe<String> {
@@ -292,7 +257,7 @@ impl CotSiteApp {
     /// The `master_pages` parameter should contain a list of sections, where
     /// each section is a tuple containing the name of the section and list
     /// of pages inside it.
-    pub fn new(master_pages: Vec<(&'static str, Vec<GuideItem>)>) -> Self {
+    pub fn new(master_pages: Vec<(&'static str, Vec<MdPage>)>) -> Self {
         let pages = get_categories(master_pages);
 
         Self {
@@ -370,7 +335,6 @@ impl App for CotSiteApp {
     fn static_files(&self) -> Vec<StaticFile> {
         static_files!(
             "favicon.ico",
-            "static/css/guide_chapters.css",
             "static/css/main.css",
             "static/js/color-modes.js",
             "static/js/search.js",
