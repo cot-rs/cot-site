@@ -136,16 +136,6 @@ async fn guide_page(
     page_response(base_context, search_index, &version, &page, pages).into_response()
 }
 
-async fn guide_section_page(
-    base_context: BaseContext,
-    search_index: SearchIndex,
-    Path((version, section, page)): Path<(String, String, String)>,
-    pages: Arc<ParsedPages>,
-) -> cot::Result<Response> {
-    let page = format!("{section}/{page}");
-    page_response(base_context, search_index, &version, &page, pages).into_response()
-}
-
 fn page_response(
     base_context: BaseContext,
     search_index: SearchIndex,
@@ -275,7 +265,6 @@ impl App for CotSiteApp {
     fn router(&self) -> Router {
         let pages_guide_version = self.pages.clone();
         let pages_guide_page = self.pages.clone();
-        let pages_guide_section_page = self.pages.clone();
 
         Router::with_urls([
             Route::with_handler_and_name("/", index, "index"),
@@ -313,21 +302,6 @@ impl App for CotSiteApp {
                     .await
                 },
                 "guide_page",
-            ),
-            Route::with_handler_and_name(
-                "/guide/{version}/{section}/{page}/",
-                async move |base_context: BaseContext,
-                            search_index: SearchIndex,
-                            path: Path<(String, String, String)>| {
-                    guide_section_page(
-                        base_context,
-                        search_index,
-                        path,
-                        Arc::clone(&pages_guide_section_page),
-                    )
-                    .await
-                },
-                "guide_section_page",
             ),
         ])
     }
