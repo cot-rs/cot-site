@@ -71,7 +71,7 @@ struct GuideLinkCategory {
 }
 
 #[derive(Debug, Clone)]
-pub enum GuideCategoryItem {
+enum GuideCategoryItem {
     Page(MdPageLink),
     SubCategory {
         title: &'static str,
@@ -97,8 +97,38 @@ impl GuideCategoryItem {
     }
 }
 
+/// Represents an item in a documentation guide. Each item can either be a
+/// single markdown page or a subcategory containing a collection of related
+/// pages.
 pub enum GuideItem {
+    /// A single markdown page to be rendered as part of the guide.
+    ///
+    /// # Examples
+    /// ```
+    /// use cot_site::GuideItem;
+    /// use cot_site_macros::md_page;
+    ///
+    /// let page = GuideItem::Page(md_page!("guide", "introduction"));
+    /// ```
     Page(MdPage),
+    /// A subcategory containing a collection of related pages.
+    ///
+    /// # Examples
+    /// ```
+    /// use cot_site::GuideItem;
+    /// use cot_site_macros::md_page;
+    ///
+    /// let subcategory = GuideItem::SubCategory(
+    ///     {
+    ///         title: "Database",
+    ///         pages: vec![
+    ///             md_page!("guide/databases/overview"),
+    ///             md_page!("guide/databases/queries"),
+    ///             md_page!("guide/databases/migrations"),
+    ///         ]
+    ///     }
+    /// )
+    /// ```
     SubCategory {
         title: &'static str,
         pages: Vec<MdPage>,
