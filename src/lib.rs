@@ -80,7 +80,10 @@ enum GuideCategoryItem {
 }
 
 impl GuideCategoryItem {
-    pub fn contains_active_page(&self, current_link: &str) -> bool {
+    /// Takes a link and checks whether any of the pages in that subcategory
+    /// matches it. We call this inside the templates to decide whether a
+    /// subcategory accordion should start open or closed.
+    fn contains_active_page(&self, current_link: &str) -> bool {
         match self {
             GuideCategoryItem::SubCategory { pages, .. } => {
                 pages.iter().any(|p| p.link == current_link)
@@ -88,8 +91,9 @@ impl GuideCategoryItem {
             GuideCategoryItem::Page(_) => false,
         }
     }
-
-    pub fn collapse_id(&self) -> String {
+    /// Returns a unique ID for the category which bootstrap uses to
+    /// control the open/close behavior of the accordion
+    fn collapse_id(&self) -> String {
         match self {
             GuideCategoryItem::SubCategory { title, .. } => title.to_lowercase().replace(' ', "-"),
             GuideCategoryItem::Page(_) => String::new(),
