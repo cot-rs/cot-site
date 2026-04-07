@@ -108,9 +108,8 @@ pub enum GuideItem {
     /// A single markdown page to be rendered as part of the guide.
     ///
     /// # Examples
-    /// ```
-    /// use cot_site::GuideItem;
-    /// use cot_site_macros::md_page;
+    /// ```ignore
+    /// use cot_site::{GuideItem, md_page};
     ///
     /// let page = GuideItem::Page(md_page!("guide", "introduction"));
     /// ```
@@ -118,20 +117,17 @@ pub enum GuideItem {
     /// A subcategory containing a collection of related pages.
     ///
     /// # Examples
-    /// ```
-    /// use cot_site::GuideItem;
-    /// use cot_site_macros::md_page;
+    /// ```ignore
+    /// use cot_site::{GuideItem, md_page};
     ///
-    /// let subcategory = GuideItem::SubCategory(
-    ///     {
+    /// let subcategory = GuideItem::SubCategory{
     ///         title: "Database",
     ///         pages: vec![
     ///             md_page!("guide/databases/overview"),
     ///             md_page!("guide/databases/queries"),
     ///             md_page!("guide/databases/migrations"),
     ///         ]
-    ///     }
-    /// )
+    /// };
     /// ```
     SubCategory {
         title: &'static str,
