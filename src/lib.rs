@@ -70,6 +70,7 @@ struct GuideLinkCategory {
     guides: Vec<GuideCategoryItem>,
 }
 
+/// Internal representation of a guide item that gets rendered in the templates.
 #[derive(Debug, Clone)]
 enum GuideCategoryItem {
     Page(MdPageLink),
@@ -400,7 +401,6 @@ impl App for CotSiteApp {
     fn static_files(&self) -> Vec<StaticFile> {
         static_files!(
             "favicon.ico",
-            "static/css/guide_chapters.css",
             "static/css/main.css",
             "static/js/color-modes.js",
             "static/js/search.js",
