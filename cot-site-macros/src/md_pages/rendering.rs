@@ -1,3 +1,4 @@
+use std::fmt;
 use std::fmt::Write;
 
 use comrak::html::{
@@ -47,8 +48,29 @@ fn format_node_custom<'a>(
     match node.data.borrow().value {
         NodeValue::Table(_) => render_table_custom(context, node, entering),
         NodeValue::Link(ref ln) => render_link_custom(context, node, entering, ln),
+        NodeValue::CodeBlock(_) => render_code_block(context, node, entering),
         _ => format_node_default(context, node, entering),
     }
+}
+
+fn render_code_block<'a, T>(
+    context: &mut Context<T>,
+    node: &'a AstNode<'a>,
+    entering: bool,
+) -> Result<ChildRendering, fmt::Error> {
+    if entering {
+        context.cr()?;
+        context.write_str("<div class=\"code-block\">")?;
+        context.write_str("<button type=\"button\" class=\"code-block-copy-btn\" data-copy-code aria-label=\"copy\" title=\"copy\">Copy</button>")?;
+    }
+
+    format_node_default(context, node, entering)?;
+
+    if !entering {
+        context.write_str("</div>")?;
+    }
+
+    Ok(ChildRendering::HTML)
 }
 
 fn render_table_custom<'a>(
