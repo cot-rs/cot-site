@@ -34,6 +34,6 @@ fn add_syntax_highlighting_from_folder(builder: &mut SyntaxSetBuilder, path: &st
     builder
         .add_from_folder(format!("../syntax-highlighting/{path}"), true)
         .unwrap_or_else(|err| {
-            panic!("failed to add {path} syntax highlighting\n original error: {err}")
+            panic!("failed to add {path} syntax highlighting: {err}")
         })
 }
