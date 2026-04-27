@@ -129,7 +129,7 @@ fn render_table_custom<'a>(
 /// suffix for required methods and the `method` suffix for provided methods.
 ///
 /// Examples
-/// ```
+/// ```text
 /// # reference to `foo` method of `Name` struct in `cot::a::b` module
 /// struct@cot::a::b::Name#method.foo -> https://docs.rs/cot/0.5.0/cot/a/b/struct.Name.html#method.foo
 /// # reference to `foo` required method of `Name` trait in `cot::a::b` module
@@ -145,7 +145,7 @@ fn render_table_custom<'a>(
 ///
 /// Examples:
 ///
-/// ```
+/// ```text
 /// # reference to a `url` field in the `DatabaseConfig` struct in the `cot::config` module.
 /// struct@cot::config::DatabaseConfig#structfield.url -> https://docs.rs/cot/0.5.0/cot/config/struct.DatabaseConfig.html/structfield.url
 /// ```
