@@ -59,7 +59,6 @@ fn render_code_block<'a, T>(
     entering: bool,
 ) -> Result<ChildRendering, fmt::Error> {
     if entering {
-        context.cr()?;
         context.write_str("<div class=\"code-block\">")?;
         context.write_str("<button type=\"button\" class=\"code-block-copy-btn\" data-copy-code aria-label=\"copy\" title=\"copy\">Copy</button>")?;
     }

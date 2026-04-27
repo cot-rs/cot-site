@@ -12,7 +12,7 @@ async function copyCode(button) {
   }
 
   try {
-    await navigator.clipboard.writeText(code.innerText)
+    await navigator.clipboard.writeText(code.innerText.trim())
     setButtonState(button, COPIED_LABEL, 'true')
   } catch {
     setButtonState(button, ERROR_LABEL, 'false')
