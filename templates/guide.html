@@ -81,9 +81,7 @@
     </div>
 </div>
 
-{% block scripts %}
 <script src="{{ base_context.static_files.url_for("static/js/code-copy.js")? }}"></script>
-
 <script type="module">
     const currentVersion = "{{ display_version }}";
     const pagefind = await import("{{ search_index.get_pagefind_url(base_context.urls) }}");
@@ -92,6 +90,4 @@
 
     initSearch(pagefind, currentVersion);
 </script>
-{% endblock %}
-
 {%- endblock %}

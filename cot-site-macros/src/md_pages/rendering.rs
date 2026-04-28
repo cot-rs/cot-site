@@ -69,7 +69,7 @@ fn render_code_block_custom<'a>(
 
     let node = AstNode::from(NodeValue::CodeBlock(Box::new(new_cb)));
 
-    format_node_default(context, &node, entering)
+    format_node_default(context, &node, entering)?;
 
     if !entering {
         context.write_str("</div>")?;
