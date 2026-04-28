@@ -4,7 +4,7 @@ use std::fmt::Write;
 use comrak::html::{
     ChildRendering, Context, format_document_with_formatter, format_node_default, render_sourcepos,
 };
-use comrak::nodes::{AstNode, NodeLink, NodeValue};
+use comrak::nodes::{AstNode, NodeCodeBlock, NodeLink, NodeValue};
 use comrak::options::Plugins;
 use comrak::{Arena, Options, parse_document};
 use cot_site_common::Version;
@@ -48,28 +48,45 @@ fn format_node_custom<'a>(
     match node.data.borrow().value {
         NodeValue::Table(_) => render_table_custom(context, node, entering),
         NodeValue::Link(ref ln) => render_link_custom(context, node, entering, ln),
-        NodeValue::CodeBlock(_) => render_code_block(context, node, entering),
+        NodeValue::CodeBlock(ref cb) => render_code_block_custom(context, node, entering, cb),
         _ => format_node_default(context, node, entering),
     }
 }
 
-fn render_code_block<'a, T>(
-    context: &mut Context<T>,
-    node: &'a AstNode<'a>,
+fn render_code_block_custom<'a>(
+    context: &mut Context<PageContext>,
+    _node: &'a AstNode<'a>,
     entering: bool,
+    cb: &NodeCodeBlock,
 ) -> Result<ChildRendering, fmt::Error> {
     if entering {
         context.write_str("<div class=\"code-block\">")?;
         context.write_str("<button type=\"button\" class=\"code-block-copy-btn\" data-copy-code aria-label=\"copy\" title=\"copy\">Copy</button>")?;
     }
 
-    format_node_default(context, node, entering)?;
+    let mut new_cb = cb.clone();
+    new_cb.literal = remove_hidden_lines(&cb.literal);
+
+    let node = AstNode::from(NodeValue::CodeBlock(Box::new(new_cb)));
+
+    format_node_default(context, &node, entering)
 
     if !entering {
         context.write_str("</div>")?;
     }
 
     Ok(ChildRendering::HTML)
+}
+
+fn remove_hidden_lines(input: &str) -> String {
+    let mut literal = String::new();
+    for line in input.lines() {
+        if !line.starts_with("# ") {
+            literal.push_str(line);
+            literal.push('\n');
+        }
+    }
+    literal
 }
 
 fn render_table_custom<'a>(
@@ -124,7 +141,7 @@ fn render_table_custom<'a>(
 /// suffix for required methods and the `method` suffix for provided methods.
 ///
 /// Examples
-/// ```
+/// ```text
 /// # reference to `foo` method of `Name` struct in `cot::a::b` module
 /// struct@cot::a::b::Name#method.foo -> https://docs.rs/cot/0.5.0/cot/a/b/struct.Name.html#method.foo
 /// # reference to `foo` required method of `Name` trait in `cot::a::b` module
@@ -140,7 +157,7 @@ fn render_table_custom<'a>(
 ///
 /// Examples:
 ///
-/// ```
+/// ```text
 /// # reference to a `url` field in the `DatabaseConfig` struct in the `cot::config` module.
 /// struct@cot::config::DatabaseConfig#structfield.url -> https://docs.rs/cot/0.5.0/cot/config/struct.DatabaseConfig.html/structfield.url
 /// ```
@@ -254,5 +271,19 @@ mod tests {
             "https://docs.rs/cot/1.2/cot/struct.Name.html"
         );
         test_resolve!("cot", "cot");
+    }
+
+    #[test]
+    fn test_code_block_filtering() {
+        let md = "```rust\n# hidden\nvisible\n```";
+        let mut options = Options::default();
+        options.render.r#unsafe = true;
+        let plugins = Plugins::default();
+        let version = Version::new(0, 5, 0);
+
+        let html = markdown_to_html(md, &options, &plugins, version);
+
+        assert!(html.contains("visible"));
+        assert!(!html.contains("hidden"));
     }
 }
