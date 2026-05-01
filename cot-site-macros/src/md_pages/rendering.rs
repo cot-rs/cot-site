@@ -1,3 +1,4 @@
+use std::fmt;
 use std::fmt::Write;
 
 use comrak::html::{
@@ -57,13 +58,24 @@ fn render_code_block_custom<'a>(
     _node: &'a AstNode<'a>,
     entering: bool,
     cb: &NodeCodeBlock,
-) -> Result<ChildRendering, std::fmt::Error> {
+) -> Result<ChildRendering, fmt::Error> {
+    if entering {
+        context.write_str("<div class=\"code-block\">")?;
+        context.write_str("<button type=\"button\" class=\"code-block-copy-btn\" data-copy-code aria-label=\"copy\" title=\"copy\">Copy</button>")?;
+    }
+
     let mut new_cb = cb.clone();
     new_cb.literal = remove_hidden_lines(&cb.literal);
 
     let node = AstNode::from(NodeValue::CodeBlock(Box::new(new_cb)));
 
-    format_node_default(context, &node, entering)
+    format_node_default(context, &node, entering)?;
+
+    if !entering {
+        context.write_str("</div>")?;
+    }
+
+    Ok(ChildRendering::HTML)
 }
 
 fn remove_hidden_lines(input: &str) -> String {

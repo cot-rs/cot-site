@@ -337,6 +337,7 @@ impl App for CotSiteApp {
             "favicon.ico",
             "static/css/main.css",
             "static/js/color-modes.js",
+            "static/js/code-copy.js",
             "static/js/search.js",
             "static/images/cot-dark.svg",
             "static/images/favicon.svg",
