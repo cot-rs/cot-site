@@ -19,7 +19,7 @@ askama = "0.15"
 async-trait = "0.1"
 blake3 = "1.8"
 chrono = "0.4"
-comrak = "0.51"
+comrak = "0.52"
 cot = { version = "0.6", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
