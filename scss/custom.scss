@@ -322,7 +322,7 @@ button.navbar-toggler {
   position: relative;
 }
 
-/* Subcategory toggle button */
+// Subcategory toggle button 
 .guide-subcategory-toggle {
   background: none;
   border: none;
@@ -339,7 +339,7 @@ button.navbar-toggler {
   color: var(--bs-emphasis-color);
 }
 
-/* Chevron rotation when open */
+// Chevron rotation when open 
 .guide-subcategory-chevron {
   flex-shrink: 0;
   transition: transform 0.2s ease;
@@ -349,7 +349,7 @@ button.navbar-toggler {
   transform: rotate(180deg);
 }
 
-/* Indented pages inside the subcategory */
+// Indented pages inside the subcategory 
 .guide-subcategory-pages li {
   padding: 0.1rem 0;
 }
@@ -363,7 +363,7 @@ button.navbar-toggler {
 
 }
 
-/* Shared link styles */
+// Shared link styles 
 .guide-link {
   color: var(--bs-secondary-color);
   text-decoration: none;
