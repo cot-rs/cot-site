@@ -6,6 +6,6 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 comrak.workspace = true
-serde.workspace = true
+serde = { workspace = true, features = ["derive"] }
 semver.workspace = true
 thiserror.workspace = true

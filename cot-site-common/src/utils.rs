@@ -23,6 +23,7 @@ impl Version {
     ///
     /// # Example
     /// ```
+    /// # use cot_site_common::Version;
     /// let v = Version::new(0, 5, 0);
     /// assert_eq!(v.to_string(), "0.5.0");
     /// ```
@@ -34,6 +35,7 @@ impl Version {
     ///
     /// # Example
     /// ```
+    /// # use cot_site_common::Version;
     /// let v = Version::new(0, 5, 0);
     /// assert_eq!(v.major(), 0);
     /// ```
@@ -45,6 +47,7 @@ impl Version {
     ///
     /// # Example
     /// ```
+    /// # use cot_site_common::Version;
     /// let v = Version::new(0, 5, 0);
     /// assert_eq!(v.minor(), 5);
     /// ```
@@ -56,6 +59,7 @@ impl Version {
     ///
     /// # Example
     /// ```
+    /// # use cot_site_common::Version;
     /// let v = Version::new(0, 5, 0);
     /// assert_eq!(v.patch(), 0);
     /// ```
