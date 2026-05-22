@@ -64,6 +64,78 @@ async fn index(base_context: BaseContext) -> cot::Result<Html> {
     Ok(Html::new(rendered))
 }
 
+#[derive(Debug, Clone)]
+struct GuideLinkCategory {
+    title: &'static str,
+    guides: Vec<GuideCategoryItem>,
+}
+
+/// Internal representation of a guide item that gets rendered in the templates.
+#[derive(Debug, Clone)]
+enum GuideCategoryItem {
+    Page(MdPageLink),
+    SubCategory {
+        title: &'static str,
+        pages: Vec<MdPageLink>,
+    },
+}
+
+impl GuideCategoryItem {
+    /// Takes a link and checks whether any of the pages in that subcategory
+    /// matches it. We call this inside the templates to decide whether a
+    /// subcategory accordion should start open or closed.
+    fn contains_active_page(&self, current_link: &str) -> bool {
+        match self {
+            GuideCategoryItem::SubCategory { pages, .. } => {
+                pages.iter().any(|p| p.link == current_link)
+            }
+            GuideCategoryItem::Page(_) => false,
+        }
+    }
+    /// Returns a unique ID for the category which bootstrap uses to
+    /// control the open/close behavior of the accordion
+    fn collapse_id(&self) -> String {
+        match self {
+            GuideCategoryItem::SubCategory { title, .. } => title.to_lowercase().replace(' ', "-"),
+            GuideCategoryItem::Page(_) => String::new(),
+        }
+    }
+}
+
+/// Represents an item in a documentation guide. Each item can either be a
+/// single markdown page or a subcategory containing a collection of related
+/// pages.
+pub enum GuideItem {
+    /// A single markdown page to be rendered as part of the guide.
+    ///
+    /// # Examples
+    /// ```ignore
+    /// use cot_site::{GuideItem, md_page};
+    ///
+    /// let page = GuideItem::Page(md_page!("guide", "introduction"));
+    /// ```
+    Page(MdPage),
+    /// A subcategory containing a collection of related pages.
+    ///
+    /// # Examples
+    /// ```ignore
+    /// use cot_site::{GuideItem, md_page};
+    ///
+    /// let subcategory = GuideItem::SubCategory{
+    ///         title: "Database",
+    ///         pages: vec![
+    ///             md_page!("guide/databases/overview"),
+    ///             md_page!("guide/databases/queries"),
+    ///             md_page!("guide/databases/migrations"),
+    ///         ]
+    /// };
+    /// ```
+    SubCategory {
+        title: &'static str,
+        pages: Vec<MdPage>,
+    },
+}
+
 #[derive(Debug, Template)]
 #[template(path = "guide.html")]
 struct GuideTemplate<'a> {
@@ -77,12 +149,6 @@ struct GuideTemplate<'a> {
     search_index: SearchIndex,
     prev: Option<&'a MdPageLink>,
     next: Option<&'a MdPageLink>,
-}
-
-#[derive(Debug, Clone)]
-struct GuideLinkCategory {
-    title: &'static str,
-    guides: Vec<MdPageLink>,
 }
 
 fn render_section(section: &Section) -> Safe<String> {
@@ -257,7 +323,7 @@ impl CotSiteApp {
     /// The `master_pages` parameter should contain a list of sections, where
     /// each section is a tuple containing the name of the section and list
     /// of pages inside it.
-    pub fn new(master_pages: Vec<(&'static str, Vec<MdPage>)>) -> Self {
+    pub fn new(master_pages: Vec<(&'static str, Vec<GuideItem>)>) -> Self {
         let pages = get_categories(master_pages);
 
         Self {
