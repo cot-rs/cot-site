@@ -93,7 +93,37 @@
     </div>
 </div>
 
-<div class="bg-body-tertiary">
+<div class="bg-body-secondary py-5">
+    <div class="container px-4 py-5">
+        <h2 class="pb-2 text-center">Less boilerplate, more building</h2>
+        <p class="lead text-center col-lg-8 mx-auto pb-3">A taste of what everyday Cot code looks like&nbsp;—&nbsp;type-safe, declarative, and free of ceremony.</p>
+
+        <div class="row row-cols-1 row-cols-lg-2 g-4 py-3">
+            <div class="col">
+                <h3 class="fw-bold mb-1 fs-5">Type-safe ORM queries</h3>
+                <p>Define a model once, then query it with the <code>query!</code> macro&nbsp;—&nbsp;fields and types are checked at compile time, not at runtime.</p>
+                {{ code_samples::ORM_CODE_SAMPLE|safe }}
+            </div>
+            <div class="col">
+                <h3 class="fw-bold mb-1 fs-5">Forms that validate themselves</h3>
+                <p><code>#[derive(Form)]</code> turns a struct into a fully validated HTML form, complete with types like <code>Email</code> and <code>Password</code> that guarantee well-formed data.</p>
+                {{ code_samples::FORMS_CODE_SAMPLE|safe }}
+            </div>
+            <div class="col">
+                <h3 class="fw-bold mb-1 fs-5">An admin panel for (almost) free</h3>
+                <p>Add <code>AdminModel</code> to any model and register it&nbsp;—&nbsp;Cot generates a full CRUD admin interface, no extra code required.</p>
+                {{ code_samples::ADMIN_CODE_SAMPLE|safe }}
+            </div>
+            <div class="col">
+                <h3 class="fw-bold mb-1 fs-5">JSON APIs with OpenAPI built in</h3>
+                <p>Derive <code>JsonSchema</code> on your request and response types, and Cot generates an interactive Swagger UI automatically&nbsp;—&nbsp;no separate spec to maintain.</p>
+                {{ code_samples::JSON_CODE_SAMPLE|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-body-tertiary border-top">
     <div class="container mx-auto px-4 py-4 text-center">
         <h2 class="font-bold my-4">Ready to Get Started?</h2>
         <p class="mb-8">
