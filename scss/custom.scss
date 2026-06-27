@@ -1,3 +1,11 @@
+:root, [data-bs-theme=light] {
+  --homepage-samples-background-color: #ebebeb;
+}
+
+[data-bs-theme=dark] {
+  --homepage-samples-background-color: #343434;
+}
+
 body {
   scroll-behavior: smooth;
 }
@@ -376,4 +384,14 @@ button.navbar-toggler {
 .guide-link.active {
   color: var(--bs-primary);
   font-weight: 500;
+}
+
+#homepage-samples{
+  .lead {
+    font-size: 1.35rem;
+  }
+
+  pre {
+    background-color: var(--homepage-samples-background-color);
+  }
 }

@@ -38,6 +38,25 @@ impl Parse for ExternalMdPageInput {
     }
 }
 
+pub(super) struct CodeSampleInput {
+    pub(super) lang: String,
+    pub(super) code: String,
+}
+
+impl Parse for CodeSampleInput {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let lang = input.parse::<LitStr>()?.value();
+        input.parse::<syn::Token![,]>()?;
+        let code = input.parse::<LitStr>()?.value();
+        Ok(Self { lang, code })
+    }
+}
+
+pub(super) fn quote_code_sample(lang: &str, code: &str) -> TokenStream {
+    let html = rendering::render_code_sample(lang, code);
+    quote! { #html }
+}
+
 fn read_md_page(link: &str) -> String {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
     let path = Path::new(&manifest_dir).join(link).with_extension("md");
@@ -111,15 +130,7 @@ pub(super) fn parse_md_page(prefix: &str, link: &str, version: &str) -> MdPage {
         sections: Mutex::new(vec![]),
     };
 
-    let syntax_highlighter = comrak::plugins::syntect::SyntectAdapterBuilder::new()
-        .css()
-        .syntax_set(
-            syntect::dumps::from_uncompressed_data(include_bytes!(
-                "../../syntax-highlighting/defs.bin"
-            ))
-            .expect("failed to load syntax set"),
-        )
-        .build();
+    let syntax_highlighter = rendering::build_syntax_highlighter();
     let render_plugins = comrak::options::RenderPlugins::builder()
         .codefence_syntax_highlighter(&syntax_highlighter)
         .heading_adapter(&heading_adapter)

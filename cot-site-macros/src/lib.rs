@@ -2,9 +2,18 @@
 
 use proc_macro::TokenStream;
 
-use crate::md_pages::{ExternalMdPageInput, MdPageInput};
+use crate::md_pages::{CodeSampleInput, ExternalMdPageInput, MdPageInput};
 
 mod md_pages;
+
+#[proc_macro]
+pub fn code_sample(input: TokenStream) -> TokenStream {
+    let input = proc_macro2::TokenStream::from(input);
+
+    let CodeSampleInput { lang, code } = syn::parse2(input).unwrap();
+
+    md_pages::quote_code_sample(&lang, &code).into()
+}
 
 #[proc_macro]
 pub fn md_page(input: TokenStream) -> TokenStream {

@@ -17,6 +17,68 @@ struct PageContext {
     version: Version,
 }
 
+pub(super) fn build_syntax_highlighter() -> comrak::plugins::syntect::SyntectAdapter {
+    comrak::plugins::syntect::SyntectAdapterBuilder::new()
+        .css()
+        .syntax_set(
+            syntect::dumps::from_uncompressed_data(include_bytes!(
+                "../../../syntax-highlighting/defs.bin"
+            ))
+            .expect("failed to load syntax set"),
+        )
+        .build()
+}
+
+pub(super) fn render_code_sample(lang: &str, code: &str) -> String {
+    let md = format!("```{lang}\n{code}\n```");
+
+    let mut options = Options::default();
+    options.render.r#unsafe = true;
+
+    let syntax_highlighter = build_syntax_highlighter();
+    let render_plugins = comrak::options::RenderPlugins::builder()
+        .codefence_syntax_highlighter(&syntax_highlighter)
+        .build();
+    let plugins = Plugins::builder().render(render_plugins).build();
+
+    let arena = Arena::new();
+    let root = parse_document(&arena, &md, &options);
+    let mut s = String::new();
+    format_document_with_formatter(
+        root,
+        &options,
+        &mut s,
+        &plugins,
+        format_node_code_sample,
+        (),
+    )
+    .unwrap();
+    s
+}
+
+fn format_node_code_sample<'a>(
+    context: &mut Context<()>,
+    node: &'a AstNode<'a>,
+    entering: bool,
+) -> Result<ChildRendering, fmt::Error> {
+    match node.data.borrow().value {
+        NodeValue::CodeBlock(ref cb) => render_code_block_plain(context, node, entering, cb),
+        _ => format_node_default(context, node, entering),
+    }
+}
+
+fn render_code_block_plain<'a>(
+    context: &mut Context<()>,
+    _node: &'a AstNode<'a>,
+    entering: bool,
+    cb: &NodeCodeBlock,
+) -> Result<ChildRendering, fmt::Error> {
+    let mut new_cb = cb.clone();
+    new_cb.literal = remove_hidden_lines(&cb.literal);
+    let node = AstNode::from(NodeValue::CodeBlock(Box::new(new_cb)));
+    format_node_default(context, &node, entering)
+}
+
 pub(super) fn markdown_to_html(
     md: &str,
     options: &Options,

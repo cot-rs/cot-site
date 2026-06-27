@@ -1,3 +1,4 @@
+mod code_samples;
 mod guides;
 mod search;
 mod template_util;
