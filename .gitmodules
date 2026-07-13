@@ -16,3 +16,6 @@
 [submodule "docs/v0.6"]
 	path = docs/v0.6
 	url = https://github.com/cot-rs/cot.git
+[submodule "docs/v0.7"]
+	path = docs/v0.7
+	url = https://github.com/cot-rs/cot.git
