@@ -74,7 +74,9 @@ fn render_code_block_plain<'a>(
     cb: &NodeCodeBlock,
 ) -> Result<ChildRendering, fmt::Error> {
     let mut new_cb = cb.clone();
-    new_cb.literal = remove_hidden_lines(&cb.literal);
+    if is_rust_lang(&cb.info) {
+        new_cb.literal = remove_hidden_lines(&cb.literal);
+    }
     let node = AstNode::from(NodeValue::CodeBlock(Box::new(new_cb)));
     format_node_default(context, &node, entering)
 }
@@ -127,7 +129,9 @@ fn render_code_block_custom<'a>(
     }
 
     let mut new_cb = cb.clone();
-    new_cb.literal = remove_hidden_lines(&cb.literal);
+    if is_rust_lang(&cb.info) {
+        new_cb.literal = remove_hidden_lines(&cb.literal);
+    }
 
     let node = AstNode::from(NodeValue::CodeBlock(Box::new(new_cb)));
 
@@ -138,6 +142,17 @@ fn render_code_block_custom<'a>(
     }
 
     Ok(ChildRendering::HTML)
+}
+
+/// Returns whether the code block's info string denotes Rust code.
+///
+/// Hidden lines (prefixed with `# `) are a Rust/rustdoc convention, so the
+/// stripping must only be applied to Rust code blocks. Applying it to other
+/// languages (e.g. TOML or shell) would incorrectly remove comments.
+fn is_rust_lang(info: &str) -> bool {
+    // the info string may carry extra attributes, e.g. `rust,has_main`
+    let lang = info.split([',', ' ']).next().unwrap_or("").trim();
+    lang == "rust"
 }
 
 fn remove_hidden_lines(input: &str) -> String {
@@ -347,5 +362,28 @@ mod tests {
 
         assert!(html.contains("visible"));
         assert!(!html.contains("hidden"));
+    }
+
+    #[test]
+    fn test_toml_comments_preserved() {
+        let md = "```toml\n# a comment\nkey = \"value\"\n```";
+        let mut options = Options::default();
+        options.render.r#unsafe = true;
+        let plugins = Plugins::default();
+        let version = Version::new(0, 5, 0);
+
+        let html = markdown_to_html(md, &options, &plugins, version);
+
+        assert!(html.contains("a comment"));
+        assert!(html.contains("key"));
+    }
+
+    #[test]
+    fn test_is_rust_lang() {
+        assert!(is_rust_lang("rust"));
+        assert!(is_rust_lang("rust,has_main"));
+        assert!(!is_rust_lang("toml"));
+        assert!(!is_rust_lang("bash"));
+        assert!(!is_rust_lang(""));
     }
 }
