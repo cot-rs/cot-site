@@ -288,14 +288,6 @@ async fn licenses(base_context: BaseContext) -> cot::Result<Html> {
     Ok(Html::new(template.render()?))
 }
 
-// TODO: remove when Cot supports wildcard routes
-async fn serve_pagefind_2(
-    index: SearchIndex,
-    Path((dir, file)): Path<(String, String)>,
-) -> cot::Result<impl IntoResponse> {
-    serve_pagefind(index, Path(format!("{dir}/{file}"))).await
-}
-
 async fn serve_pagefind(
     index: SearchIndex,
     Path(path): Path<String>,
@@ -349,8 +341,7 @@ impl App for CotSiteApp {
             Route::with_handler_and_name("/faq/", faq, "faq"),
             Route::with_handler_and_name("/licenses/", licenses, "licenses"),
             Route::with_handler_and_name("/guide/", guide, "guide"),
-            Route::with_handler_and_name("/_pagefind/{file}", serve_pagefind, "serve_pagefind"),
-            Route::with_handler("/_pagefind/{dir}/{file}", serve_pagefind_2),
+            Route::with_handler_and_name("/_pagefind/{*file}", serve_pagefind, "serve_pagefind"),
             Route::with_handler_and_name(
                 "/guide/{version}/",
                 async move |base_context: BaseContext,
