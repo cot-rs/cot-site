@@ -282,9 +282,11 @@ fn resolve_url(route: &str, page_context: &PageContext) -> String {
     if let Some(ty) = ty {
         match ty {
             "feature" => {
-                // features use the crate overview page instead of the regular doc.rs page.
+                // features use the crate overview page instead of the regular
+                // doc.rs page.
                 parts[0] = COT_RUSTDOC_CRATE_OVERVIEW_URL.to_string();
-                // rustdoc uses `features`. we use `feature` for consistency with other types.
+                // rustdoc uses `features`. we use `feature` for consistency
+                // with other types.
                 parts.push(format!("features#{}", last_part))
             }
             other => {

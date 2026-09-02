@@ -14,9 +14,9 @@ fn main() {
 fn build_syntax_highlighting_defs() {
     let mut builder = SyntaxSetBuilder::new();
     builder.add_plain_text_syntax();
-    // Syntect parser doesn't work with some newer Sublime Text syntax definitions
-    // but newer definitions are more up-to-date (Rust one gains `async` as a
-    // keyword, for instance) so we update what we can
+    // Syntect parser doesn't work with some newer Sublime Text syntax
+    // definitions but newer definitions are more up-to-date (Rust one gains
+    // `async` as a keyword, for instance) so we update what we can
     add_syntax_highlighting_from_folder(&mut builder, "Packages/HTML");
     add_syntax_highlighting_from_folder(&mut builder, "Packages/ShellScript");
     add_syntax_highlighting_from_folder(&mut builder, "Packages-new/Rust");
