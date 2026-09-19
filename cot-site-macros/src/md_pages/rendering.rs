@@ -4,7 +4,7 @@ use std::fmt::Write;
 use comrak::html::{
     ChildRendering, Context, format_document_with_formatter, format_node_default, render_sourcepos,
 };
-use comrak::nodes::{AstNode, NodeCodeBlock, NodeLink, NodeValue};
+use comrak::nodes::{AstNode, NodeCode, NodeCodeBlock, NodeLink, NodeValue};
 use comrak::options::Plugins;
 use comrak::{Arena, Options, parse_document};
 use cot_site_common::Version;
@@ -113,8 +113,44 @@ fn format_node_custom<'a>(
         NodeValue::Table(_) => render_table_custom(context, node, entering),
         NodeValue::Link(ref ln) => render_link_custom(context, node, entering, ln),
         NodeValue::CodeBlock(ref cb) => render_code_block_custom(context, node, entering, cb),
+        NodeValue::Code(ref nc) => render_code_custom(context, node, entering, nc),
         _ => format_node_default(context, node, entering),
     }
+}
+
+/// Renders an inline code span, inserting a `<wbr>` after every underscore.
+///
+/// Identifiers such as `register_panic_hook` have no natural break
+/// opportunity as far as the browser's line-breaking algorithm is concerned,
+/// so a cramped column (e.g. the Key column of the config reference tables)
+/// wraps them in the middle of a word. `<wbr>` gives the browser an explicit,
+/// invisible place to break instead, but only takes effect where wrapping is
+/// already allowed - `.cot-guide code` uses `white-space: pre` everywhere
+/// else, which suppresses soft wrap opportunities entirely.
+fn render_code_custom<'a>(
+    context: &mut Context<PageContext>,
+    node: &'a AstNode<'a>,
+    entering: bool,
+    nc: &NodeCode,
+) -> Result<ChildRendering, fmt::Error> {
+    if entering {
+        context.write_str("<code")?;
+        render_sourcepos(context, node)?;
+        context.write_str(">")?;
+
+        let mut segments = nc.literal.split('_');
+        if let Some(first) = segments.next() {
+            context.escape(first)?;
+        }
+        for segment in segments {
+            context.write_str("_<wbr>")?;
+            context.escape(segment)?;
+        }
+
+        context.write_str("</code>")?;
+    }
+
+    Ok(ChildRendering::HTML)
 }
 
 fn render_code_block_custom<'a>(
@@ -173,6 +209,10 @@ fn render_table_custom<'a>(
 ) -> Result<ChildRendering, std::fmt::Error> {
     if entering {
         context.cr()?;
+        // wrap in Bootstrap's responsive table container so wide tables
+        // scroll horizontally instead of overflowing the page
+        context.write_str("<div class=\"table-responsive\">")?;
+        context.cr()?;
         // add the Bootstrap "table" class
         context.write_str("<table class=\"table\"")?;
         render_sourcepos(context, node)?;
@@ -188,6 +228,8 @@ fn render_table_custom<'a>(
         }
         context.cr()?;
         context.write_str("</table>")?;
+        context.cr()?;
+        context.write_str("</div>")?;
     }
 
     Ok(ChildRendering::HTML)
