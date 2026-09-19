@@ -201,6 +201,53 @@ body {
   }
 }
 
+// Configuration reference page (Key / Type / Default / Description tables).
+.cot-guide-config {
+  table {
+    // give the columns preferred proportions instead of letting the browser's
+    // auto layout squeeze them based on content, which crams values like
+    // `"plain"`, `"login"`, `"xoauth2"` into a narrow column. Cells still
+    // wrap normally within their column when a value doesn't fit.
+    table-layout: fixed;
+    // keep those proportions from being crushed on narrow screens; the
+    // enclosing `.table-responsive` scrolls horizontally instead.
+    min-width: 40rem;
+
+    // "Key" column
+    th:nth-child(1), td:nth-child(1) {
+      width: 20%;
+    }
+    // "Type" column
+    th:nth-child(2), td:nth-child(2) {
+      width: 15%;
+    }
+    // "Default" column
+    th:nth-child(3), td:nth-child(3) {
+      width: 15%;
+    }
+    // "Description" column
+    th:nth-child(4), td:nth-child(4) {
+      width: 50%;
+    }
+
+    // `.cot-guide code` forces `white-space: pre`, which stops these values
+    // from wrapping at all and makes them overflow the fixed-width columns
+    // above instead. Let them wrap like the rest of the cell content.
+    code {
+      white-space: pre-wrap;
+    }
+  }
+
+  // remove some of the article's side padding on large screens so the
+  // tables have more room to breathe
+  @include media-breakpoint-up(xl) {
+    &.px-xl-5 {
+      padding-left: 0rem;
+      padding-right: 0.5rem;
+    }
+  }
+}
+
 .code-block {
   position: relative;
   margin: 1rem 0;
