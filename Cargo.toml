@@ -12,7 +12,7 @@ members = [
     "cot-site-common",
     "cot-site-macros",
 ]
-resolver = "2"
+resolver = "3"
 
 [workspace.dependencies]
 askama = "0.16"
