@@ -45,7 +45,7 @@
             <div id="search-results-list" class="mt-4"></div>
         </div>
 
-        <article class="col cot-guide mt-3 px-lg-3 px-xl-5" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
+        <article class="col cot-guide mt-3 px-lg-3 px-xl-5{% if guide.link == "configuration" %} cot-guide-config{% endif %}" data-bs-spy="scroll" data-bs-target="#page-toc" data-bs-offset="0" tabindex="0">
             {%- if version != "latest" && version != "master" && version != latest_version -%}
             <div class="alert alert-warning" role="alert">
                 This guide is for an old Cot's version. Please check out the <a
