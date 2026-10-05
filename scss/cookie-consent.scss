@@ -1,0 +1,163 @@
+.cookie-banner, .cookie-preferences {
+  color: var(--bs-body-color);
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1.25rem;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .18), 0 .25rem .75rem rgba(0, 0, 0, .06);
+  padding: 1.75rem;
+  font-size: .95rem;
+
+  h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.025em; margin: 0 0 .75rem; }
+  p { line-height: 1.6; color: var(--bs-secondary-color); }
+}
+
+.cookie-banner {
+  position: fixed;
+  inset: auto auto 1rem 1rem;
+  width: min(32rem, calc(100% - 2rem));
+  z-index: 1060;
+}
+
+.cookie-preferences {
+  width: min(36rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  &::backdrop { background: rgba(15, 23, 42, .55); backdrop-filter: blur(5px); }
+  h2 span { display: block; font-size: .95rem; font-weight: 400; letter-spacing: normal; color: var(--bs-secondary-color); line-height: 1.6; margin-top: .5rem; }
+}
+
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+
+  button {
+    flex: 1 1 auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    padding: .65rem .9rem;
+    font-weight: 600;
+    transition: background-color .15s, border-color .15s;
+    &:hover { border-color: var(--bs-primary); background: var(--bs-secondary-bg); }
+  }
+}
+
+.cookie-preferences-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cookie-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: .35rem .55rem;
+  border-radius: .6rem;
+  &:hover { background: var(--bs-tertiary-bg); }
+}
+
+.cookie-option {
+  position: relative;
+  margin-bottom: .75rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .9rem;
+  background: var(--bs-tertiary-bg);
+
+  summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    padding: 1.15rem 4.5rem 1.15rem 1rem;
+    list-style: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: .9rem;
+    &::-webkit-details-marker { display: none; }
+    &::before {
+      content: '+';
+      display: inline-grid;
+      place-items: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--bs-secondary-color);
+    }
+  }
+  details[open] summary::before { content: '-'; }
+  .cookie-accordion-content {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-.25rem);
+  }
+  details[open] .cookie-accordion-content { height: auto; opacity: 1; transform: none; }
+  .cookie-accordion-content > div { min-height: 0; overflow: hidden; }
+  .cookie-accordion-content p { margin: 0; padding: 0 1rem 1rem 2.75rem; font-size: .85rem; }
+  > .cookie-option-note { margin: -.6rem 0 .9rem; padding: 0 1rem 0 2.75rem; }
+  &:last-of-type { margin-bottom: 1.25rem; }
+}
+
+.cookie-switch {
+  appearance: none;
+  position: absolute;
+  top: 1.15rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 1.5rem;
+  margin: 0;
+  border: 1px solid var(--bs-secondary-color);
+  border-radius: 2rem;
+  background: var(--bs-secondary-color);
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s;
+  &::before {
+    content: '';
+    position: absolute;
+    top: .2rem;
+    left: .15rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+    transition: transform .15s;
+  }
+  &:checked { background: var(--bs-primary); border-color: var(--bs-primary); }
+  &:checked::before { transform: translateX(1.1rem); }
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+.cookie-required, .cookie-option-note {
+  color: var(--bs-secondary-color);
+  font-size: .8rem;
+  font-weight: 400;
+}
+
+.cookie-counting-note { margin: .85rem 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-switch, .cookie-switch::before, .cookie-actions button { transition: none; }
+}
+
+.cookie-settings {
+  border: 0;
+  background: transparent;
+  text-align: start;
+  font: inherit;
+}
+
+.cookie-actions button:focus-visible, .cookie-close:focus-visible,
+.cookie-option summary:focus-visible, .cookie-option input:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 3px;
+}

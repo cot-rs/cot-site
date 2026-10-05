@@ -9,6 +9,7 @@ fn main() {
 fn build_css() {
     println!("cargo::rerun-if-changed=scss/main.scss");
     println!("cargo::rerun-if-changed=scss/custom.scss");
+    println!("cargo::rerun-if-changed=scss/cookie-consent.scss");
     println!("cargo::rerun-if-changed=scss/syntax-highlighting.scss");
 
     let mut css = grass::from_path("scss/main.scss", &grass::Options::default())
