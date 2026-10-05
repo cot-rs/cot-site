@@ -1,4 +1,3 @@
-// Askama escapes configuration in HTML attributes, never JavaScript strings.
 (() => {
   const configuration = document.currentScript?.dataset
   const banner = document.getElementById('cookie-banner')
