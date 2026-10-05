@@ -20,6 +20,13 @@
     <!-- Twitter/X Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
 
+    {% if base_context.analytics.enabled %}
+    <script defer src="{{ base_context.static_files.url_for("static/js/posthog.js")? }}"
+            data-project-token="{{ base_context.analytics.project_token }}"
+            data-api-host="{{ base_context.analytics.host }}"
+            data-allow-localhost="{{ base_context.analytics.allow_localhost }}"></script>
+    {% endif %}
+
     <script src="{{ base_context.static_files.url_for("static/js/color-modes.js")? }}"></script>
     <link href="{{ base_context.static_files.url_for("static/css/main.css")? }}" rel="stylesheet">
 
@@ -35,6 +42,10 @@
     {%- block head -%}{%- endblock -%}
 </head>
 <body class="bg-body d-flex flex-column h-100">
+
+{% if base_context.analytics.enabled %}
+{% include "_cookie_consent.html" %}
+{% endif %}
 
 {%- include "icons/common_icons.svg" -%}
 
@@ -104,7 +115,7 @@
     </div>
 </nav>
 
-<main class="flex-fill">{% block content %}{% endblock %}</main>
+<main class="flex-fill" tabindex="-1">{% block content %}{% endblock %}</main>
 
 <footer class="border-top theme-bg mt-auto">
     <div class="container row row-cols-1 row-cols-sm-2 row-cols-lg-5 py-5 mx-auto">
@@ -121,6 +132,11 @@
                 <li class="nav-item mb-2">
                     <a href="{{ cot::reverse!(urls, "licenses")? }}" class="nav-link p-0 text-body-secondary">Licenses</a>
                 </li>
+                {% if base_context.analytics.enabled %}
+                <li class="nav-item mb-2">
+                    <button type="button" class="cookie-settings nav-link p-0 text-body-secondary ph-no-capture" data-consent="customize">Cookie settings</button>
+                </li>
+                {% endif %}
                 <li class="nav-item mb-2">
                     <a href="{{ cot::reverse!(urls, "faq")? }}" class="nav-link p-0 text-body-secondary">FAQ</a>
                 </li>

@@ -1,0 +1,38 @@
+<section id="cookie-banner" class="cookie-banner ph-no-capture" aria-labelledby="cookie-banner-title" hidden>
+    <h2 id="cookie-banner-title">We value your privacy</h2>
+    <p>We use optional cookies to understand how visitors use our site and improve the experience for everyone.</p>
+    <div class="cookie-actions">
+        <button type="button" data-consent="accept">Accept all</button>
+        <button type="button" data-consent="reject">Reject all</button>
+        <button type="button" data-consent="customize">Customize</button>
+    </div>
+</section>
+
+<dialog id="cookie-preferences" class="cookie-preferences ph-no-capture" aria-labelledby="cookie-preferences-title">
+    <form method="dialog" id="cookie-preferences-form">
+        <div class="cookie-preferences-heading">
+            <h2 id="cookie-preferences-title">Customize your privacy settings here. <span>You can choose which types of cookies and tracking technologies you allow.</span></h2>
+            <button type="button" data-consent="close" class="cookie-close" aria-label="Close cookie preferences">&#215;</button>
+        </div>
+        <p id="cookie-privacy-signal" hidden>Your browser requests privacy. Optional tracking stays off while this signal is enabled.</p>
+
+        <div class="cookie-option">
+            <details>
+                <summary><span id="cookie-necessary-title">strictly Necessary</span><span class="cookie-required">Always on</span></summary>
+                <div class="cookie-accordion-content"><div><p>These cookies are essential for the website to function properly and cannot be disabled.</p></div></div>
+            </details>
+            <input class="cookie-switch" id="cookie-necessary" type="checkbox" role="switch" aria-labelledby="cookie-necessary-title" checked disabled>
+        </div>
+        <div class="cookie-option">
+            <details>
+                <summary><span id="cookie-analytics-title">Analytics</span></summary>
+                <div class="cookie-accordion-content"><div><p>These cookies help us understand how visitors interact with the website and improve its performance.</p></div></div>
+            </details>
+            <input class="cookie-switch" id="cookie-analytics" type="checkbox" role="switch" name="analytics" aria-labelledby="cookie-analytics-title">
+        </div>
+        <div class="cookie-actions">
+            <button type="submit">Save preferences</button>
+            <button type="button" data-consent="reject">Reject all</button>
+        </div>
+    </form>
+</dialog>

@@ -1,3 +1,4 @@
+mod analytics;
 mod code_samples;
 mod guides;
 mod search;
@@ -32,6 +33,7 @@ pub struct BaseContext {
     urls: Urls,
     static_files: StaticFiles,
     route_name: RouteName,
+    analytics: analytics::AnalyticsConfig,
 }
 
 #[derive(Debug, Clone)]
@@ -397,6 +399,7 @@ impl App for CotSiteApp {
             "static/js/color-modes.js",
             "static/js/code-copy.js",
             "static/js/search.js",
+            "static/js/posthog.js",
             "static/images/cot-dark.svg",
             "static/images/favicon.svg",
             "static/images/favicon-32.png",
@@ -409,6 +412,7 @@ impl App for CotSiteApp {
     }
 
     async fn init(&self, context: &mut ProjectContext) -> cot::Result<()> {
+        analytics::configuration()?;
         let urls = Urls::from(context);
         let search_index = build_search_index(urls, Arc::clone(&self.pages)).await;
 
