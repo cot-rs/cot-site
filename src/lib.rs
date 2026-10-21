@@ -401,6 +401,8 @@ impl App for CotSiteApp {
             "static/js/search.js",
             "static/js/posthog.js",
             "static/images/cot-dark.svg",
+            "static/images/cot-cookie-dark.svg",
+            "static/images/cot-cookie-light.svg",
             "static/images/favicon.svg",
             "static/images/favicon-32.png",
             "static/images/favicon-180.png",

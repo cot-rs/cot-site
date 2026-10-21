@@ -1,82 +1,35 @@
 (() => {
   const configuration = document.currentScript?.dataset
   const banner = document.getElementById('cookie-banner')
-  const dialog = document.getElementById('cookie-preferences')
-  if (!configuration || !banner || !dialog) return
+  if (!configuration || !banner) return
 
-  const storageKey = 'cot-cookie-consent-v1'
-  const lifetime = 180 * 24 * 60 * 60 * 1000
-  const analytics = document.getElementById('cookie-analytics')
+  const storageKey = '__cot-cookie-consent-v1'
+  const lifetime = 180 * 24 * 60 * 60 * 1000 // 180 days
+  // Keep visits from local development out of the site's analytics.
   const local = ['localhost', '127.0.0.1', '[::1]', '::1'].includes(window.location.hostname)
     || window.location.hostname.endsWith('.localhost')
+  // Global Privacy Control (GPC) and Do Not Track (DNT) are browser privacy signals.
+  // We treat either as a full analytics opt-out.
   const privacySignal = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1'
     || window.doNotTrack === '1'
-  const trackingAllowed = !privacySignal && (!local || configuration.allowLocalhost === 'true')
+  const trackingAllowed = !privacySignal && !local
   let preferences = readPreferences()
   let sdk = null
   let loading = false
-  let pageviewCaptured = false
+  let pageviewMode = null
   let returnFocus = null
   let previousAnalytics = null
-
-  document.querySelectorAll('.cookie-option details').forEach(details => {
-    const summary = details.querySelector('summary')
-    const content = details.querySelector('.cookie-accordion-content')
-    let animation = null
-    let closing = false
-    if (!summary || !content) return
-
-    summary.addEventListener('click', event => {
-      event.preventDefault()
-      const opening = !details.open || closing
-      const currentHeight = content.getBoundingClientRect().height
-      const currentOpacity = Number.parseFloat(getComputedStyle(content).opacity) || 0
-      animation?.cancel()
-      animation = null
-      closing = false
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        details.open = opening
-        return
-      }
-      details.open = true
-      const targetHeight = opening ? content.scrollHeight : 0
-      animation = content.animate([
-        { height: `${currentHeight}px`, opacity: currentOpacity, transform: `translateY(${opening ? '-.25rem' : '0'})` },
-        { height: `${targetHeight}px`, opacity: opening ? 1 : 0, transform: opening ? 'translateY(0)' : 'translateY(-.25rem)' }
-      ], { duration: 260, easing: 'cubic-bezier(.2,.75,.25,1)' })
-      closing = !opening
-      animation.onfinish = () => {
-        if (closing) details.open = false
-        closing = false
-        animation = null
-      }
-    })
-  })
 
   function readPreferences() {
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey))
+      const now = Date.now()
+      // Ignore expired choices and expiry dates beyond our 180-day limit.
       if (saved?.version === 1 && typeof saved.analytics === 'boolean'
         && typeof saved.expires === 'number'
-        && saved.expires > Date.now() && saved.expires <= Date.now() + lifetime) return saved
-    } catch { /* Blocked storage leaves preferences in memory for this page. */ }
+        && saved.expires > now && saved.expires <= now + lifetime) return saved
+    } catch { /* Storage may be blocked; ask for a choice again. */ }
     return null
-  }
-
-  function updateChoices() {
-    analytics.disabled = privacySignal
-    document.getElementById('cookie-privacy-signal').hidden = !privacySignal
-  }
-
-  function openPreferences(button) {
-    returnFocus = button
-    analytics.checked = !privacySignal && (preferences?.analytics || false)
-    updateChoices()
-    if (!dialog.open) dialog.showModal()
-  }
-
-  function closePreferences() {
-    if (dialog.open) dialog.close()
   }
 
   function save(allowAnalytics) {
@@ -85,10 +38,9 @@
       analytics: !privacySignal && allowAnalytics,
       expires: Date.now() + lifetime
     }
-    try { localStorage.setItem(storageKey, JSON.stringify(preferences)) } catch { /* Memory only. */ }
+    try { localStorage.setItem(storageKey, JSON.stringify(preferences)) } catch { /* The choice still works for this page. */ }
     banner.hidden = true
-    closePreferences()
-    if (!dialog.open) focusPageWithoutScrolling()
+    focusPageWithoutScrolling()
     if (sdk) applyPreferences()
     else loadSdk()
   }
@@ -96,59 +48,64 @@
   function focusPageWithoutScrolling() {
     const x = window.scrollX
     const y = window.scrollY
-    document.querySelector('main')?.focus({ preventScroll: true })
+    const target = returnFocus || document.querySelector('main')
+    target?.focus({ preventScroll: true })
+    returnFocus = null
     window.scrollTo(x, y)
   }
 
   function applyPreferences() {
     if (!sdk) return
-    // A rejected analytics choice must stop an accepted session recording immediately.
-    sdk.set_config({ disable_session_recording: true })
+    // Pause interaction capture and replay before we apply the new choice.
+    sdk.set_config({ autocapture: false, disable_session_recording: true })
+    // No choice, a browser privacy signal, or localhost blocks new events.
     if (!preferences || !trackingAllowed) {
       sdk.opt_out_capturing()
       previousAnalytics = null
       return
     }
-    // PostHog's consent APIs switch between persistent and cookieless capture.
-    sdk.set_config({ disable_persistence: !preferences.analytics })
-    if (previousAnalytics !== preferences.analytics) {
-      if (preferences.analytics) sdk.opt_in_capturing({ captureEventName: false })
+    const consented = preferences.analytics
+    // We only switch PostHog's consent mode when the choice changes.
+    if (previousAnalytics !== consented) {
+      if (consented) sdk.opt_in_capturing({ captureEventName: false })
       else sdk.opt_out_capturing()
-      previousAnalytics = preferences.analytics
+      previousAnalytics = consented
     }
-    sdk.set_config({ autocapture: true, capture_performance: true })
-    sdk.set_config({ disable_session_recording: !preferences.analytics })
-    if (!pageviewCaptured) {
+    if (consented) sdk.set_config({ autocapture: true, disable_session_recording: false })
+    // A change from Reject to Allow gives this page a new consented pageview.
+    if (pageviewMode !== consented) {
       sdk.capture('$pageview')
-      pageviewCaptured = true
+      pageviewMode = consented
     }
   }
 
   function loadSdk() {
+    // Wait for a choice before downloading PostHog, even for cookieless visits.
     if (!preferences || !trackingAllowed || loading || sdk) return
     loading = true
     const script = document.createElement('script')
     script.async = true
     script.crossOrigin = 'anonymous'
+    // PostHog serves the SDK from its asset host
     script.src = configuration.apiHost.replace('.i.posthog.com', '-assets.i.posthog.com') + '/static/array.js'
     script.onerror = () => { loading = false }
     script.onload = () => {
       loading = false
       if (!window.posthog) return
+      // PostHog SDK options: https://posthog.com/docs/libraries/js/config
       window.posthog.init(configuration.projectToken, {
         api_host: configuration.apiHost,
-        defaults: '2026-05-30',
+        defaults: '2026-08-30',
         cookieless_mode: 'on_reject',
         person_profiles: 'never',
         persistence: 'localStorage+cookie',
         cross_subdomain_cookie: false,
         cookie_expiration: 180,
-        disable_persistence: !preferences?.analytics,
-        // Consent is applied before the one explicit pageview.
+        // We send the pageview ourselves after applying the visitor's choice.
         capture_pageview: false,
         capture_pageleave: true,
         autocapture: false,
-        capture_performance: false,
+        capture_performance: true,
         mask_all_text: false,
         mask_all_element_attributes: true,
         disable_session_recording: true,
@@ -165,6 +122,8 @@
         capture_heatmaps: false,
         before_send: event => {
           if (!preferences || !trackingAllowed) return null
+          // After Reject, only the cookieless pageview may leave the browser.
+          if (!preferences.analytics && event.event !== '$pageview') return null
           return event
         },
         loaded: instance => {
@@ -179,39 +138,27 @@
   document.querySelectorAll('[data-consent]').forEach(button => {
     button.addEventListener('click', () => {
       switch (button.dataset.consent) {
-        case 'accept': save(true, true); break
-        case 'reject': save(false, false); break
-        case 'customize': openPreferences(button); break
-        case 'close': closePreferences(); break
+        case 'accept': save(true); break
+        case 'reject': save(false); break
+        case 'show-banner':
+          returnFocus = button
+          banner.hidden = false
+          banner.querySelector(privacySignal ? '[data-consent="reject"]' : '[data-consent="accept"]')?.focus({ preventScroll: true })
+          break
       }
     })
     if (privacySignal && button.dataset.consent === 'accept') button.disabled = true
   })
-  analytics.addEventListener('change', updateChoices)
-  document.getElementById('cookie-preferences-form').addEventListener('submit', event => {
-    event.preventDefault()
-    save(analytics.checked)
-  })
-  dialog.addEventListener('close', () => {
-    const target = returnFocus && !returnFocus.closest('[hidden]')
-      ? returnFocus : document.querySelector('main')
-    const x = window.scrollX
-    const y = window.scrollY
-    target?.focus({ preventScroll: true })
-    window.scrollTo(x, y)
-  })
   window.addEventListener('storage', event => {
+    // Apply consent changes made in another tab to this tab as well.
     if (event.key !== storageKey && event.key !== null) return
     preferences = readPreferences()
-    banner.hidden = preferences !== null
-    if (dialog.open) {
-      analytics.checked = preferences?.analytics || false
-      updateChoices()
-    }
+    banner.hidden = preferences !== null || privacySignal
     if (sdk) applyPreferences()
     else loadSdk()
   })
 
+  document.getElementById('cookie-privacy-signal').hidden = !privacySignal
   banner.hidden = preferences !== null || privacySignal
   loadSdk()
 })()

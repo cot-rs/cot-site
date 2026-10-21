@@ -23,8 +23,7 @@
     {% if base_context.analytics.enabled %}
     <script defer src="{{ base_context.static_files.url_for("static/js/posthog.js")? }}"
             data-project-token="{{ base_context.analytics.project_token }}"
-            data-api-host="{{ base_context.analytics.host }}"
-            data-allow-localhost="{{ base_context.analytics.allow_localhost }}"></script>
+            data-api-host="{{ base_context.analytics.host }}"></script>
     {% endif %}
 
     <script src="{{ base_context.static_files.url_for("static/js/color-modes.js")? }}"></script>
@@ -134,7 +133,7 @@
                 </li>
                 {% if base_context.analytics.enabled %}
                 <li class="nav-item mb-2">
-                    <button type="button" class="cookie-settings nav-link p-0 text-body-secondary ph-no-capture" data-consent="customize">Cookie settings</button>
+                    <button type="button" class="cookie-settings nav-link p-0 text-body-secondary ph-no-capture" data-consent="show-banner">Cookie settings</button>
                 </li>
                 {% endif %}
                 <li class="nav-item mb-2">
