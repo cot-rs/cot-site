@@ -1,101 +1,85 @@
 use std::sync::OnceLock;
 
+use cot::config::ProjectConfig;
 use cot::request::RequestHead;
 use cot::request::extractors::FromRequestHead;
+use serde::Deserialize;
 
-static CONFIG: OnceLock<Result<AnalyticsConfig, String>> = OnceLock::new();
-const DEFAULT_ENABLED: bool = true;
+static CONFIG: OnceLock<AnalyticsConfig> = OnceLock::new();
+
+// https://posthog.com/docs/privacy#is-it-ok-for-my-api-key-to-be-exposed-and-public
 const DEFAULT_PROJECT_TOKEN: &str = "phc_CpMFffYnhPmXZrMy8oh8TqeB2kK4EopYaMft3yhgtHiY";
 const US_POSTHOG_HOST: &str = "https://us.i.posthog.com";
 const EU_POSTHOG_HOST: &str = "https://eu.i.posthog.com";
-const DEFAULT_HOST: &str = EU_POSTHOG_HOST;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub(crate) struct AnalyticsConfig {
     pub enabled: bool,
     pub project_token: String,
     pub host: String,
 }
 
-impl AnalyticsConfig {
-    fn parse(
-        enabled: Option<&str>,
-        token: Option<&str>,
-        host: Option<&str>,
-    ) -> Result<Self, String> {
-        let enabled = match enabled {
-            Some(value) => parse_bool(Some(value))?,
-            None => DEFAULT_ENABLED,
-        };
-        if !enabled {
+impl Default for AnalyticsConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            project_token: DEFAULT_PROJECT_TOKEN.to_owned(),
+            host: EU_POSTHOG_HOST.to_owned(),
+        }
+    }
+}
+
+impl TryFrom<&ProjectConfig> for AnalyticsConfig {
+    type Error = String;
+
+    fn try_from(config: &ProjectConfig) -> Result<Self, String> {
+        let Some(table) = config.extra.get("posthog") else {
             return Ok(Self::default());
-        }
-        let configured_token = token.unwrap_or_default().trim();
-        let token = if configured_token.is_empty() {
-            DEFAULT_PROJECT_TOKEN
-        } else {
-            configured_token
         };
-        if !token.starts_with("phc_")
-            || token.len() <= 4
-            || !token
-                .bytes()
-                .all(|c| c.is_ascii_alphanumeric() || c == b'_')
-        {
-            return Err(
-                "POSTHOG_PROJECT_TOKEN must be a public phc_ project token, not a personal API key"
-                    .to_owned(),
-            );
-        }
-        let configured_host = host
-            .map(str::trim)
-            .filter(|host| !host.is_empty())
-            .unwrap_or(DEFAULT_HOST);
-        let host = match configured_host.trim_end_matches('/') {
-            US_POSTHOG_HOST => US_POSTHOG_HOST,
-            EU_POSTHOG_HOST => EU_POSTHOG_HOST,
-            other => {
-                return Err(format!(
-                    "Unknown POSTHOG_HOST {other:?}; expected {US_POSTHOG_HOST} or {EU_POSTHOG_HOST}"
-                ));
-            }
-        };
-        Ok(Self {
-            enabled,
-            project_token: token.to_owned(),
-            host: host.to_owned(),
-        })
+        let analytics: Self = table
+            .clone()
+            .try_into()
+            .map_err(|error| format!("invalid posthog config: {error}"))?;
+        analytics.validate()?;
+        Ok(analytics)
     }
 }
 
-fn parse_bool(value: Option<&str>) -> Result<bool, &'static str> {
-    match value {
-        None | Some("false") | Some("0") | Some("") => Ok(false),
-        Some("true") | Some("1") => Ok(true),
-        _ => Err("PostHog boolean settings must be true, false, 1, or 0"),
+impl AnalyticsConfig {
+    fn validate(&self) -> Result<(), String> {
+        if !self.enabled {
+            return Ok(());
+        }
+
+        if !self.project_token.starts_with("phc_") {
+            return Err("posthog.project_token must be a public phc_ project token".to_owned());
+        }
+        let host = self.host.trim_end_matches('/');
+        if host != US_POSTHOG_HOST && host != EU_POSTHOG_HOST {
+            return Err(format!(
+                "posthog.host must be {US_POSTHOG_HOST} or {EU_POSTHOG_HOST}, got {:?}",
+                self.host
+            ));
+        }
+        Ok(())
     }
 }
 
-pub(crate) fn configuration() -> cot::Result<&'static AnalyticsConfig> {
+pub(crate) fn init(config: &ProjectConfig) -> cot::Result<()> {
+    let analytics = AnalyticsConfig::try_from(config).map_err(cot::Error::internal)?;
     CONFIG
-        .get_or_init(|| {
-            let enabled = std::env::var("POSTHOG_ENABLED").ok();
-            let token = std::env::var("POSTHOG_PROJECT_TOKEN").ok();
-            let host = std::env::var("POSTHOG_HOST").ok();
-            AnalyticsConfig::parse(enabled.as_deref(), token.as_deref(), host.as_deref())
-        })
-        .as_ref()
-        .map_err(|message| {
-            cot::Error::internal(std::io::Error::new(
-                std::io::ErrorKind::InvalidInput,
-                message.clone(),
-            ))
-        })
+        .set(analytics)
+        .expect("analytics config should be set once");
+    Ok(())
 }
 
 impl FromRequestHead for AnalyticsConfig {
     async fn from_request_head(_head: &RequestHead) -> cot::Result<Self> {
-        configuration().cloned()
+        CONFIG
+            .get()
+            .cloned()
+            .ok_or_else(|| cot::Error::internal("analytics config is not initialized"))
     }
 }
 
@@ -103,55 +87,41 @@ impl FromRequestHead for AnalyticsConfig {
 mod tests {
     use super::*;
 
-    #[test]
-    fn enabled_by_default_uses_the_builtin_project_and_eu_host() {
-        let config = AnalyticsConfig::parse(None, None, None).unwrap();
-        assert_eq!(config.enabled, DEFAULT_ENABLED);
-        assert_eq!(config.project_token, DEFAULT_PROJECT_TOKEN);
-        assert_eq!(config.host, DEFAULT_HOST);
-
-        let blank_host = AnalyticsConfig::parse(Some("true"), None, Some("  ")).unwrap();
-        assert_eq!(blank_host.host, DEFAULT_HOST);
+    fn parse(toml: &str) -> Result<AnalyticsConfig, String> {
+        AnalyticsConfig::try_from(&ProjectConfig::from_toml(toml).unwrap())
     }
 
     #[test]
-    fn can_be_disabled_and_ignores_credentials() {
-        let config = AnalyticsConfig::parse(Some("false"), Some("phx_secret"), None).unwrap();
+    fn missing_table_uses_defaults() {
+        assert_eq!(parse("").unwrap(), AnalyticsConfig::default());
+    }
+
+    #[test]
+    fn fields_can_be_overridden() {
+        let config = parse(
+            r#"
+            [posthog]
+            project_token = "phc_test"
+            host = "https://us.i.posthog.com"
+            "#,
+        )
+        .unwrap();
+        assert!(config.enabled);
+        assert_eq!(config.project_token, "phc_test");
+        assert_eq!(config.host, US_POSTHOG_HOST);
+    }
+
+    #[test]
+    fn can_be_disabled() {
+        let config = parse("[posthog]\nenabled = false\nproject_token = \"phx_secret\"").unwrap();
         assert!(!config.enabled);
-        assert!(config.project_token.is_empty());
     }
 
     #[test]
-    fn enabled_requires_public_token_and_matching_cloud_host() {
-        for host in [US_POSTHOG_HOST, EU_POSTHOG_HOST] {
-            let config =
-                AnalyticsConfig::parse(Some("true"), Some("phc_test"), Some(host)).unwrap();
-            assert!(config.enabled);
-            assert!(config.host.ends_with(".i.posthog.com"));
-        }
-        let eu_host_with_slash = format!("{EU_POSTHOG_HOST}/");
-        let config =
-            AnalyticsConfig::parse(Some("true"), Some("phc_test"), Some(&eu_host_with_slash))
-                .unwrap();
-        assert_eq!(config.host, EU_POSTHOG_HOST);
-        for token in [None, Some("")] {
-            let config =
-                AnalyticsConfig::parse(Some("true"), token, Some(US_POSTHOG_HOST)).unwrap();
-            assert_eq!(config.project_token, DEFAULT_PROJECT_TOKEN);
-        }
-        for token in [Some("phx_secret"), Some("phc_"), Some("phc_\"><script>")] {
-            assert!(AnalyticsConfig::parse(Some("true"), token, Some(US_POSTHOG_HOST)).is_err());
-        }
-        let error =
-            AnalyticsConfig::parse(Some("true"), Some("phc_test"), Some("https://example.com"))
-                .unwrap_err();
-        assert!(error.contains("https://example.com"));
-        for dashboard_host in ["https://us.posthog.com", "https://eu.posthog.com"] {
-            assert!(
-                AnalyticsConfig::parse(Some("true"), Some("phc_test"), Some(dashboard_host))
-                    .is_err()
-            );
-        }
-        assert!(AnalyticsConfig::parse(Some("maybe"), None, None).is_err());
+    fn rejects_invalid_values() {
+        assert!(parse("[posthog]\nproject_token = \"phx_secret\"").is_err());
+        assert!(parse("[posthog]\nhost = \"https://example.com\"").is_err());
+        assert!(parse("[posthog]\nhost = \"https://eu.posthog.com\"").is_err());
+        assert!(parse("[posthog]\nenabeld = false").is_err());
     }
 }

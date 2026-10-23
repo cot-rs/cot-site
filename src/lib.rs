@@ -401,8 +401,6 @@ impl App for CotSiteApp {
             "static/js/search.js",
             "static/js/posthog.js",
             "static/images/cot-dark.svg",
-            "static/images/cot-cookie-dark.svg",
-            "static/images/cot-cookie-light.svg",
             "static/images/favicon.svg",
             "static/images/favicon-32.png",
             "static/images/favicon-180.png",
@@ -414,7 +412,7 @@ impl App for CotSiteApp {
     }
 
     async fn init(&self, context: &mut ProjectContext) -> cot::Result<()> {
-        analytics::configuration()?;
+        analytics::init(context.config())?;
         let urls = Urls::from(context);
         let search_index = build_search_index(urls, Arc::clone(&self.pages)).await;
 
