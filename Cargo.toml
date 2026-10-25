@@ -54,6 +54,7 @@ cot-site-macros.workspace = true
 hex.workspace = true
 mime_guess.workspace = true
 pagefind.workspace = true
+serde = { workspace = true, features = ["derive"] }
 tokio.workspace = true
 tracing.workspace = true
 
