@@ -12,11 +12,31 @@ async function copyCode(button) {
   }
 
   try {
-    await navigator.clipboard.writeText(code.innerText.trim())
+    const text = code.innerText.trim()
+    await navigator.clipboard.writeText(text)
     setButtonState(button, COPIED_LABEL, 'true')
+    trackCopy(button, text)
   } catch {
     setButtonState(button, ERROR_LABEL, 'false')
   }
+}
+
+function classifySnippet(text) {
+  if (/cargo install cot-cli/.test(text)) return 'install_cli'
+  if (/\bcot new\b/.test(text)) return 'new_project'
+  if (/\bbacon\b|\bcargo run\b/.test(text)) return 'run_project'
+  return 'code'
+}
+
+function trackCopy(button, text) {
+  const blocks = Array.from(document.querySelectorAll('.code-block'))
+  window.posthog?.capture('code_copied', {
+    snippet_kind: classifySnippet(text),
+    snippet_preview: text.slice(0, 80),
+    snippet_index: blocks.indexOf(button.closest('.code-block')),
+    method: 'button',
+    page: window.location.pathname
+  })
 }
 
 function setButtonState(button, label, copied) {
