@@ -455,14 +455,13 @@ button.navbar-toggler {
   }
 }
 
-// "Was this helpful?" widget: only what Bootstrap doesn't cover.
+// feedback widget styles
 .page-feedback {
   [data-feedback-rating] {
     --bs-btn-hover-bg: var(--bs-secondary-bg);
   }
 
-  // Bootstrap turns off pointer events on disabled buttons, which also hides
-  // the cursor; turn them back on so locked faces show "not allowed".
+
   [data-feedback-rating]:disabled {
     pointer-events: auto;
     cursor: not-allowed;

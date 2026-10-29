@@ -1,10 +1,3 @@
-// "Was this helpful?" widget, shown in the right sidebar on wide screens and at
-// the end of the chapter on narrow ones. Both copies share one state.
-//
-// Picking a face sends `docs_feedback` straight away and locks the faces. A sad
-// face also opens an optional comment box, which sends `docs_feedback_comment`
-// with the same `feedback_id`; leaving it empty keeps just the rating. Nothing
-// is stored on the device: the rating only lives for this page load.
 (() => {
   const version = document.currentScript?.dataset.version
   const widgets = document.querySelectorAll('[data-page-feedback]')
@@ -12,6 +5,9 @@
   if (!widgets.length || !window.cotAnalytics) return
 
   const MAX_COMMENT_LENGTH = 1000
+  const DOCS_FEEDBACK_COMMENT_TAG = "docs_feedback_comment"
+  const DOCS_FEEDBACK_TAG = "docs_feedback"
+
   let feedback = null
 
   function send(event, extra) {
@@ -24,6 +20,7 @@
     })
   }
 
+  // Random ID that links a rating to its optional comment.
   function newId() {
     return window.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`
   }
@@ -35,14 +32,13 @@
   function rate(rating, activeWidget) {
     if (feedback) return
     feedback = { id: newId(), rating }
-    send('docs_feedback')
+    send(DOCS_FEEDBACK_TAG)
 
     for (const widget of widgets) {
       widget.querySelectorAll('[data-feedback-rating]').forEach(face => {
         const chosen = face.dataset.feedbackRating === rating
         face.disabled = true
         face.setAttribute('aria-pressed', String(chosen))
-        // Bootstrap fades disabled buttons; keep the chosen face fully visible.
         face.classList.toggle('opacity-100', chosen)
         face.classList.toggle('bg-body-secondary', chosen)
       })
@@ -53,14 +49,17 @@
     else setStatus('Thanks for your feedback!')
   }
 
+
   function sendComment(activeWidget) {
     const comment = activeWidget.querySelector('textarea').value.trim().slice(0, MAX_COMMENT_LENGTH)
     if (!comment) {
       activeWidget.querySelector('textarea').focus()
       return
     }
-    send('docs_feedback_comment', { comment })
-    widgets.forEach(widget => { widget.querySelector('[data-feedback-comment]').hidden = true })
+    send(DOCS_FEEDBACK_COMMENT_TAG, { comment })
+    widgets.forEach(widget => {
+      widget.querySelector('[data-feedback-comment]').hidden = true
+    })
     setStatus('Thanks for your feedback!')
   }
 

@@ -5,6 +5,8 @@
 
   const storageKey = '__cot-cookie-consent-v1'
   const lifetime = 180 * 24 * 60 * 60 * 1000 // 180 days
+  // PostHog's single-event capture endpoint: https://posthog.com/docs/api/capture
+  const capturePath = '/i/v0/e/'
   // Keep visits from local development out of the site's analytics.
   const local = ['localhost', '127.0.0.1', '[::1]', '::1'].includes(window.location.hostname)
     || window.location.hostname.endsWith('.localhost')
@@ -158,10 +160,10 @@
     else loadSdk()
   })
 
-  // Page feedback is something the visitor deliberately submits, not tracking,
+  // Page feedback is something the visitor deliberately submits which is not tracking,
   // so it is sent whatever the analytics choice. Visitors who allowed analytics
   // send it through the SDK, so it joins their session. Everyone else sends one
-  // request with a single-use random ID: nothing is stored on the device, and
+  // request with a single-use random ID. nothing is stored on the device, and
   // the feedback can't be linked to any of the visitor's other events.
   function sendFeedback(event, properties) {
     if (local) {
@@ -172,7 +174,7 @@
       sdk.capture(event, properties)
       return
     }
-    fetch(`${configuration.apiHost}/i/v0/e/`, {
+    fetch(configuration.apiHost + capturePath, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'omit',
