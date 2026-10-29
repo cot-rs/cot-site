@@ -5,6 +5,8 @@
 
   const storageKey = '__cot-cookie-consent-v1'
   const lifetime = 180 * 24 * 60 * 60 * 1000 // 180 days
+  // PostHog's single-event capture path
+  const capturePath = '/i/v0/e/'
   // Keep visits from local development out of the site's analytics.
   const local = ['localhost', '127.0.0.1', '[::1]', '::1'].includes(window.location.hostname)
     || window.location.hostname.endsWith('.localhost')
@@ -157,6 +159,34 @@
     if (sdk) applyPreferences()
     else loadSdk()
   })
+
+  function sendFeedback(event, properties) {
+    if (local) {
+      console.info('[feedback] not sent from a local host:', event, properties)
+      return
+    }
+    if (sdk && trackingAllowed && preferences?.analytics) {
+      sdk.capture(event, properties)
+      return
+    }
+    fetch(configuration.apiHost + capturePath, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      keepalive: true,
+      body: JSON.stringify({
+        api_key: configuration.projectToken,
+        event,
+        distinct_id: properties.feedback_id,
+        properties: {
+          ...properties,
+          $process_person_profile: false
+        }
+      })
+    }).catch(() => { /* Feedback is best effort. */ })
+  }
+
+  window.cotAnalytics = { sendFeedback }
 
   document.getElementById('cookie-privacy-signal').hidden = !privacySignal
   banner.hidden = preferences !== null || privacySignal

@@ -1,0 +1,17 @@
+<section class="page-feedback small" data-page-feedback hidden aria-labelledby="page-feedback-question-{{ feedback_location }}">
+    <p id="page-feedback-question-{{ feedback_location }}" class="mb-2">Was this helpful?</p>
+    <div class="d-inline-flex border rounded-pill overflow-hidden" role="group" aria-labelledby="page-feedback-question-{{ feedback_location }}">
+        <button type="button" class="btn rounded-0 lh-1 px-3 py-2 fs-5" data-feedback-rating="good" aria-pressed="false" aria-label="Helpful" title="Helpful">😀</button>
+        <button type="button" class="btn rounded-0 lh-1 px-3 py-2 fs-5 border-start" data-feedback-rating="okay" aria-pressed="false" aria-label="Somewhat helpful" title="Somewhat helpful">😐</button>
+        <button type="button" class="btn rounded-0 lh-1 px-3 py-2 fs-5 border-start" data-feedback-rating="bad" aria-pressed="false" aria-label="Not helpful" title="Not helpful">😞</button>
+    </div>
+
+    <div data-feedback-comment class="position-relative mt-3" hidden>
+        <label for="page-feedback-comment-{{ feedback_location }}" class="visually-hidden">Anything to add about what was missing or wrong? (optional)</label>
+        <textarea id="page-feedback-comment-{{ feedback_location }}" class="form-control form-control-sm rounded-4 pb-5 ph-sensitive" rows="3" maxlength="1000"
+                  placeholder="Anything to add? Tell us what was missing or wrong (optional)"></textarea>
+        <button type="button" class="btn btn-sm btn-primary rounded-pill position-absolute bottom-0 end-0 m-2" data-feedback-send>Send</button>
+    </div>
+
+    <p data-feedback-status class="text-body-secondary mt-2 mb-0" role="status"></p>
+</section>

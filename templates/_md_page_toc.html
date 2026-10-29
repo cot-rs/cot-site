@@ -14,4 +14,10 @@
             </ul>
         </nav>
     </div>
+    {%- if show_page_feedback %}
+    <div class="d-none d-lg-block ms-3 mt-4 pt-3 border-top">
+        {%- let feedback_location = "sidebar" -%}
+        {%- include "_page_feedback.html" -%}
+    </div>
+    {%- endif %}
 </div>
