@@ -4,9 +4,9 @@
   // posthog.js is only loaded when analytics is enabled for the site.
   if (!widgets.length || !window.cotAnalytics) return
 
-  const MAX_COMMENT_LENGTH = 1000
-  const DOCS_FEEDBACK_COMMENT_TAG = "docs_feedback_comment"
-  const DOCS_FEEDBACK_TAG = "docs_feedback"
+  const maxCommentLen = 1000
+  const docsFeedbackComment = "docs_feedback_comment"
+  const docsFeedback = "docs_feedback"
 
   let feedback = null
 
@@ -32,7 +32,7 @@
   function rate(rating, activeWidget) {
     if (feedback) return
     feedback = { id: newId(), rating }
-    send(DOCS_FEEDBACK_TAG)
+    send(docsFeedback)
 
     for (const widget of widgets) {
       widget.querySelectorAll('[data-feedback-rating]').forEach(face => {
@@ -51,12 +51,12 @@
 
 
   function sendComment(activeWidget) {
-    const comment = activeWidget.querySelector('textarea').value.trim().slice(0, MAX_COMMENT_LENGTH)
+    const comment = activeWidget.querySelector('textarea').value.trim().slice(0, maxCommentLen)
     if (!comment) {
       activeWidget.querySelector('textarea').focus()
       return
     }
-    send(DOCS_FEEDBACK_COMMENT_TAG, { comment })
+    send(docsFeedbackComment, { comment })
     widgets.forEach(widget => {
       widget.querySelector('[data-feedback-comment]').hidden = true
     })
