@@ -158,6 +158,36 @@
     else loadSdk()
   })
 
+  // Page feedback is something the visitor deliberately submits, not tracking,
+  // so it is sent whatever the analytics choice. Visitors who allowed analytics
+  // send it through the SDK, so it joins their session. Everyone else sends one
+  // request with a single-use random ID: nothing is stored on the device, and
+  // the feedback can't be linked to any of the visitor's other events.
+  function sendFeedback(event, properties) {
+    if (local) {
+      console.info('[feedback] not sent from a local host:', event, properties)
+      return
+    }
+    if (sdk && trackingAllowed && preferences?.analytics) {
+      sdk.capture(event, properties)
+      return
+    }
+    fetch(`${configuration.apiHost}/i/v0/e/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      keepalive: true,
+      body: JSON.stringify({
+        api_key: configuration.projectToken,
+        event,
+        distinct_id: properties.feedback_id,
+        properties: { ...properties, $process_person_profile: false }
+      })
+    }).catch(() => { /* Feedback is best effort. */ })
+  }
+
+  window.cotAnalytics = { sendFeedback }
+
   document.getElementById('cookie-privacy-signal').hidden = !privacySignal
   banner.hidden = preferences !== null || privacySignal
   loadSdk()

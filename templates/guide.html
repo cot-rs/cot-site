@@ -35,6 +35,7 @@
         {%- let page = guide -%}
         {%- let redirect_version = version -%}
         {%- let latest_version = **versions[1] -%}
+        {%- let show_page_feedback = true -%}
         {%- include "_md_page_toc.html" -%}
 
         <div id="search-results" class="col cot-guide mt-3 px-lg-3 px-xl-5 d-none">
@@ -63,6 +64,11 @@
 
             {{- guide.content_html|safe -}}
 
+            <div class="d-lg-none border-top border-secondary-subtle mt-5 pt-4 pb-2">
+                {%- let feedback_location = "bottom" -%}
+                {%- include "_page_feedback.html" -%}
+            </div>
+
             <nav class="border-top border-secondary-subtle py-4 d-flex flex-row flex-wrap">
                 {%- if let Some(prev) = &prev -%}
                 <a href="{{ cot::reverse!(urls, "guide_page", version = redirect_version, page = prev.link)? }}" class="link-secondary link-underline-opacity-0" rel="prev">
@@ -82,6 +88,8 @@
 </div>
 
 <script src="{{ base_context.static_files.url_for("static/js/code-copy.js")? }}"></script>
+<script defer src="{{ base_context.static_files.url_for("static/js/feedback.js")? }}"
+        data-version="{{ display_version }}"></script>
 <script type="module">
     const currentVersion = "{{ display_version }}";
     const pagefind = await import("{{ search_index.get_pagefind_url(base_context.urls) }}");
