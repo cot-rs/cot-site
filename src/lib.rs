@@ -399,6 +399,7 @@ impl App for CotSiteApp {
             "static/js/color-modes.js",
             "static/js/code-copy.js",
             "static/js/search.js",
+            "static/js/feedback.js",
             "static/js/posthog.js",
             "static/images/cot-dark.svg",
             "static/images/favicon.svg",

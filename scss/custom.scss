@@ -158,6 +158,18 @@ body {
     max-width: 20%;
     min-width: 11.25rem;
   }
+
+  // Keep page feedback in view below a long table of contents.
+  .cot-toc.sticky-sidebar {
+    display: flex;
+    flex-direction: column;
+
+    #page-toc-contents {
+      flex: 0 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+    }
+  }
 }
 
 .guide-chapters {
@@ -440,6 +452,23 @@ button.navbar-toggler {
 
   pre {
     background-color: var(--homepage-samples-background-color);
+  }
+}
+
+// feedback widget styles
+.page-feedback {
+  [data-feedback-rating] {
+    --bs-btn-hover-bg: var(--bs-secondary-bg);
+  }
+
+
+  [data-feedback-rating]:disabled {
+    pointer-events: auto;
+    cursor: not-allowed;
+  }
+
+  textarea::placeholder {
+    color: var(--bs-tertiary-color);
   }
 }
 
