@@ -40,7 +40,9 @@
       analytics: !privacySignal && allowAnalytics,
       expires: Date.now() + lifetime
     }
-    try { localStorage.setItem(storageKey, JSON.stringify(preferences)) } catch { /* The choice still works for this page. */ }
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(preferences))
+    } catch { /* The choice still works for this page. */ }
     banner.hidden = true
     focusPageWithoutScrolling()
     if (sdk) applyPreferences()
@@ -180,6 +182,8 @@
         distinct_id: properties.feedback_id,
         properties: {
           ...properties,
+          $host: window.location.host,
+          $current_url: window.location.href,
           $process_person_profile: false
         }
       })

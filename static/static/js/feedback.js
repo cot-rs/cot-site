@@ -42,11 +42,10 @@
         face.classList.toggle('opacity-100', chosen)
         face.classList.toggle('bg-body-secondary', chosen)
       })
-      if (rating === 'bad') widget.querySelector('[data-feedback-comment]').hidden = false
+      widget.querySelector('[data-feedback-comment]').hidden = false
     }
 
-    if (rating === 'bad') activeWidget.querySelector('textarea').focus()
-    else setStatus('Thanks for your feedback!')
+    activeWidget.querySelector('textarea').focus()
   }
 
 
