@@ -13,7 +13,7 @@
   function send(event, extra) {
     window.cotAnalytics.sendFeedback(event, {
       feedback_id: feedback.id,
-      rating: feedback.rating, // 'good' | 'okay' | 'bad'
+      rating: feedback.rating,
       page: window.location.pathname,
       version,
       ...extra
