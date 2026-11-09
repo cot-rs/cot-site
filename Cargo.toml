@@ -20,14 +20,14 @@ async-trait = "0.1"
 blake3 = "1.8"
 chrono = "0.4"
 comrak = "0.59"
-cot = { git = "https://github.com/cot-rs/cot.git", rev = "1638ac877352d22ce98d1b7f2f6e75d13fc519e8", default-features = false }
+cot = { version = "0.8", default-features = false }
 cot-site-common = { path = "cot-site-common" }
 cot-site-macros = { path = "cot-site-macros" }
 grass = "0.13"
 hex = "0.4"
-lightningcss = "1.0.0-alpha.68"
+lightningcss = "1.0.0-alpha.72"
 mime_guess = "2"
-pagefind = "1.5"
+pagefind = "1.6"
 proc-macro2 = "1"
 quote = "1"
 rustversion = "1"
@@ -36,7 +36,7 @@ serde = "1"
 serde_yml = "0.0.13"
 syn = "3"
 syntect = "5"
-thiserror = "2.0.18"
+thiserror = "2.0.21"
 tokio = { version = "1", features = ["sync", "macros", "rt-multi-thread"] }
 tracing = "0.1"
 
