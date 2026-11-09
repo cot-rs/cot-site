@@ -246,6 +246,44 @@ pub fn get_categories(master_version: Vec<(&'static str, Vec<GuideItem>)>) -> Pa
                 ),
             ],
         ),
+        (
+            "v0.8",
+            vec![
+                (
+                    "Getting started",
+                    vec![
+                        GuideItem::Page(md_page!("v0.8", "introduction")),
+                        GuideItem::Page(md_page!("v0.8", "configuration")),
+                        GuideItem::Page(md_page!("v0.8", "templates")),
+                        GuideItem::Page(md_page!("v0.8", "forms")),
+                        GuideItem::SubCategory {
+                            title: "Database",
+                            pages: vec![
+                                md_page!("v0.8", "databases/overview"),
+                                md_page!("v0.8", "databases/queries"),
+                                md_page!("v0.8", "databases/transactions"),
+                                md_page!("v0.8", "databases/migrations"),
+                            ],
+                        },
+                        GuideItem::Page(md_page!("v0.8", "admin-panel")),
+                        GuideItem::Page(md_page!("v0.8", "static-files")),
+                        GuideItem::Page(md_page!("v0.8", "sending-emails")),
+                        GuideItem::Page(md_page!("v0.8", "caching")),
+                        GuideItem::Page(md_page!("v0.8", "error-pages")),
+                        GuideItem::Page(md_page!("v0.8", "openapi")),
+                        GuideItem::Page(md_page!("v0.8", "testing")),
+                    ],
+                ),
+                (
+                    "Upgrading",
+                    vec![GuideItem::Page(md_page!("v0.8", "upgrade-guide"))],
+                ),
+                (
+                    "About",
+                    vec![GuideItem::Page(md_page!("v0.8", "framework-comparison"))],
+                ),
+            ],
+        ),
         ("master", master_version),
     ]);
 
