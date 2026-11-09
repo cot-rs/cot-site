@@ -9,10 +9,10 @@
   const local = ['localhost', '127.0.0.1', '[::1]', '::1'].includes(window.location.hostname)
     || window.location.hostname.endsWith('.localhost')
   // Global Privacy Control (GPC) and Do Not Track (DNT) are browser privacy signals.
-  // We treat either as a full analytics opt-out.
+  // We treat either as a full opt-out: no banner and no PostHog at all, unless
+  // the visitor opens "Cookie settings" in the footer and clicks Allow.
   const privacySignal = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1'
     || window.doNotTrack === '1'
-  const trackingAllowed = !privacySignal && !local
   let preferences = readPreferences()
   let sdk = null
   let loading = false
@@ -32,10 +32,17 @@
     return null
   }
 
+  // No choice yet, or localhost, blocks all events. With a privacy signal,
+  // only an explicit Allow does; Reject then means no PostHog, not cookieless.
+  function trackingAllowed() {
+    if (local || !preferences) return false
+    return preferences.analytics || !privacySignal
+  }
+
   function save(allowAnalytics) {
     preferences = {
       version: 1,
-      analytics: !privacySignal && allowAnalytics,
+      analytics: allowAnalytics,
       expires: Date.now() + lifetime
     }
     try { localStorage.setItem(storageKey, JSON.stringify(preferences)) } catch { /* The choice still works for this page. */ }
@@ -58,8 +65,7 @@
     if (!sdk) return
     // Pause interaction capture and replay before we apply the new choice.
     sdk.set_config({ autocapture: false, disable_session_recording: true })
-    // No choice, a browser privacy signal, or localhost blocks new events.
-    if (!preferences || !trackingAllowed) {
+    if (!trackingAllowed()) {
       sdk.opt_out_capturing()
       previousAnalytics = null
       return
@@ -81,7 +87,7 @@
 
   function loadSdk() {
     // Wait for a choice before downloading PostHog, even for cookieless visits.
-    if (!preferences || !trackingAllowed || loading || sdk) return
+    if (!trackingAllowed() || loading || sdk) return
     loading = true
     const script = document.createElement('script')
     script.async = true
@@ -121,7 +127,7 @@
         capture_exceptions: false,
         capture_heatmaps: false,
         before_send: event => {
-          if (!preferences || !trackingAllowed) return null
+          if (!trackingAllowed()) return null
           // After Reject, only the cookieless pageview may leave the browser.
           if (!preferences.analytics && event.event !== '$pageview') return null
           return event
@@ -143,11 +149,10 @@
         case 'show-banner':
           returnFocus = button
           banner.hidden = false
-          banner.querySelector(privacySignal ? '[data-consent="reject"]' : '[data-consent="accept"]')?.focus({ preventScroll: true })
+          banner.querySelector('[data-consent="accept"]')?.focus({ preventScroll: true })
           break
       }
     })
-    if (privacySignal && button.dataset.consent === 'accept') button.disabled = true
   })
   window.addEventListener('storage', event => {
     // Apply consent changes made in another tab to this tab as well.
@@ -158,7 +163,6 @@
     else loadSdk()
   })
 
-  document.getElementById('cookie-privacy-signal').hidden = !privacySignal
   banner.hidden = preferences !== null || privacySignal
   loadSdk()
 })()
