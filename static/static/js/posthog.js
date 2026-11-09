@@ -9,7 +9,7 @@
   const local = ['localhost', '127.0.0.1', '[::1]', '::1'].includes(window.location.hostname)
     || window.location.hostname.endsWith('.localhost')
   // Global Privacy Control (GPC) and Do Not Track (DNT) are browser privacy signals.
-  // We treat either as a full opt-out: no banner and no PostHog at all, unless
+  // We treat either as a full opt-out (no banner and no PostHog at all), unless
   // the visitor opens "Cookie settings" in the footer and clicks Allow.
   const privacySignal = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1'
     || window.doNotTrack === '1'
