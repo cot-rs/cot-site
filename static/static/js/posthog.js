@@ -32,8 +32,8 @@
     return null
   }
 
-  // No choice yet, or localhost, blocks all events. With a privacy signal,
-  // only an explicit Allow does; Reject then means no PostHog, not cookieless.
+  // No choice yet or localhost should block all events. With a privacy signal,
+  // only an explicit Allow does, i.e Reject means no PostHog analytics instead of cookieless.
   function trackingAllowed() {
     if (local || !preferences) return false
     return preferences.analytics || !privacySignal
