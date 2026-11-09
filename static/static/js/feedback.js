@@ -35,12 +35,10 @@
     send(docsFeedback)
 
     for (const widget of widgets) {
+      // custom.scss highlights the face with aria-pressed="true".
       widget.querySelectorAll('[data-feedback-rating]').forEach(face => {
-        const chosen = face.dataset.feedbackRating === rating
         face.disabled = true
-        face.setAttribute('aria-pressed', String(chosen))
-        face.classList.toggle('opacity-100', chosen)
-        face.classList.toggle('bg-body-secondary', chosen)
+        face.setAttribute('aria-pressed', String(face.dataset.feedbackRating === rating))
       })
       widget.querySelector('[data-feedback-comment]').hidden = false
     }
@@ -68,6 +66,13 @@
       const face = event.target.closest('[data-feedback-rating]')
       if (face) rate(face.dataset.feedbackRating, widget)
       else if (event.target.closest('[data-feedback-send]')) sendComment(widget)
+    })
+    // ctrl+Enter (cmd+Enter on macOS) sends the comment.
+    widget.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey) && event.target.matches('textarea')) {
+        event.preventDefault()
+        sendComment(widget)
+      }
     })
   }
 })()

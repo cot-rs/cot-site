@@ -459,8 +459,27 @@ button.navbar-toggler {
 .page-feedback {
   [data-feedback-rating] {
     --bs-btn-hover-bg: var(--bs-secondary-bg);
+    --bs-btn-active-bg: var(--bs-secondary-bg);
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-disabled-border-color: transparent;
   }
 
+  [data-feedback-rating] + [data-feedback-rating] {
+    border-left-color: var(--bs-border-color);
+  }
+
+  [data-feedback-rating][aria-pressed="true"] {
+    --bs-btn-disabled-bg: var(--bs-primary-bg-subtle);
+    --bs-btn-disabled-opacity: 1;
+  }
+
+  [data-feedback-faces]:has([aria-pressed="true"]) {
+    border-color: var(--bs-primary-border-subtle);
+  }
+
+  [data-feedback-faces]:has(:focus-visible) {
+    box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+  }
 
   [data-feedback-rating]:disabled {
     pointer-events: auto;
