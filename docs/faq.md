@@ -7,10 +7,10 @@ title: FAQ
 * [The very website you are looking at right now!](https://cot.rs) ([source code](https://github.com/cot-rs/cot))
 * [Mateusz Maćkowski's blog](https://mackow.ski) ([source](https://github.com/m4tx/m4txblog))
 * The backend for [ChomboGen](https://hand.chombo.club/), web service generating images of Riichi Mahjong hands ([source code](https://github.com/m4tx/chombo-gen/tree/master/chombo-gen-backend))
-* Brewnerator, an experimental beer recipe viewer ([source code](https://github.com/brewnerator/brewnerator))
+* [Hack the Space](https://hackthespace.mackow.ski/), a CTF-like web game ([source code](https://github.com/m4tx/hackthespace))
 * An example implementation of server-side detection of using `curl | bash` in the CLI ([source code](https://github.com/m4tx/curl-bash-attack))
 
-Do you have a website built with Cot? Let us know by [opening a pull request](https://github.com/cot-rs/cot-site/edit/master/src/md-pages/faq.md)! We'd love to feature it here.
+Do you have a website built with Cot? Let us know by [opening a pull request](https://github.com/cot-rs/cot-site/edit/master/docs/faq.md)! We'd love to feature it here.
 
 ## Where does the name come from?
 
@@ -39,6 +39,8 @@ This makes Cot a great choice for developers who want to build a web application
 
 Loco is a web framework similar to Cot in a sense that it also tries to provide a batteries-included experience for developers. Cot tries to provide a more developer-friendly experience by providing friendlier APIs and features such as admin panel, or form handling with easy HTML generation. It tries to utilize Rust's type system as much as possible to avoid bugs earlier in the process, hence the choice of Rinja for server-side templates instead of Tera, for instance. Finally, Cot goes as far as creating its own ORM to provide even more tightly integrated experience.
 
+For more details, visit the [framework comparison](https://cot.rs/guide/latest/framework-comparison/) page.
+
 ## Why build your own ORM? Isn't this a huge undertaking?
 
 There is a variety ORMs available in Rust, but none of them have the following features:
@@ -63,3 +65,4 @@ Yes! Here are some articles and videos about Cot:
 
 * [Cot framework aims to ease Rust web development](https://www.infoworld.com/article/3832992/cot-framework-aims-to-ease-rust-web-development.html) on [InfoWorld](https://www.infoworld.com/)
 * [Welcome, Cot: the Rust web framework for lazy developers](https://mackow.ski/blog/cot-the-rust-web-framework-for-lazy-developers/) on [Mateusz Maćkowski's blog](https://mackow.ski/) _(written by us)_
+* [The Unglamorous Side of Rust Web Development](https://blog.jetbrains.com/rust/2026/06/25/rust-web-development-2026/) on [JetBrains RustRover blog](https://blog.jetbrains.com/rust/) _(written by us)_
